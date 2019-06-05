@@ -153,9 +153,22 @@ void WiFiEvent(WiFiEvent_t event) {
     udp.onPacket([](AsyncUDPPacket packet) {
 
         Serial.print("Data: ");
-        Serial.write(packet.data(), packet.length());
-        Serial.println();
-        SetupAnimations();
+        Serial.write(packet.data(), packet.length());Serial.println();
+        String command;
+      
+        for ( int i = 0; i < packet.length(); i++ ) {
+            command += (char)packet.data()[i];
+        }
+
+        //Serial.println();Serial.println(command);
+        if (command.charAt(1) == 'S') {
+            SetupAnimations();
+        }
+        if (command.charAt(1) == 'E') {
+            animations.StopAnimation(0);
+            animations.StopAnimation(1);
+        }
+        
         }); 
     }
 

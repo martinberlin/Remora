@@ -1,0 +1,3 @@
+// Configuration. Rename this file to Config.h and fill with your credentials
+#define WIFI_SSID1 "KabelBox-A210"
+#define WIFI_PASS1 ""

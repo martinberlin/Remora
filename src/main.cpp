@@ -7,6 +7,94 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/timers.h"
 
+// START Quick and dirty test move to Animation class
+#include <NeoPixelBus.h>
+#include <NeoPixelAnimator.h>
+const uint16_t PixelCount = 144; 
+const uint8_t PixelPin = 19;  
+const RgbColor CylonEyeColor(HtmlColor(0x7f0000));
+NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
+NeoPixelAnimator animations(2); // only ever need 2 animations
+uint16_t lastPixel = 0; // track the eye position
+int8_t moveDir = 1; // track the direction of movement
+// uncomment one of the lines below to see the effects of
+// changing the ease function on the movement animation
+AnimEaseFunction moveEase =
+//      NeoEase::Linear;
+//      NeoEase::QuadraticInOut;
+//      NeoEase::CubicInOut;
+        NeoEase::QuarticInOut;
+//      NeoEase::QuinticInOut;
+//      NeoEase::SinusoidalInOut;
+//      NeoEase::ExponentialInOut;
+//      NeoEase::CircularInOut;
+
+void FadeAll(uint8_t darkenBy)
+{
+    RgbColor color;
+    for (uint16_t indexPixel = 0; indexPixel < strip.PixelCount(); indexPixel++)
+    {
+        color = strip.GetPixelColor(indexPixel);
+        color.Darken(darkenBy);
+        strip.SetPixelColor(indexPixel, color);
+    }
+}
+
+void FadeAnimUpdate(const AnimationParam& param)
+{
+    if (param.state == AnimationState_Completed)
+    {
+        FadeAll(10);
+        animations.RestartAnimation(param.index);
+    }
+}
+
+void MoveAnimUpdate(const AnimationParam& param)
+{
+    // apply the movement animation curve
+    float progress = moveEase(param.progress);
+    // use the curved progress to calculate the pixel to effect
+    uint16_t nextPixel;
+    if (moveDir > 0)
+    {
+        nextPixel = progress * PixelCount;
+    }
+    else
+    {
+        nextPixel = (1.0f - progress) * PixelCount;
+    }
+
+    // if progress moves fast enough, we may move more than
+    // one pixel, so we update all between the calculated and
+    // the last
+    if (lastPixel != nextPixel)
+    {
+        for (uint16_t i = lastPixel + moveDir; i != nextPixel; i += moveDir)
+        {
+            strip.SetPixelColor(i, CylonEyeColor);
+        }
+    }
+    strip.SetPixelColor(nextPixel, CylonEyeColor);
+    lastPixel = nextPixel;
+
+    if (param.state == AnimationState_Completed)
+    {
+        // reverse direction of movement
+        moveDir *= -1;
+        // done, time to restart this position tracking animation/timer
+        animations.RestartAnimation(param.index);
+    }
+}
+
+void SetupAnimations()
+{
+    // fade all pixels providing a tail that is longer the faster the pixel moves.
+    animations.StartAnimation(0, 5, FadeAnimUpdate);
+    // take several seconds to move eye fron one side to the other
+    animations.StartAnimation(1, 1000, MoveAnimUpdate);
+}
+// END
+
 // Debug mode prints to serial
 bool debugMode = true;
 TimerHandle_t wifiReconnectTimer;
@@ -16,7 +104,7 @@ AsyncUDP udp;
 
 struct config {
   char chipId[20];
-  int udpPort = 1234;
+  int udpPort = 49161;
 } internalConfig;
 
 /**
@@ -67,7 +155,7 @@ void WiFiEvent(WiFiEvent_t event) {
         Serial.print("Data: ");
         Serial.write(packet.data(), packet.length());
         Serial.println();
-        
+        SetupAnimations();
         }); 
     }
 
@@ -90,8 +178,13 @@ void setup()
 
   // Set up automatic reconnect timers
   wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void *)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
+ 
+    strip.Begin();
+    strip.Show();
+    
 }
 
 void loop() {
-    delay(10);
+    animations.UpdateAnimations();
+    strip.Show();
 }

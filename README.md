@@ -4,11 +4,18 @@
 
 Remora will be a simple pseudo animation language to be a companion to Orca receiving UDP short instructions and sending animations to an addressable LEDs stripe.
 This animations will run entirely in an ESP32 controller and are initially aimed to be short so they can be triggered by Orca bangs
+[Orca sequencer](https://github.com/hundredrabbits/Orca)
 
 ## Communications protocol
 
 UDP will be hearing in a configurable port so you can send short instructions from Orca or any other program you desire
-**Update the default Orca IP for UDP**
+
+###Requirements
+
+1. Get an ESP32 Board (Any) and compile this firmware using Plataformio or Arduino
+2. Make sure to update the settings for your LED Stripe (data PIN, Length)
+3. Update the default Orca IP for UDP
+
 The default localhost IP needs to be updated in Orca in the file:
 desktop/core/io/udp.js this.play line. Replace this by the IP of that the controller displays in Serial.
 Note: Doing this will disable any other localhost running UDP communications from Orca
@@ -25,11 +32,17 @@ The current demo instructions are just temporary as a proof-of-concept approach 
  https://github.com/martinberlin/Remora/tree/feature/animation
 
 **S** Long stripe start  (800 ms)
+
 **s** Short stripe start (200 ms)
+
 **E** End all running animations
-**s(lqcwseo)** ex. sl will attem to switch animation NeoEase to Linear
+
+**s(lqcwseo)** ex. sl will attempt to switch animation NeoEase to Linear
+
 **C(rgb)** ex Cr Will add Red to the actual color
+
 **c(rgb)** ex cr Will substract Red to the actual color
+
 **p(rgb)** ex pr Will render pure red (and switch off other colors)
 
 
@@ -46,9 +59,13 @@ R99 Existing animation will go rightwards ( ;> )
 **>02R99G99B00**  Will make a 2 Yellow LEDs go to the right and dissapear
 
 This will be the initial animations to develop.
-Coming in next phase we can imagine more combinations like:
+
+#### Coming in next phase we can imagine more combinations like:
 
 **>|** Go rightwards and bump at the end to retun leftwards
+
 **ALL_R00G00B00** Turn all LEDs to that color
+
 **X25R99** Turn LED 25 into maximun Red
+
 **X25R99G99B99** Turn LED 25 into maximun Red, Green, Blue (White)

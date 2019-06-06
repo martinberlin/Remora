@@ -12,7 +12,7 @@
 #include <NeoPixelAnimator.h>
 const uint16_t PixelCount = 144; 
 const uint8_t PixelPin = 19;  
-const RgbColor CylonEyeColor(HtmlColor(0x7f0000));
+struct RgbColor CylonEyeColor(HtmlColor(0x7f0000));
 NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
 NeoPixelAnimator animations(2); // only ever need 2 animations
 uint16_t lastPixel = 0; // track the eye position
@@ -89,7 +89,7 @@ void MoveAnimUpdate(const AnimationParam& param)
 void SetupAnimations()
 {
     // fade all pixels providing a tail that is longer the faster the pixel moves.
-    animations.StartAnimation(0, 5, FadeAnimUpdate);
+    //animations.StartAnimation(0, 5, FadeAnimUpdate);
     // take several seconds to move eye fron one side to the other
     animations.StartAnimation(1, 1000, MoveAnimUpdate);
 }
@@ -160,15 +160,60 @@ void WiFiEvent(WiFiEvent_t event) {
             command += (char)packet.data()[i];
         }
 
-        //Serial.println();Serial.println(command);
-        if (command.charAt(1) == 'S') {
-            SetupAnimations();
+        // Serial.println(command.charAt(0));
+        // TODO Refactor this in an animation class
+        if (command.charAt(0) == 'S') {
+            printMessage("S Start long");
+            // take 1000ms to move eye fron one side to the other
+            animations.StartAnimation(0, 8, FadeAnimUpdate);
+            animations.StartAnimation(1, 800, MoveAnimUpdate);
         }
-        if (command.charAt(1) == 'E') {
+        if (command.charAt(0) == 's') {
+            printMessage("s Start short");
+            // take 1000ms to move eye fron one side to the other
+            animations.StartAnimation(0, 4, FadeAnimUpdate);
+            animations.StartAnimation(1, 200, MoveAnimUpdate);
+        }
+        if (command.charAt(0) == 'E') {
+            printMessage("End");
             animations.StopAnimation(0);
             animations.StopAnimation(1);
         }
-        
+        if (command.charAt(0) == 's' && command.charAt(1) == 'l' ) {
+            printMessage("s Linear");
+            AnimEaseFunction moveEase = NeoEase::Linear;
+        }
+        if (command.charAt(0) == 's' && command.charAt(1) == 'q' ) {
+            printMessage("s QuadraticInOut");
+            AnimEaseFunction moveEase = NeoEase::QuadraticInOut; 
+        }
+        if (command.charAt(0) == 's' && command.charAt(1) == 'c' ) {
+            AnimEaseFunction moveEase = NeoEase::CubicInOut;
+        }
+        if (command.charAt(0) == 's' && command.charAt(1) == 'w' ) {
+            AnimEaseFunction moveEase = NeoEase::QuinticInOut;
+        }
+        if (command.charAt(0) == 's' && command.charAt(1) == 's' ) {
+            AnimEaseFunction moveEase = NeoEase::SinusoidalInOut;
+        }
+        if (command.charAt(0) == 's' && command.charAt(1) == 'e' ) {
+            AnimEaseFunction moveEase = NeoEase::ExponentialInOut;
+        }
+        if (command.charAt(0) == 's' && command.charAt(1) == 'o' ) {
+            AnimEaseFunction moveEase = NeoEase::CircularInOut;
+        }
+        // Colors. TODO: Changing colors in realtime does not work yet 
+        if (command.charAt(0) == 'C' && command.charAt(1) == 'r' ) {
+            printMessage("Color to red");
+            RgbColor CylonEyeColor(HtmlColor(0x7f0000));
+        }
+        if (command.charAt(0) == 'C' && command.charAt(1) == 'g' ) {
+            printMessage("Color to green");
+            RgbColor CylonEyeColor(HtmlColor(0x007f00));
+        }
+        if (command.charAt(0) == 'C' && command.charAt(1) == 'b' ) {
+            RgbColor CylonEyeColor(HtmlColor(0x00007f));
+        }
         }); 
     }
 

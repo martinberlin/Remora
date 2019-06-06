@@ -182,7 +182,8 @@ void WiFiEvent(WiFiEvent_t event) {
         }
         if (command.charAt(0) == 's' && command.charAt(1) == 'l' ) {
             printMessage("s Linear");
-            AnimEaseFunction moveEase = NeoEase::Linear;
+            moveEase.swap(NeoEase::Linear);
+            //AnimEaseFunction moveEase = NeoEase::Linear;
         }
         if (command.charAt(0) == 's' && command.charAt(1) == 'q' ) {
             printMessage("s QuadraticInOut");

@@ -4,11 +4,17 @@
 
 Remora will be a simple pseudo animation language to be a companion to Orca receiving UDP short instructions and sending animations to an addressable LEDs stripe.
 This animations will run entirely in an ESP32 controller and are initially aimed to be short so they can be triggered by Orca bangs
+[Orca sequencer](https://github.com/hundredrabbits/Orca)
 
 ## Communications protocol
 
 UDP will be hearing in a configurable port so you can send short instructions from Orca or any other program you desire
-**Update the default Orca IP for UDP**
+
+###Requirements
+
+1. Get an ESP32 Board (Any) and compile this firmware using Plataformio or Arduino
+2. Make sure to update the settings for your LED Stripe (data PIN, Length)
+3. Update the default Orca IP for UDP
 
 The default localhost IP needs to be updated in Orca in the file:
 desktop/core/io/udp.js this.play line. Replace this by the IP of that the controller displays in Serial.
@@ -31,7 +37,7 @@ The current demo instructions are just temporary as a proof-of-concept approach 
 
 **E** End all running animations
 
-**s(lqcwseo)** ex. sl will attemt to switch animation NeoEase to Linear
+**s(lqcwseo)** ex. sl will attempt to switch animation NeoEase to Linear
 
 **C(rgb)** ex Cr Will add Red to the actual color
 

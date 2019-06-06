@@ -25,11 +25,17 @@ The current demo instructions are just temporary as a proof-of-concept approach 
  https://github.com/martinberlin/Remora/tree/feature/animation
 
 **S** Long stripe start  (800 ms)
+
 **s** Short stripe start (200 ms)
+
 **E** End all running animations
+
 **s(lqcwseo)** ex. sl will attem to switch animation NeoEase to Linear
+
 **C(rgb)** ex Cr Will add Red to the actual color
+
 **c(rgb)** ex cr Will substract Red to the actual color
+
 **p(rgb)** ex pr Will render pure red (and switch off other colors)
 
 

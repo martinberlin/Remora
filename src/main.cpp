@@ -13,6 +13,7 @@
 const uint16_t PixelCount = 144; 
 const uint8_t PixelPin = 19;  
 struct RgbColor CylonEyeColor(HtmlColor(0x7f0000));
+
 NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
 NeoPixelAnimator animations(2); // only ever need 2 animations
 uint16_t lastPixel = 0; // track the eye position
@@ -202,17 +203,54 @@ void WiFiEvent(WiFiEvent_t event) {
         if (command.charAt(0) == 's' && command.charAt(1) == 'o' ) {
             AnimEaseFunction moveEase = NeoEase::CircularInOut;
         }
-        // Colors. TODO: Changing colors in realtime does not work yet 
+        // Colors : Add & Substract
         if (command.charAt(0) == 'C' && command.charAt(1) == 'r' ) {
-            printMessage("Color to red");
-            RgbColor CylonEyeColor(HtmlColor(0x7f0000));
+            printMessage("Add red");
+            CylonEyeColor.R = 100;
         }
         if (command.charAt(0) == 'C' && command.charAt(1) == 'g' ) {
-            printMessage("Color to green");
-            RgbColor CylonEyeColor(HtmlColor(0x007f00));
+            printMessage("Add green");
+            CylonEyeColor.G = 100;
         }
         if (command.charAt(0) == 'C' && command.charAt(1) == 'b' ) {
-            RgbColor CylonEyeColor(HtmlColor(0x00007f));
+            printMessage("Add blue");
+            CylonEyeColor.B = 100;
+        }
+        if (command.charAt(0) == 'c' && command.charAt(1) == 'r' ) {
+            printMessage("Off red");
+            CylonEyeColor.R = 0;
+        }
+        if (command.charAt(0) == 'c' && command.charAt(1) == 'g' ) {
+            printMessage("Off green");
+            CylonEyeColor.G = 0;
+        }
+        if (command.charAt(0) == 'c' && command.charAt(1) == 'b' ) {
+            printMessage("Off blue");
+            CylonEyeColor.B = 0;
+        }
+        if (command.charAt(0) == 'P' && command.charAt(1) == 'r' ) {
+            printMessage("Pure red");
+            CylonEyeColor.R = 100;
+            CylonEyeColor.G = 0;
+            CylonEyeColor.B = 0;
+        }
+        if (command.charAt(0) == 'p' && command.charAt(1) == 'g' ) {
+            printMessage("Pure green");
+            CylonEyeColor.R = 0;
+            CylonEyeColor.G = 100;
+            CylonEyeColor.B = 0;
+        }
+        if (command.charAt(0) == 'p' && command.charAt(1) == 'b' ) {
+            printMessage("Pure blue");
+            CylonEyeColor.R = 0;
+            CylonEyeColor.G = 0;
+            CylonEyeColor.B = 100;
+        }
+        if (command.charAt(0) == 'p' && command.charAt(1) == 'v' ) {
+            printMessage("Pure violet");
+            CylonEyeColor.R = 100;
+            CylonEyeColor.G = 0;
+            CylonEyeColor.B = 100;
         }
         }); 
     }

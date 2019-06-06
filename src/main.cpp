@@ -10,7 +10,7 @@
 // START Quick and dirty test move to Animation class
 #include <NeoPixelBus.h>
 #include <NeoPixelAnimator.h>
-const uint16_t PixelCount = 144; 
+const uint16_t PixelCount = 72; 
 const uint8_t PixelPin = 19;  
 struct RgbColor CylonEyeColor(HtmlColor(0x7f0000));
 
@@ -24,7 +24,7 @@ AnimEaseFunction moveEase =
 //      NeoEase::Linear;
 //      NeoEase::QuadraticInOut;
 //      NeoEase::CubicInOut;
-        NeoEase::QuarticInOut;
+      NeoEase::QuarticInOut;
 //      NeoEase::QuinticInOut;
 //      NeoEase::SinusoidalInOut;
 //      NeoEase::ExponentialInOut;
@@ -80,19 +80,8 @@ void MoveAnimUpdate(const AnimationParam& param)
 
     if (param.state == AnimationState_Completed)
     {
-        // reverse direction of movement
-        moveDir *= -1;
-        // done, time to restart this position tracking animation/timer
-        animations.RestartAnimation(param.index);
+        animations.StopAll();
     }
-}
-
-void SetupAnimations()
-{
-    // fade all pixels providing a tail that is longer the faster the pixel moves.
-    //animations.StartAnimation(0, 5, FadeAnimUpdate);
-    // take several seconds to move eye fron one side to the other
-    animations.StartAnimation(1, 1000, MoveAnimUpdate);
 }
 // END
 
@@ -163,46 +152,47 @@ void WiFiEvent(WiFiEvent_t event) {
 
         // Serial.println(command.charAt(0));
         // TODO Refactor this in an animation class
-        if (command.charAt(0) == 'S') {
-            printMessage("S Start long");
-            // take 1000ms to move eye fron one side to the other
-            animations.StartAnimation(0, 8, FadeAnimUpdate);
-            animations.StartAnimation(1, 800, MoveAnimUpdate);
-        }
-        if (command.charAt(0) == 's') {
-            printMessage("s Start short");
-            // take 1000ms to move eye fron one side to the other
+    
+        if (command.charAt(0) == '6') {
+            lastPixel = 0;
+            moveDir = 1;
+            // ord("1") is 49 in the ascii table
+            int duration = ((int)command.charAt(1)-48) * 100;
+            printMessage("> duration: "+String(duration));
             animations.StartAnimation(0, 4, FadeAnimUpdate);
-            animations.StartAnimation(1, 200, MoveAnimUpdate);
+            animations.StartAnimation(1, duration, MoveAnimUpdate);
+        }
+        if (command.charAt(0) == '4') {
+            lastPixel = PixelCount;
+            moveDir = -1;
+            // ord("1") is 49 in the ascii table
+            int duration = ((int)command.charAt(1)-48) * 100;
+            printMessage("> duration: "+String(duration));
+            animations.StartAnimation(0, 4, FadeAnimUpdate);
+            animations.StartAnimation(1, duration, MoveAnimUpdate);
         }
         if (command.charAt(0) == 'E') {
             printMessage("End");
             animations.StopAnimation(0);
             animations.StopAnimation(1);
         }
-        if (command.charAt(0) == 's' && command.charAt(1) == 'l' ) {
-            printMessage("s Linear");
-            moveEase.swap(NeoEase::Linear);
-            //AnimEaseFunction moveEase = NeoEase::Linear;
+        if (command.charAt(0) == 'a' && command.charAt(1) == 'l' ) {
+            printMessage("a Linear");
+            AnimEaseFunction moveEase = NeoEase::Linear;
+            moveEase.swap(moveEase);
         }
-        if (command.charAt(0) == 's' && command.charAt(1) == 'q' ) {
-            printMessage("s QuadraticInOut");
+        if (command.charAt(0) == 'a' && command.charAt(1) == 'q' ) {
+            printMessage("a QuadraticInOut");
             AnimEaseFunction moveEase = NeoEase::QuadraticInOut; 
+            moveEase.swap(moveEase);
         }
-        if (command.charAt(0) == 's' && command.charAt(1) == 'c' ) {
+        if (command.charAt(0) == 'a' && command.charAt(1) == 'c' ) {
+            printMessage("a CubicInOut");
             AnimEaseFunction moveEase = NeoEase::CubicInOut;
+            moveEase.swap(moveEase);
         }
-        if (command.charAt(0) == 's' && command.charAt(1) == 'w' ) {
+        if (command.charAt(0) == 'a' && command.charAt(1) == 'w' ) {
             AnimEaseFunction moveEase = NeoEase::QuinticInOut;
-        }
-        if (command.charAt(0) == 's' && command.charAt(1) == 's' ) {
-            AnimEaseFunction moveEase = NeoEase::SinusoidalInOut;
-        }
-        if (command.charAt(0) == 's' && command.charAt(1) == 'e' ) {
-            AnimEaseFunction moveEase = NeoEase::ExponentialInOut;
-        }
-        if (command.charAt(0) == 's' && command.charAt(1) == 'o' ) {
-            AnimEaseFunction moveEase = NeoEase::CircularInOut;
         }
         // Colors : Add & Substract
         if (command.charAt(0) == 'C' && command.charAt(1) == 'r' ) {
@@ -275,13 +265,14 @@ void setup()
 
   // Set up automatic reconnect timers
   wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void *)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
- 
-    strip.Begin();
-    strip.Show();
-    
+  strip.Begin();
 }
 
 void loop() {
-    animations.UpdateAnimations();
+   
+    if(animations.IsAnimating()) {
+        animations.UpdateAnimations();
+    }
+    
     strip.Show();
 }

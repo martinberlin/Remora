@@ -31,9 +31,9 @@ Minimum brightness value will be 0 and maximum 99 and the instructions will be k
 The current demo instructions are just temporary as a proof-of-concept approach in the branch feature/animation
  https://github.com/martinberlin/Remora/tree/feature/animation
 
-**S** Long stripe start  (800 ms)
+**6{ms duration *100}** Launch animation right ex. 61 will take 100ms
 
-**s** Short stripe start (200 ms)
+**4{ms duration *100}** Launch animation left ex. 49 will take 900ms
 
 **E** End all running animations
 
@@ -51,9 +51,9 @@ The current demo instructions are just temporary as a proof-of-concept approach 
 **FPS**30 Set frames per second (As default 30)
 R99 Existing animation will go rightwards ( ;> )
 
-**<** Any running animation will change direction to left
+**4** Any running animation will change direction to left
 
-**>**{Length}**R**{Bright: 2 digits from 00 to 99}   example:
+**6**{Length}**R**{Bright: 2 digits from 00 to 99}   example:
       **>10R99**  Will make a 10 Red LEDs in maximun brightness slide right to the end and dissapear
 
 **>02R99G99B00**  Will make a 2 Yellow LEDs go to the right and dissapear

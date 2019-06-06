@@ -10,9 +10,13 @@
 // START Quick and dirty test move to Animation class
 #include <NeoPixelBus.h>
 #include <NeoPixelAnimator.h>
+
+// Please configure this to your own setup!
 const uint16_t PixelCount = 72; 
 const uint8_t PixelPin = 19;  
 struct RgbColor CylonEyeColor(HtmlColor(0x7f0000));
+byte maxBrightness = 105; // 0 to 255
+// self configuration
 
 NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
 NeoPixelAnimator animations(2); // only ever need 2 animations
@@ -25,10 +29,6 @@ AnimEaseFunction moveEase =
 //      NeoEase::QuadraticInOut;
 //      NeoEase::CubicInOut;
       NeoEase::QuarticInOut;
-//      NeoEase::QuinticInOut;
-//      NeoEase::SinusoidalInOut;
-//      NeoEase::ExponentialInOut;
-//      NeoEase::CircularInOut;
 
 void FadeAll(uint8_t darkenBy)
 {
@@ -171,11 +171,7 @@ void WiFiEvent(WiFiEvent_t event) {
             animations.StartAnimation(0, 4, FadeAnimUpdate);
             animations.StartAnimation(1, duration, MoveAnimUpdate);
         }
-        if (command.charAt(0) == 'E') {
-            printMessage("End");
-            animations.StopAnimation(0);
-            animations.StopAnimation(1);
-        }
+    
         if (command.charAt(0) == 'a' && command.charAt(1) == 'l' ) {
             printMessage("a Linear");
             AnimEaseFunction moveEase = NeoEase::Linear;
@@ -186,62 +182,60 @@ void WiFiEvent(WiFiEvent_t event) {
             AnimEaseFunction moveEase = NeoEase::QuadraticInOut; 
             moveEase.swap(moveEase);
         }
-        if (command.charAt(0) == 'a' && command.charAt(1) == 'c' ) {
-            printMessage("a CubicInOut");
-            AnimEaseFunction moveEase = NeoEase::CubicInOut;
-            moveEase.swap(moveEase);
+        
+        // Red + 0-99 test -- It does not work like expected for some reason launches animation again
+        //                    with some larger amount of pixels
+        if (command.charAt(0) == 'R') {
+            int cen = ((int)command.charAt(1)-48) * 10;
+            int dec = ((int)command.charAt(2)-48);
+            int colorTo = (cen+dec)*2.57;
+            printMessage("Color red to:" + String(colorTo));
+            CylonEyeColor.R = colorTo;
         }
-        if (command.charAt(0) == 'a' && command.charAt(1) == 'w' ) {
-            AnimEaseFunction moveEase = NeoEase::QuinticInOut;
+        if (command.charAt(0) == 'G') {
+            int cen = ((int)command.charAt(1)-48) * 10;
+            int dec = ((int)command.charAt(2)-48);
+            int colorTo = (cen+dec)*2.57;
+            printMessage("Color green to:" + String(colorTo));
+            CylonEyeColor.G = colorTo;
         }
-        // Colors : Add & Substract
-        if (command.charAt(0) == 'C' && command.charAt(1) == 'r' ) {
-            printMessage("Add red");
-            CylonEyeColor.R = 100;
+        if (command.charAt(0) == 'B') {
+            int cen = ((int)command.charAt(1)-48) * 10;
+            int dec = ((int)command.charAt(2)-48);
+            int colorTo = (cen+dec)*2.57;
+            printMessage("Color blue to:" + String(colorTo));
+            CylonEyeColor.B = colorTo;
         }
-        if (command.charAt(0) == 'C' && command.charAt(1) == 'g' ) {
-            printMessage("Add green");
-            CylonEyeColor.G = 100;
-        }
-        if (command.charAt(0) == 'C' && command.charAt(1) == 'b' ) {
-            printMessage("Add blue");
-            CylonEyeColor.B = 100;
-        }
-        if (command.charAt(0) == 'c' && command.charAt(1) == 'r' ) {
-            printMessage("Off red");
+        if (command.charAt(0) == 'd') {
+            printMessage("darkness");
             CylonEyeColor.R = 0;
-        }
-        if (command.charAt(0) == 'c' && command.charAt(1) == 'g' ) {
-            printMessage("Off green");
-            CylonEyeColor.G = 0;
-        }
-        if (command.charAt(0) == 'c' && command.charAt(1) == 'b' ) {
-            printMessage("Off blue");
-            CylonEyeColor.B = 0;
-        }
-        if (command.charAt(0) == 'P' && command.charAt(1) == 'r' ) {
-            printMessage("Pure red");
-            CylonEyeColor.R = 100;
             CylonEyeColor.G = 0;
             CylonEyeColor.B = 0;
+        }
+ // Pure colors for now
+        if (command.charAt(0) == 'p' && command.charAt(1) == 'w' ) {
+            printMessage("Pure white");
+            CylonEyeColor.R = maxBrightness;
+            CylonEyeColor.G = maxBrightness;
+            CylonEyeColor.B = maxBrightness;
         }
         if (command.charAt(0) == 'p' && command.charAt(1) == 'g' ) {
             printMessage("Pure green");
             CylonEyeColor.R = 0;
-            CylonEyeColor.G = 100;
+            CylonEyeColor.G = maxBrightness;
             CylonEyeColor.B = 0;
         }
         if (command.charAt(0) == 'p' && command.charAt(1) == 'b' ) {
             printMessage("Pure blue");
             CylonEyeColor.R = 0;
             CylonEyeColor.G = 0;
-            CylonEyeColor.B = 100;
+            CylonEyeColor.B = maxBrightness;
         }
         if (command.charAt(0) == 'p' && command.charAt(1) == 'v' ) {
             printMessage("Pure violet");
-            CylonEyeColor.R = 100;
+            CylonEyeColor.R = maxBrightness;
             CylonEyeColor.G = 0;
-            CylonEyeColor.B = 100;
+            CylonEyeColor.B = maxBrightness;
         }
         }); 
     }

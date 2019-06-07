@@ -49,7 +49,7 @@ void WiFiEvent(WiFiEvent_t event) {
         break;
     case SYSTEM_EVENT_STA_DISCONNECTED:
         Serial.println("WiFi lost connection");
-        // Ensure we don't reconnect to MQTT while reconnecting to Wi-Fi
+        // TODO: Ensure we don't start UDP while reconnecting to Wi-Fi (low prio)
 	      xTimerStart(wifiReconnectTimer, 0);
         break;
     }
@@ -62,8 +62,7 @@ void setup()
   WiFi.onEvent(WiFiEvent);
   itoa(ESP.getEfuseMac(), internalConfig.chipId, 16);
   printMessage("ESP32 ChipID: "+String(internalConfig.chipId));
-
-  // Set up automatic reconnect timers
+  // Set up automatic reconnect timer
   wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void *)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
 }
 

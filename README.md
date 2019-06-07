@@ -34,23 +34,20 @@ The current demo instructions are just temporary as a proof-of-concept approach 
 
 **4{ms duration *100}** Launch animation left ex. 49 will take 900ms
 
-**E** End all running animations
+**E** End all running animations and toggle all RGB off
 
-**s(lqcwseo)** ex. sl will attempt to switch animation NeoEase to Linear
+**s(lqcwseo)** reserved for attempt NeoEase animation curves ex. Linear
 
 **C(rgb)** ex Cr Will add Red to the actual color
 
 **c(rgb)** ex cr Will substract Red to the actual color
 
-**p(rgb)** ex pr Will render pure red (and switch off other colors)
+**p(rgbyw)** ex pr Will render pure red (and 
 
-
-## Goals to achieve:
-
-**FPS**30 Set frames per second (As default 30)
-R99 Existing animation will go rightwards ( ;> )
-
-**4** Any running animation will change direction to left
+Probably all this color operations will be replaced to a simple 
+CR__G__B__
+OR
+H___S__L__ Hue wheel angle/ saturation
 
 **6**{Length}**R**{Bright: 2 digits from 00 to 99}   example:
       **610R99**  Will make a 10 Red LEDs in maximun brightness slide right to the end and dissapear
@@ -63,9 +60,9 @@ This will be the initial animations to develop.
 
 **6|** Go rightwards and bump at the end to retun leftwards
 
-**ALL_R00G00B00** Turn all LEDs to that color
+**ALL_R00G99B00** Fade all LEDs to color green
 
-**X25R99** Turn LED 25 into maximun Red
+**X25B99** Turn LED 25 into maximun Blue
 
 **X25R99G99B99** Turn LED 25 into maximun Red, Green, Blue (White)
 

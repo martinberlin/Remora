@@ -6,12 +6,13 @@ const uint16_t PixelCount = 72; // Length of LED stripe
 const uint8_t  PixelPin = 19;   // Data line of Addressable LEDs
 struct RgbColor CylonEyeColor(HtmlColor(0x7f0000)); // Red as default
 byte maxBrightness = 105;       // 0 to 255
+// </Configure>
 
+// Sent from main.cpp:
 struct config {
-  int udpPort = 49161; // Default Orca UDP Port
+  int udpPort; 
   String ipAddress;
 } animateConfig;
-// </Configure>
 // Message transport protocol
 AsyncUDP udp;
 
@@ -214,6 +215,8 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             CylonEyeColor.B = maxBrightness;
         }
         }); 
+    } else {
+        debugMessage("UDP Listener could not start");
     }
 }
 

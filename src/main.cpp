@@ -16,7 +16,7 @@ Animate animate;
 
 struct config {
   char chipId[20];
-  int udpPort = 49161; // Default Orca UDP Port
+  int udpPort = 49161; // 49161 Default Orca UDP Port
 } internalConfig;
 
 /**

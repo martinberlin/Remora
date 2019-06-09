@@ -30,6 +30,8 @@ Minimum brightness value will be 0 and maximum 99 and the instructions will be k
 The current demo instructions are just temporary as a proof-of-concept approach in the branch feature/animation
  https://github.com/martinberlin/Remora/tree/feature/animation
 
+## See docs/commands.orca
+
 **6{ms duration *100}** Launch animation right ex. 61 will take 100ms
 
 **4{ms duration *100}** Launch animation left ex. 49 will take 900ms

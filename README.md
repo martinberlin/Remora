@@ -19,6 +19,17 @@ The default localhost IP needs to be updated in Orca in the file:
 desktop/core/io/udp.js this.play line. Replace this by the IP of that the controller displays in Serial.
 Note: Doing this will disable any other localhost running UDP communications from Orca
 
+## Hardware list
+
+1. ESP32 Board (The cheapest one. Suggested 4,50€)
+2. Addressable LEDs [WS2812B](https://www.aliexpress.com/item/Individually-Addressable-RGB-LED-Strip-Light-WS2812B-SK6812-LED-Stripe-DC-5V-5050-Waterproof-Diode-Flexible/32864337987.html) (1 Mtr, 144 leds, about 10€)
+3. 1 mtr Aluminium profile (About 4€ in any store like Bauhaus)
+4. Additionally and if you use a Stripe larger as 72 elements then you will get a brown out error when many LEDs are on since USB delivers max. 500mA so we recommend to give power from an external source than USB:
+   [SANMIN 1PCS AC110V/220V-DC5V 3A 15W Isolated switch power supply module 220 to 5v](https://www.aliexpress.com/item/SANMIN-1PCS-AC110V-220V-DC5V-3A-15W-Isolated-switch-power-supply-module-220-to-5v-black/32842935108.html)
+  
+That and soldiering 3 cables plus additing an optional 220v to 5VDC converter will do it. Usually the data cable is on the middle, so soldiering 5V positive, ground and data to a PIN in the ESP32 is the only electrical. 
+Note: Links are not affiliate links and are given just as a reference, check in others stores if you get a better price, I calculate in total should be not more than 19 € to put a one meter Stripe + Controller together.
+
 ## Instructions
 
 At the beginning instructions will be kept to a minimun just as a demo. The idea is that anyone can fork this and add their own customizations. Friendly pull requests are welcome. 

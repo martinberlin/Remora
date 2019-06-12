@@ -13,11 +13,15 @@ UDP will be hearing in a configurable port so you can send short instructions fr
 
 1. Get an ESP32 Board (Any) and compile this firmware using Plataformio or Arduino
 2. Make sure to update the settings for your LED Stripe **(data PIN, Length)** and also edit lib/Config/config.h adding your WiFi credentials
-3. Update the default **Orca IP** [for UDP](https://github.com/hundredrabbits/Orca/issues/135)
+3. Update the default **Orca IP** [for UDP](https://github.com/hundredrabbits/Orca/issues/135) so it knows where to send the UDP Messages. Now Remora supports mDns so if you are on Linux or Mac try to make a ping to: 
 
-The default localhost IP needs to be updated in Orca in the file:
-desktop/core/io/udp.js this.play line. Replace this by the IP of that the controller displays in Serial.
-Note: Doing this will disable any other localhost running UDP communications from Orca
+led.local
+
+And see if the ESP32 responds. For windows you need to install Bonjour for this to work. Update the default led.local in Config.h if you need another name.
+
+Update the default localhost IP used by Orca in the file:
+desktop/core/io/udp.js this.play line. Replace this by the IP of that the controller displays in Serial (Or by led.local if your system supports mDns).
+Note: Doing this will disable any other localhost running UDP communications from Orca to another programs
 
 ## Hardware list
 

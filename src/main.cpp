@@ -2,9 +2,9 @@
 
 #include <WiFi.h>
 // Config.h and Animate.h need configuration
-#include <Config.h>  // WiFi credentials
+#include <Config.h>  // WiFi credentials, mDNS Domain
 #include <Animate.h> // PixelCount, PixelPin
-
+#include <ESPmDNS.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/timers.h"
 
@@ -13,7 +13,7 @@ bool debugMode = true;
 TimerHandle_t wifiReconnectTimer;
 // Animation handling class
 Animate animate;
-
+const char* localDomain = MDNSDOMAIN; // mDNS: led.local (Config.h)
 struct config {
   char chipId[20];
   int udpPort = 49161; // 49161 Default Orca UDP Port
@@ -45,6 +45,14 @@ void WiFiEvent(WiFiEvent_t event) {
         Serial.println("WiFi connected");
         Serial.println("IP address: ");
         Serial.println(WiFi.localIP());
+        if (!MDNS.begin(localDomain)) {
+          while(1) { 
+          delay(100);
+          }
+        }
+        MDNS.addService("http", "tcp", 80);
+        printMessage(String(localDomain)+".local mDns started");
+
         animate.startUdpListener(WiFi.localIP(), internalConfig.udpPort);
         break;
     case SYSTEM_EVENT_STA_DISCONNECTED:

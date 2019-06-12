@@ -36,39 +36,43 @@ At the beginning instructions will be kept to a minimun just as a demo. The idea
 UDP commands can be sent from Orca using the ;COMMAND
 Minimum brightness value will be 0 and maximum 99 and the instructions will be kept as short as possible.
 
-### Current demo set
-
-The current demo instructions are just temporary as a proof-of-concept approach in the branch feature/animation
- https://github.com/martinberlin/Remora/tree/feature/animation
 
 ## See docs/commands.orca
 
-**6{ms duration *100}** Launch animation right ex. 61 will take 100ms
+**6**[ms duration *100] Launch animation right ex. 61 will take 100ms
 
-**4{ms duration *100}** Launch animation left ex. 49 will take 900ms
+**4**[ms duration *100] Launch animation left ex. 49 will take 900ms
 
-**p(rgbyw)** ex pr Will render pure red (and 
+**r** Switch color to red
+
+**b** Switch color to green
+
+**g** Switch color to blue
+
+**v** Switch color to violet
+
+**y** Switch color to yellow
+
+**w** Switch color to white
+
+#### Future color ideas
 
 Probably all this color operations will be replaced to a simple 
 
-CR__G__B__
+**R**__**G**__**B**__
 
 OR
 
-H___S__L__ Hue wheel angle/ saturation
+**H**___**S**__**L**__ Hue wheel angle/ saturation
 
 **6**{Length}**R**{Bright: 2 digits from 00 to 99}   example:
       **610R99**  Will make a 10 Red LEDs in maximun brightness slide right to the end and dissapear
 
 **4** Any running animation will change direction to left
 
-Coming soon: 
+#### Coming soon: 
 
 **5** Crossing lights path, left to right, right to left
-
-This will be the initial animations to develop.
-
-#### Coming in next phase we can imagine more combinations like:
 
 **6|** Go rightwards and bump at the end to retun leftwards
 
@@ -83,6 +87,9 @@ This will be the initial animations to develop.
 
 **X25R99G99B99** Turn LED 25 into maximun Red, Green, Blue (White)
 
+Please feel free to fork this and add your new animation ideas. Pull requests are welcome!
+
 #### Proof of concept video
 
 [Take 1](https://twitter.com/martinfasani/status/1136687580374798341)
+[youtube Orca/Remora Take 2](https://www.youtube.com/watch?v=C8OmwIaXQIE)

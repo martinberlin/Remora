@@ -5,6 +5,7 @@
 const uint16_t PixelCount = 72; // Length of LED stripe
 const uint8_t  PixelPin = 19;   // Data line of Addressable LEDs
 struct RgbColor CylonEyeColor(HtmlColor(0x7f0000)); // Red as default
+struct RgbColor blackColor(HtmlColor(0x000000)); 
 byte maxBrightness = 105;       // 0 to 255
 // </Configure>
 
@@ -65,6 +66,15 @@ void fadeAnimUpdate(const AnimationParam& param)
     }
 }
 
+void allBlack()
+{
+    RgbColor color;
+    for (uint16_t indexPixel = 0; indexPixel < strip.PixelCount(); indexPixel++)
+    {
+        strip.SetPixelColor(indexPixel, blackColor);
+    }
+}
+
 void moveAnimUpdate(const AnimationParam& param)
 {
     // Apply the movement animation curve
@@ -95,8 +105,10 @@ void moveAnimUpdate(const AnimationParam& param)
     if (param.state == AnimationState_Completed)
     {
         animations.StopAll();
+        allBlack();
     }
 }
+
 /**
  * Convert the IP to string 
  */
@@ -183,32 +195,40 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             debugMessage("Color blue to:" + String(colorTo));
             CylonEyeColor.B = colorTo;
         }
-        if (command.charAt(0) == 'd') {
-            debugMessage("darkness");
-            CylonEyeColor.R = 0;
+
+ // Pure colors for now
+        if (command.charAt(0) == 'r') {
+            debugMessage("Pure red");
+            CylonEyeColor.R = maxBrightness;
             CylonEyeColor.G = 0;
             CylonEyeColor.B = 0;
         }
- // Pure colors for now
-        if (command.charAt(0) == 'p' && command.charAt(1) == 'w' ) {
-            debugMessage("Pure white");
-            CylonEyeColor.R = maxBrightness;
-            CylonEyeColor.G = maxBrightness;
-            CylonEyeColor.B = maxBrightness;
-        }
-        if (command.charAt(0) == 'p' && command.charAt(1) == 'g' ) {
+        if (command.charAt(0) == 'g') {
             debugMessage("Pure green");
             CylonEyeColor.R = 0;
             CylonEyeColor.G = maxBrightness;
             CylonEyeColor.B = 0;
         }
-        if (command.charAt(0) == 'p' && command.charAt(1) == 'b' ) {
+        if (command.charAt(0) == 'b') {
             debugMessage("Pure blue");
             CylonEyeColor.R = 0;
             CylonEyeColor.G = 0;
             CylonEyeColor.B = maxBrightness;
         }
-        if (command.charAt(0) == 'p' && command.charAt(1) == 'v' ) {
+        if (command.charAt(0) == 'y') {
+            debugMessage("Pure yellow");
+            CylonEyeColor.R = maxBrightness;
+            CylonEyeColor.G = maxBrightness;
+            CylonEyeColor.B = 0;
+        }
+        if (command.charAt(0) == 'w' ) {
+            debugMessage("Pure white");
+            CylonEyeColor.R = maxBrightness;
+            CylonEyeColor.G = maxBrightness;
+            CylonEyeColor.B = maxBrightness;
+        }
+        
+        if (command.charAt(0) == 'v') {
             debugMessage("Pure violet");
             CylonEyeColor.R = maxBrightness;
             CylonEyeColor.G = 0;

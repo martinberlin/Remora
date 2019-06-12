@@ -20,6 +20,8 @@ AsyncUDP udp;
 NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
 NeoPixelAnimator animations(2); // only ever need 2 animations
 uint16_t lastPixel = 0; // track the eye position
+uint16_t rightPixel = PixelCount; // Used for 5: moveCrossedAnimUpdate()
+
 int8_t moveDir = 1; // track the direction of movement
 // uncomment one of the lines below to see the effects of
 // changing the ease function on the movement animation
@@ -109,6 +111,37 @@ void moveAnimUpdate(const AnimationParam& param)
     }
 }
 
+void moveCrossedAnimUpdate(const AnimationParam& param)
+{
+    float progress = moveEase(param.progress);
+    // use the curved progress to calculate the pixel to effect
+    uint16_t nextPixel;
+    uint16_t nextRightPixel;
+    nextPixel = progress * PixelCount;
+    nextRightPixel = (1.0f - progress) * PixelCount;
+
+    if (lastPixel != nextPixel)
+    {
+        for (uint16_t i = lastPixel + 1; i != nextPixel; i += 1)
+        {
+            strip.SetPixelColor(i, CylonEyeColor);
+        }
+        for (uint16_t i = rightPixel; i != nextRightPixel; i -= 1)
+        {
+            strip.SetPixelColor(i, CylonEyeColor);
+        }
+    }
+    strip.SetPixelColor(nextPixel, CylonEyeColor);
+    lastPixel = nextPixel;
+    rightPixel = nextRightPixel;
+
+    if (param.state == AnimationState_Completed)
+    {
+        animations.StopAll();
+        allBlack();
+    }
+}
+
 /**
  * Convert the IP to string 
  */
@@ -154,11 +187,18 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
         if (command.charAt(0) == '4') {
             lastPixel = PixelCount;
             moveDir = -1;
-            // ord("1") is 49 in the ascii table
             int duration = ((int)command.charAt(1)-48) * 100;
             debugMessage("> duration: "+String(duration));
             animations.StartAnimation(0, 4, fadeAnimUpdate);
             animations.StartAnimation(1, duration, moveAnimUpdate);
+        }
+        if (command.charAt(0) == '5') {
+            lastPixel = 0;
+            rightPixel = PixelCount;
+            int duration = ((int)command.charAt(1)-48) * 100;
+            debugMessage("> duration: "+String(duration));
+            animations.StartAnimation(0, 4, fadeAnimUpdate);
+            animations.StartAnimation(1, duration, moveCrossedAnimUpdate);
         }
     
         if (command.charAt(0) == 'a' && command.charAt(1) == 'l' ) {

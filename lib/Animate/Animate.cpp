@@ -2,9 +2,10 @@
 #include "AsyncUDP.h"
 
 // <Configure> this to your own setup:
+#define DEFAULT_HUE_ANGLE 0
 const uint16_t PixelCount = 72; // Length of LED stripe
 const uint8_t  PixelPin = 19;   // Data line of Addressable LEDs
-struct RgbColor CylonEyeColor(HtmlColor(0x7f0000)); // Red as default
+struct RgbColor CylonEyeColor(HslColor(0.0f,1.0f,0.5f)); // Red as default
 struct RgbColor blackColor(HtmlColor(0x000000)); 
 byte maxBrightness = 105;       // 0 to 255
 // </Configure>
@@ -174,16 +175,34 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
         }
 
         debugMessage(String(command.charAt(0)));
-     
+        //debugMessage("LEN:"+String(packet.length() ));
         if (command.charAt(0) == '6') {
             lastPixel = 0;
             moveDir = 1;
             // ord("1") is 49 in the ascii table
             int duration = ((int)command.charAt(1)-48) * 100;
+            int colorAngle = DEFAULT_HUE_ANGLE; // Red as default (Maybe make default constant)
+            if (packet.length()-2 == 1) {
+                colorAngle = ((int)command.charAt(2)-48);
+            }
+            if (packet.length()-2 == 2) {
+                colorAngle = (((int)command.charAt(2)-48)*10); // Dec
+                colorAngle += ((int)command.charAt(3)-48);
+            }
+            if (packet.length()-2 >= 3 && ((int)command.charAt(4)-48)<4) {
+                colorAngle = (((int)command.charAt(2)-48)*100); // Hundreds
+                colorAngle += ((int)command.charAt(3)-48)*10;   // Dec
+                colorAngle += ((int)command.charAt(3)-48);
+            }
+            
+            CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
+
+            debugMessage("colorAngle:"+String(colorAngle));
             debugMessage("> duration: "+String(duration));
             animations.StartAnimation(0, 4, fadeAnimUpdate);
             animations.StartAnimation(1, duration, moveAnimUpdate);
         }
+
         if (command.charAt(0) == '4') {
             lastPixel = PixelCount;
             moveDir = -1;
@@ -212,29 +231,6 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             moveEase.swap(moveEase);
         }
         
-        // Red + 0-99 test -- It does not work like expected for some reason launches animation again
-        //                    with some larger amount of pixels
-        if (command.charAt(0) == 'R') {
-            int cen = ((int)command.charAt(1)-48) * 10;
-            int dec = ((int)command.charAt(2)-48);
-            int colorTo = (cen+dec)*2.57;
-            debugMessage("Color red to:" + String(colorTo));
-            CylonEyeColor.R = colorTo;
-        }
-        if (command.charAt(0) == 'G') {
-            int cen = ((int)command.charAt(1)-48) * 10;
-            int dec = ((int)command.charAt(2)-48);
-            int colorTo = (cen+dec)*2.57;
-            debugMessage("Color green to:" + String(colorTo));
-            CylonEyeColor.G = colorTo;
-        }
-        if (command.charAt(0) == 'B') {
-            int cen = ((int)command.charAt(1)-48) * 10;
-            int dec = ((int)command.charAt(2)-48);
-            int colorTo = (cen+dec)*2.57;
-            debugMessage("Color blue to:" + String(colorTo));
-            CylonEyeColor.B = colorTo;
-        }
 
  // Pure colors for now
         if (command.charAt(0) == 'r') {

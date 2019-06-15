@@ -30,9 +30,9 @@
      inkscape:pageshadow="2"
      inkscape:zoom="5.6"
      inkscape:cx="113.21455"
-     inkscape:cy="1049.6067"
+     inkscape:cy="1042.4638"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer3"
+     inkscape:current-layer="g58"
      showgrid="false"
      showguides="true"
      inkscape:window-width="1366"
@@ -74,30 +74,40 @@
        cy="17.145184"
        cx="26.516722"
        id="circle68"
-       style="display:inline;opacity:0.8;fill:#e80000;stroke-width:0.1;stroke:none;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none;fill-opacity:1" />
+       style="display:inline;opacity:0.8;fill:#e80000;stroke-width:0.1;stroke:none;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none;fill-opacity:1"
+       inkscape:export-xdpi="68.009476"
+       inkscape:export-ydpi="68.009476" />
     <circle
        style="display:inline;opacity:0.6;fill:#ff0000;stroke-width:0.2315104"
        id="circle70"
        cx="31.335911"
        cy="17.145184"
-       r="0.99218744" />
+       r="0.99218744"
+       inkscape:export-xdpi="68.009476"
+       inkscape:export-ydpi="68.009476" />
     <circle
        r="0.99218744"
        cy="17.145184"
        cx="36.748119"
        id="circle114"
-       style="display:inline;opacity:0.4;fill:#ff0000;stroke-width:0.2315104" />
+       style="display:inline;opacity:0.4;fill:#ff0000;stroke-width:0.2315104"
+       inkscape:export-xdpi="68.009476"
+       inkscape:export-ydpi="68.009476" />
     <circle
        style="display:inline;opacity:0.2;fill:#ff0000;stroke-width:0.2315104"
        id="circle118"
        cx="42.157902"
        cy="17.121559"
-       r="0.99218744" />
+       r="0.99218744"
+       inkscape:export-xdpi="68.009476"
+       inkscape:export-ydpi="68.009476" />
     <circle
        style="display:inline;opacity:1;fill:#1a1a1a;stroke-width:0.2315104"
        id="circle64"
        cx="21.733631"
        cy="17.203127"
-       r="0.99218744" />
+       r="0.99218744"
+       inkscape:export-xdpi="68.009476"
+       inkscape:export-ydpi="68.009476" />
   </g>
 </svg>

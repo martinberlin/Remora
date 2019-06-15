@@ -1,6 +1,6 @@
 # Remora
 
-![Remora Logo](/docs/remora.png)
+![Remora Logo](/docs/remora-370.png)
 
 Remora will be a simple pseudo animation language to be a companion to Orca receiving UDP short instructions and sending animations to an addressable LEDs stripe.
 This animations will run entirely in an ESP32 controller and are initially aimed to be short so they can be triggered by [Orca sequencer](https://github.com/hundredrabbits/Orca) bangs
@@ -107,4 +107,3 @@ Please feel free to fork this and add your new animation ideas. Pull requests ar
 ## Companion Applications
 
 - [Orca](https://github.com/hundredrabbits/orca), ORCΛ Sequencer
-- [Remora ![Remora logo](https://raw.githubusercontent.com/martinberlin/Remora/master/docs/remora-logo.png)](https://github.com/martinberlin/Remora), an ESP32 Led controller firmware triggering animations from Orca UDP commands

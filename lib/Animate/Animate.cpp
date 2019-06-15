@@ -198,11 +198,11 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             moveDir = 1;
             // ord("1") is 49 in the ascii table
             int duration = ((int)command.charAt(1)-48) * 100;
-             
-            int colorAngle = hueSelect(command, packet.length(), 2);
-            CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
-
-            debugMessage("colorAngle:"+String(colorAngle));
+            if (packet.length()>2) { // Only change the color if Hue angle is sent otherwise keep last Hue
+                int colorAngle = hueSelect(command, packet.length(), 2);
+                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
+                debugMessage("colorAngle:"+String(colorAngle));
+            }
             debugMessage("> duration: "+String(duration));
             animations.StartAnimation(0, 4, fadeAnimUpdate);
             animations.StartAnimation(1, duration, moveAnimUpdate);
@@ -212,8 +212,10 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             lastPixel = PixelCount;
             moveDir = -1;
             int duration = ((int)command.charAt(1)-48) * 100;
-            int colorAngle = hueSelect(command, packet.length(), 2);
-            CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
+            if (packet.length()>2) {
+                int colorAngle = hueSelect(command, packet.length(), 2);
+                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
+            }
             animations.StartAnimation(0, 4, fadeAnimUpdate);
             animations.StartAnimation(1, duration, moveAnimUpdate);
         }
@@ -221,8 +223,10 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             lastPixel = 0;
             rightPixel = PixelCount;
             int duration = ((int)command.charAt(1)-48) * 100;
-            int colorAngle = hueSelect(command, packet.length(), 2);
-            CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
+            if (packet.length()>2) {
+                int colorAngle = hueSelect(command, packet.length(), 2);
+                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
+            }
             animations.StartAnimation(0, 4, fadeAnimUpdate);
             animations.StartAnimation(1, duration, moveCrossedAnimUpdate);
         }

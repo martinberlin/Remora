@@ -43,6 +43,8 @@ Minimum brightness value will be 0 and maximum 99 and the instructions will be k
 
 ## See docs/*.orca
 
+[0-359 HSL Color angle] is optional. If it's not sent as default will play last color. That is useful if you want to keep different animations running but trigger the colors universally. Default initial color is red.
+
 **6**[ms duration *100][0-359 HSL Color angle] Launch animation right ex. 610 will take 100ms with color red
 69240 900ms with color blue (Hue 240°)
 

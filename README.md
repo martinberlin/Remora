@@ -103,3 +103,8 @@ Please feel free to fork this and add your new animation ideas. Pull requests ar
 
 [Take 1](https://twitter.com/martinfasani/status/1136687580374798341)
 [youtube Orca/Remora Take 2](https://www.youtube.com/watch?v=C8OmwIaXQIE)
+
+## Companion Applications
+
+- [Orca](https://github.com/hundredrabbits/orca), ORCΛ Sequencer
+- [Remora ![Remora logo](https://raw.githubusercontent.com/martinberlin/Remora/master/docs/remora-logo.png)](https://github.com/martinberlin/Remora), an ESP32 Led controller firmware triggering animations from Orca UDP commands

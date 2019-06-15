@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="remora.svg"
+   inkscape:export-filename="/home/martin/Documents/PlatformIO/Projects/Remora/docs/remora-logo.png"
+   inkscape:export-xdpi="56.740002"
+   inkscape:export-ydpi="56.740002">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="5.6"
+     inkscape:cx="113.21455"
+     inkscape:cy="1049.6067"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer2"
+     showgrid="false"
+     showguides="true"
+     inkscape:window-width="1366"
+     inkscape:window-height="713"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:guide-bbox="true"
+     inkscape:snap-nodes="false">
+    <sodipodi:guide
+       position="37.419642,280.83632"
+       orientation="0,1"
+       id="guide44"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="background"
+     style="display:inline;opacity:1">
+    <rect
+       style="opacity:0.2;fill:#f9f9f9;stroke-width:0.26458332"
+       id="rect139"
+       width="98.488823"
+       height="30.468729"
+       x="6.0135641"
+       y="4.0725999"
+       inkscape:export-xdpi="30.844736"
+       inkscape:export-ydpi="30.844736" />
+    <rect
+       style="fill:#ffffff;stroke:none;stroke-width:0.09911037;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1080"
+       width="28.820683"
+       height="7.5122766"
+       x="18.331844"
+       y="13.565105" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="shape" />
+  <g
+     id="g58"
+     inkscape:groupmode="layer"
+     inkscape:label="eyes"
+     style="display:inline">
+    <circle
+       r="0.99218744"
+       cy="17.145184"
+       cx="26.516722"
+       id="circle68"
+       style="display:inline;opacity:0.8;fill:#e80000;stroke-width:0.1;stroke:none;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none;fill-opacity:1" />
+    <circle
+       style="display:inline;opacity:0.6;fill:#ff0000;stroke-width:0.2315104"
+       id="circle70"
+       cx="31.335911"
+       cy="17.145184"
+       r="0.99218744" />
+    <circle
+       r="0.99218744"
+       cy="17.145184"
+       cx="36.748119"
+       id="circle114"
+       style="display:inline;opacity:0.4;fill:#ff0000;stroke-width:0.2315104" />
+    <circle
+       style="display:inline;opacity:0.2;fill:#ff0000;stroke-width:0.2315104"
+       id="circle118"
+       cx="42.157902"
+       cy="17.121559"
+       r="0.99218744" />
+    <circle
+       style="display:inline;opacity:1;fill:#1a1a1a;stroke-width:0.2315104"
+       id="circle64"
+       cx="21.733631"
+       cy="17.203127"
+       r="0.99218744" />
+  </g>
+</svg>

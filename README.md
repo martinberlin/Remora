@@ -41,11 +41,17 @@ UDP commands can be sent from Orca using the ;COMMAND
 Minimum brightness value will be 0 and maximum 99 and the instructions will be kept as short as possible.
 
 
-## See docs/commands.orca
+## See docs/*.orca
 
-**6**[ms duration *100] Launch animation right ex. 61 will take 100ms
+**6**[ms duration *100][0-359 HSL Color angle] Launch animation right ex. 610 will take 100ms with color red
+69240 900ms with color blue (Hue 240°)
 
-**4**[ms duration *100] Launch animation left ex. 49 will take 900ms
+**4**[ms*100][0-359° Hue] Launch animation left ex. 490 will take 900ms with red
+4990 900ms with green (Hue 90°)
+
+**5**[ms*100][0-359° Hue] Launch 2 chaser animations left to right and right to left
+
+**Switch to pure colors without doing any animation**
 
 **r** Switch color to red
 

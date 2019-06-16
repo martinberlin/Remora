@@ -6,7 +6,7 @@
 const uint16_t PixelCount = 72; // Length of LED stripe
 const uint8_t  PixelPin = 19;   // Data line of Addressable LEDs
 struct RgbColor CylonEyeColor(HslColor(0.0f,1.0f,0.5f)); // Red as default
-struct RgbColor blackColor(HtmlColor(0x000000)); 
+
 byte maxBrightness = 105;       // 0 to 255
 // </Configure>
 
@@ -48,7 +48,19 @@ void debugMessage(String message, bool newline = true)
     }
    }
 }
-
+/**
+ * Turn off all LEDs
+ */
+void allBlack()
+{
+    for (uint16_t indexPixel = 0; indexPixel < strip.PixelCount(); indexPixel++)
+    {
+        strip.SetPixelColor(indexPixel, HtmlColor(0x000000));
+    }
+}
+/**
+ * Fade all by darkenBy incrementally
+ */
 void fadeAll(uint8_t darkenBy)
 {
     RgbColor color;
@@ -57,6 +69,21 @@ void fadeAll(uint8_t darkenBy)
         color = strip.GetPixelColor(indexPixel);
         color.Darken(darkenBy);
         strip.SetPixelColor(indexPixel, color);
+    }
+}
+void darkenAll(const AnimationParam& param)
+{
+    RgbColor color;
+    for (uint16_t indexPixel = 0; indexPixel < strip.PixelCount(); indexPixel++)
+    {
+        color = strip.GetPixelColor(indexPixel);
+        color.Darken(10);
+        strip.SetPixelColor(indexPixel, color);
+    }
+    if (param.state == AnimationState_Completed)
+    {
+        animations.StopAll();
+        allBlack();
     }
 }
 
@@ -69,12 +96,25 @@ void fadeAnimUpdate(const AnimationParam& param)
     }
 }
 
-void allBlack()
+void allToColor(const AnimationParam& param)
 {
-    RgbColor color;
     for (uint16_t indexPixel = 0; indexPixel < strip.PixelCount(); indexPixel++)
     {
-        strip.SetPixelColor(indexPixel, blackColor);
+        strip.SetPixelColor(indexPixel, CylonEyeColor);
+    }
+}
+
+void allToColorNoise(const AnimationParam& param)
+{
+    for (uint16_t indexPixel = 0; indexPixel < strip.PixelCount(); indexPixel++)
+    {
+        byte rand = random(2);
+        if (rand==1) {
+            strip.SetPixelColor(indexPixel, CylonEyeColor);
+        } else {
+            strip.SetPixelColor(indexPixel, HtmlColor(0x000000));
+        }
+        
     }
 }
 
@@ -104,6 +144,37 @@ void moveAnimUpdate(const AnimationParam& param)
     }
     strip.SetPixelColor(nextPixel, CylonEyeColor);
     lastPixel = nextPixel;
+
+    if (param.state == AnimationState_Completed)
+    {
+        animations.StopAll();
+        allBlack();
+    }
+}
+
+void moveCrossedAnimBlackUpdate(const AnimationParam& param)
+{
+    float progress = moveEase(param.progress);
+    // use the curved progress to calculate the pixel to effect
+    uint16_t nextPixel;
+    uint16_t nextRightPixel;
+    nextPixel = progress * PixelCount;
+    nextRightPixel = (1.0f - progress) * PixelCount;
+
+    if (lastPixel != nextPixel)
+    {
+        for (uint16_t i = lastPixel + 1; i != nextPixel; i += 1)
+        {
+            strip.SetPixelColor(i, HtmlColor(0x000000));
+        }
+        for (uint16_t i = rightPixel; i != nextRightPixel; i -= 1)
+        {
+            strip.SetPixelColor(i, HtmlColor(0x000000));
+        }
+    }
+    strip.SetPixelColor(nextPixel, HtmlColor(0x000000));
+    lastPixel = nextPixel;
+    rightPixel = nextRightPixel;
 
     if (param.state == AnimationState_Completed)
     {
@@ -154,6 +225,9 @@ String Animate::ipAddress2String(const IPAddress& ipAddress)
   String(ipAddress[3]);
 }
 
+/**
+ * Return int with Hue angle analysing given command ex. offset 2: ;51240 will return 240 (blue)
+ */
 int hueSelect(String command, int length, uint8_t offset) {
     int colorAngle = DEFAULT_HUE_ANGLE; // Red as default (Maybe make default constant)
     if (length-offset == 1) {
@@ -219,6 +293,7 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             animations.StartAnimation(0, 4, fadeAnimUpdate);
             animations.StartAnimation(1, duration, moveAnimUpdate);
         }
+        // 2 chasers left->right right<-left
         if (command.charAt(0) == '5') {
             lastPixel = 0;
             rightPixel = PixelCount;
@@ -231,7 +306,42 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             animations.StartAnimation(1, duration, moveCrossedAnimUpdate);
         }
 
- // Pure colors for now
+        // Fast random noise 0-3 on 1 Turns
+        if (command.charAt(0) == '7') {
+            int duration = ((int)command.charAt(1)-48) * 100;
+            if (packet.length()>2) { 
+                int colorAngle = hueSelect(command, packet.length(), 2);
+                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
+            }
+            debugMessage("7 rand-noise duration: "+String(duration));
+            animations.StartAnimation(0, 1, allToColorNoise);
+            animations.StartAnimation(1, duration, darkenAll);
+        }
+
+        // Turn to color and fade
+        if (command.charAt(0) == '8') {
+            int duration = ((int)command.charAt(1)-48) * 100;
+            if (packet.length()>2) {
+                int colorAngle = hueSelect(command, packet.length(), 2);
+                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
+            }
+            debugMessage("Fade duration: "+String(duration));
+            animations.StartAnimation(0, 1, allToColor);
+            animations.StartAnimation(1, duration, moveCrossedAnimBlackUpdate);
+        }
+
+        // Flash effect (white)
+        if (command.charAt(0) == '9') {
+            int duration = ((int)command.charAt(1)-48) * 50;
+            CylonEyeColor.R = maxBrightness;
+            CylonEyeColor.G = maxBrightness;
+            CylonEyeColor.B = maxBrightness;
+            debugMessage("Fade duration: "+String(duration));
+            animations.StartAnimation(0, 1, allToColor);
+            animations.StartAnimation(1, duration, darkenAll);
+        }
+
+        // Pure colors for now
         if (command.charAt(0) == 'r') {
             debugMessage("Pure red");
             CylonEyeColor.R = maxBrightness;

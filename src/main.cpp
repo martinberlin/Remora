@@ -60,6 +60,32 @@ void WiFiEvent(WiFiEvent_t event) {
         // TODO: Ensure we don't start UDP while reconnecting to Wi-Fi (low prio)
 	      xTimerStart(wifiReconnectTimer, 0);
         break;
+                // Non used, just there to avoid warnings
+        case SYSTEM_EVENT_WIFI_READY:
+        case SYSTEM_EVENT_SCAN_DONE:
+        case SYSTEM_EVENT_STA_START:
+        case SYSTEM_EVENT_STA_STOP:
+        case SYSTEM_EVENT_STA_CONNECTED:
+        case SYSTEM_EVENT_STA_AUTHMODE_CHANGE:
+        case SYSTEM_EVENT_STA_LOST_IP:
+        case SYSTEM_EVENT_STA_WPS_ER_SUCCESS:
+        case SYSTEM_EVENT_STA_WPS_ER_FAILED:
+        case SYSTEM_EVENT_STA_WPS_ER_TIMEOUT:
+        case SYSTEM_EVENT_STA_WPS_ER_PIN:
+        case SYSTEM_EVENT_AP_START:
+        case SYSTEM_EVENT_AP_STOP:
+        case SYSTEM_EVENT_AP_STACONNECTED:
+        case SYSTEM_EVENT_AP_STADISCONNECTED:
+        case SYSTEM_EVENT_AP_STAIPASSIGNED:
+        case SYSTEM_EVENT_AP_PROBEREQRECVED:
+        case SYSTEM_EVENT_GOT_IP6:
+        case SYSTEM_EVENT_ETH_START:
+        case SYSTEM_EVENT_ETH_STOP:
+        case SYSTEM_EVENT_ETH_CONNECTED:
+        case SYSTEM_EVENT_ETH_DISCONNECTED:
+        case SYSTEM_EVENT_ETH_GOT_IP:
+        case SYSTEM_EVENT_MAX:
+        break;
     }
 }
 

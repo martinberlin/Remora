@@ -324,6 +324,7 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             if (packet.length()>2) {
                 int colorAngle = commandToInt(command, packet.length(), 2);
                 CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
+                debugMessage("Hue: "+String(colorAngle));
             }
             debugMessage("Fade duration: "+String(duration));
             animations.StartAnimation(0, 1, allToColor);
@@ -361,6 +362,29 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
                 }
             }
         }
+        // Chords A -> G (65 -> 72)
+        if (command.charAt(0) == '0') {
+            int duration = ((int)command.charAt(1)-48) * 100;
+            if (packet.length()>3) {
+                int colorAngle = commandToInt(command, packet.length(), 3);
+                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
+                debugMessage("Hue: "+String(colorAngle));
+            }
+            debugMessage("Fade duration: "+String(duration));
+            // A -> G
+            byte note = (int)command.charAt(2)-65;
+            byte noteLength = PixelCount/7;
+            // a -> g
+            if ((int)command.charAt(2)>96 && (int)command.charAt(2)<104) {
+               note = (int)command.charAt(2)-96; 
+               noteLength = noteLength /2;
+            }
+            for (uint16_t x = note*noteLength+1; x < (note+1)*noteLength; x++){
+                strip.SetPixelColor(x, CylonEyeColor);
+            }
+            animations.StartAnimation(1, duration, darkenAll);
+        }
+
         // Pure colors for now
         if (command.charAt(0) == 'r') {
             debugMessage("Pure red");

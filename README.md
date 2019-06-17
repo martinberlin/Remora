@@ -120,4 +120,4 @@ Please feel free to fork this and add your new animation ideas. Pull requests ar
 
 ## Companion Applications
 
-- [Orca](https://github.com/hundredrabbits/orca), ORCΛ Sequencer
+- [Orca](https://github.com/hundredrabbits/Orca), ORCΛ Sequencer

@@ -53,6 +53,16 @@ Minimum brightness value will be 0 and maximum 99 and the instructions will be k
 
 **5**[ms*100][0-359° Hue] Launch 2 chaser animations left to right and right to left
 
+**7**[ms*100][0-359° Hue] Make Noise (random on/off) all along the stripe
+
+**8**[ms*100][0-359° Hue] Turn all to desired Hue color and fade to black
+
+**9**[ms*50] Short white flash
+
+**x**[coordinate] Light only one Led to last color and leave it on. Ex. ;x1 will light the first led on the stripe
+
+**X**[coordinate] Light only one Led and fade in 100ms to black
+
 **Switch to pure colors without doing any animation**
 
 **r** Switch color to red

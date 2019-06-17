@@ -41,7 +41,7 @@ UDP commands can be sent from Orca using the ;COMMAND
 Minimum brightness value will be 0 and maximum 99 and the instructions will be kept as short as possible.
 
 
-## See docs/*.orca
+## Commands
 
 [0-359 HSL Color angle] is optional. If it's not sent as default will play last color. That is useful if you want to keep different animations running but trigger the colors universally. Default initial color is red.
 
@@ -62,6 +62,8 @@ Minimum brightness value will be 0 and maximum 99 and the instructions will be k
 **x**[coordinate] Light only one Led to last color and leave it on. Ex. ;x1 will light the first led on the stripe
 
 **X**[coordinate] Light only one Led and fade in 100ms to black
+
+For some Orca examples please refer to docs/*.orca.
 
 **Switch to pure colors without doing any animation**
 

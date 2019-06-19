@@ -268,7 +268,7 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
         }
 
         // Chords A -> G (65 -> 72)
-        if (command.charAt(0) == '0') {
+        if (command.charAt(0) == '0' && (int)command.charAt(2)>64) {
             int duration = ((int)command.charAt(1)-48) * 100;
             if (packet.length()>3) {
                 int colorAngle = commandToInt(command, packet.length(), 3);

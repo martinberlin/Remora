@@ -79,6 +79,19 @@ For some Orca examples please refer to docs/*.orca.
 
 **w** Switch color to white
 
+## Base36 Table
+
+In this branch we will emulate Orca's **36 increments**. Operators using numeric values will typically also operate on letters and convert them into values as per the following table.
+This will be used for the color angle of Hue. For example N will represent 24*10=240 (blue)
+
+| **0** | **1** | **2** | **3** | **4** | **5** | **6** | **7** | **8** | **9** | **A** | **B**  | 
+| :-:   | :-:   | :-:   | :-:   | :-:   | :-:   | :-:   | :-:   | :-:   | :-:   | :-:   | :-:    | 
+| 0     | 1     | 2     | 3     | 4     | 5     | 6     | 7     | 8     | 9     | 10    | 11     |
+| **C** | **D** | **E** | **F** | **G** | **H** | **I** | **J** | **K** | **L** | **M** | **N**  |
+| 12    | 13    | 14    | 15    | 16    | 17    | 18    | 19    | 20    | 21    | 22    | 23     |
+| **O** | **P** | **Q** | **R** | **S** | **T** | **U** | **V** | **W** | **X** | **Y** | **Z**  | 
+| 24    | 25    | 26    | 27    | 28    | 29    | 30    | 31    | 32    | 33    | 34    | 35     |
+
 #### Future color ideas
 
 Probably all this color operations will be replaced to a simple 

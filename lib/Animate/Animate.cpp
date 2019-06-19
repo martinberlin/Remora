@@ -226,6 +226,21 @@ String Animate::ipAddress2String(const IPAddress& ipAddress)
 }
 
 /**
+ * Convert incoming char to base36 and return it multiplied by 10
+ */
+int commandToBase36(String command, uint8_t offset) {
+    int colorAngle = DEFAULT_HUE_ANGLE;
+    int inputChar = (int)command.charAt(offset);
+    if (inputChar>47 && inputChar<58) {
+        colorAngle = inputChar-48;
+    }
+    if (inputChar>64 && inputChar<91) {
+        colorAngle = inputChar-55;
+    }
+    return colorAngle*10;
+}
+
+/**
  * Return int with Hue angle analysing given command ex. offset 2: ;51240 will return 240 (blue)
  */
 int commandToInt(String command, int length, uint8_t offset) {
@@ -289,13 +304,14 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             return;
         }
         //debugMessage("LEN:"+String(packet.length() ));
+        // ->
         if (command.charAt(0) == '6') {
             lastPixel = 0;
             moveDir = 1;
             // ord("1") is 49 in the ascii table
             int duration = ((int)command.charAt(1)-48) * 100;
             if (packet.length()>2) { // Only change the color if Hue angle is sent otherwise keep last Hue
-                int colorAngle = commandToInt(command, packet.length(), 2);
+                int colorAngle = commandToBase36(command, 2);
                 CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
                 debugMessage("colorAngle:"+String(colorAngle));
             }
@@ -303,13 +319,13 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             animations.StartAnimation(0, 4, fadeAnimUpdate);
             animations.StartAnimation(1, duration, moveAnimUpdate);
         }
-
+        // <-
         if (command.charAt(0) == '4') {
             lastPixel = PixelCount;
             moveDir = -1;
             int duration = ((int)command.charAt(1)-48) * 100;
             if (packet.length()>2) {
-                int colorAngle = commandToInt(command, packet.length(), 2);
+                int colorAngle = commandToBase36(command, 2);
                 CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
             }
             animations.StartAnimation(0, 4, fadeAnimUpdate);
@@ -321,7 +337,7 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             rightPixel = PixelCount;
             int duration = ((int)command.charAt(1)-48) * 100;
             if (packet.length()>2) {
-                int colorAngle = commandToInt(command, packet.length(), 2);
+                int colorAngle = commandToBase36(command, 2);
                 CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
             }
             animations.StartAnimation(0, 4, fadeAnimUpdate);
@@ -332,7 +348,7 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
         if (command.charAt(0) == '7') {
             int duration = ((int)command.charAt(1)-48) * 100;
             if (packet.length()>2) { 
-                int colorAngle = commandToInt(command, packet.length(), 2);
+                int colorAngle = commandToBase36(command, 2);
                 CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
             }
             debugMessage("7 rand-noise duration: "+String(duration));
@@ -344,7 +360,7 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
         if (command.charAt(0) == '8') {
             int duration = ((int)command.charAt(1)-48) * 100;
             if (packet.length()>2) {
-                int colorAngle = commandToInt(command, packet.length(), 2);
+                int colorAngle = commandToBase36(command, 2);
                 CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
                 debugMessage("Hue: "+String(colorAngle));
             }

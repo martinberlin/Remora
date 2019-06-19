@@ -7,7 +7,7 @@ const uint16_t PixelCount = 72; // Length of LED stripe
 const uint8_t  PixelPin = 19;   // Data line of Addressable LEDs
 struct RgbColor CylonEyeColor(HslColor(0.0f,1.0f,0.5f)); // Red as default
 
-byte maxBrightness = 105;       // 0 to 255
+byte maxBrightness = 180;       // 0 to 255
 // </Configure>
 
 // Sent from main.cpp:
@@ -257,15 +257,37 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
 
     // Executes on UDP receive
     udp.onPacket([](AsyncUDPPacket packet) {
-        Serial.print("Data: ");
-        Serial.write(packet.data(), packet.length());Serial.println();
+        if(debugMode) {
+            Serial.print("Data: ");
+            Serial.write(packet.data(), packet.length());Serial.println();
+        }
         String command;
       
         for ( int i = 0; i < packet.length(); i++ ) {
             command += (char)packet.data()[i];
         }
 
-        debugMessage(String(command.charAt(0)));
+        // Chords A -> G (65 -> 72)
+        if (command.charAt(0) == '0') {
+            int duration = ((int)command.charAt(1)-48) * 100;
+            if (packet.length()>3) {
+                int colorAngle = commandToInt(command, packet.length(), 3);
+                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
+            }
+            // A -> G
+            byte note = (int)command.charAt(2)-65;
+            byte noteLength = PixelCount/7;
+            // a -> g
+            if ((int)command.charAt(2)>96 && (int)command.charAt(2)<104) {
+               note = (int)command.charAt(2)-96; 
+               noteLength = noteLength /2;
+            }
+            for (uint16_t x = note*noteLength+1; x < (note+1)*noteLength; x++){
+                strip.SetPixelColor(x, CylonEyeColor);
+            }
+            animations.StartAnimation(1, duration, darkenAll);
+            return;
+        }
         //debugMessage("LEN:"+String(packet.length() ));
         if (command.charAt(0) == '6') {
             lastPixel = 0;
@@ -361,28 +383,6 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
                   strip.SetPixelColor(x, CylonEyeColor);
                 }
             }
-        }
-        // Chords A -> G (65 -> 72)
-        if (command.charAt(0) == '0') {
-            int duration = ((int)command.charAt(1)-48) * 100;
-            if (packet.length()>3) {
-                int colorAngle = commandToInt(command, packet.length(), 3);
-                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
-                debugMessage("Hue: "+String(colorAngle));
-            }
-            debugMessage("Fade duration: "+String(duration));
-            // A -> G
-            byte note = (int)command.charAt(2)-65;
-            byte noteLength = PixelCount/7;
-            // a -> g
-            if ((int)command.charAt(2)>96 && (int)command.charAt(2)<104) {
-               note = (int)command.charAt(2)-96; 
-               noteLength = noteLength /2;
-            }
-            for (uint16_t x = note*noteLength+1; x < (note+1)*noteLength; x++){
-                strip.SetPixelColor(x, CylonEyeColor);
-            }
-            animations.StartAnimation(1, duration, darkenAll);
         }
 
         // Pure colors for now

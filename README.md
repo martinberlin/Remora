@@ -43,19 +43,21 @@ Minimum brightness value will be 0 and maximum 99 and the instructions will be k
 
 ## Commands
 
-[0-359 HSL Color angle] is optional. If it's not sent as default will play last color. That is useful if you want to keep different animations running but trigger the colors universally. Default initial color is red.
+[0-35 HSL Color angle] is optional and multiplied per 10 to give Hue angle. If it's not sent as default will play last color. Please check the table to understand how to go beyond 9. That is useful if you want to keep different animations running but trigger the colors universally. Default initial color is red.
 
-**6**[ms duration *100][0-359 HSL Color angle] Launch animation right ex. 610 will take 100ms with color red
-69240 900ms with color blue (Hue 240°)
+**6**[ms duration *100][0-35 HSL Color angle] Launch animation right ex. 
+610 will take 100ms with color red
+69O 900ms with color blue (Hue 240° since O is 240)
+69C same but with color 120
 
-**4**[ms*100][0-359° Hue] Launch animation left ex. 490 will take 900ms with red
+**4**[ms*100][0-35 Hue] Launch animation left ex. 490 will take 900ms with red
 4990 900ms with green (Hue 90°)
 
-**5**[ms*100][0-359° Hue] Launch 2 chaser animations left to right and right to left
+**5**[ms*100][0-35 Hue] Launch 2 chaser animations left to right and right to left
 
-**7**[ms*100][0-359° Hue] Make Noise (random on/off) all along the stripe
+**7**[ms*100][0-35 Hue] Make Noise (random on/off) all along the stripe
 
-**8**[ms*100][0-359° Hue] Turn all to desired Hue color and fade to black
+**8**[ms*100][0-35 Hue] Turn all to desired Hue color and fade to black
 
 **9**[ms*50] Short white flash
 

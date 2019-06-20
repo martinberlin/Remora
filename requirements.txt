@@ -1,3 +1,2 @@
 # This file is just an intent to draw a github Dependency graph
-
--e git+https://github.com/Makuna/NeoPixelBus.git#egg=Remora
+NeoPixelBus=2.5.0

@@ -136,3 +136,4 @@ Please feel free to fork this and add your new animation ideas. Pull requests ar
 ## Companion Applications
 
 - [Orca](https://github.com/hundredrabbits/orca), ORCΛ Sequencer
+- [UDProxy](/extras) UDP Proxier to enable sending animations to multiple Led stripes. See comments at the start of js file for configuration

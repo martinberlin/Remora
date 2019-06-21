@@ -1,15 +1,17 @@
 /**
  * UDP Redirector proxy is my first nodejs project. If you don't like my code style is because there is none
- * To use configure your Id and IP combinations combinations in ip-config.json ( Ex {"1" : "192.168.0.2"} )
+ * To use configure your Id and IP combinations in ip-config.json ( Ex {"1" : "192.168.0.2"} )
  * And run:   nodejs udproxy.js
  * 
  * From Orca: Prepend your animations using this one character to lookup the IP 
  * Ex.  ;152  Will lookup IP with id 1 and redirect the rest of the message (52) to 192.168.0.2
  * This will enable to run multiple ID stripes using a single IP address as a central point
+ * Turn DEBUG false to disable console output
  */
-var PORT = 49161;
+var DEBUG = true;
+var PORT = 49161;       // Default Orca UDP output port
 var HOST = '127.0.0.1';
-var DEBUG = true; // false to disable console output
+
 var dgram = require('dgram');
 var server = dgram.createSocket('udp4');
 var client = dgram.createSocket('udp4');

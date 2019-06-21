@@ -44,6 +44,14 @@ At the beginning instructions will be kept to a minimun just as a demo. The idea
 UDP commands can be sent from Orca using the ;COMMAND
 Minimum brightness value will be 0 and maximum 99 and the instructions will be kept as short as possible.
 
+## Sending animations to multiple LED Stripes
+
+Change directory to extras. Run:   **nodejs udproxy.js**
+Configure your Id and IP combinations in ip-config.json ( Ex {"1" : "192.168.0.2"} )
+  
+ From Orca: Prepend your animations using this one character to lookup the IP 
+ Ex.  ;**1**52  Will lookup IP with id 1 and redirect the rest of the message (52) to 192.168.0.2
+ This will enable to run multiple ID stripes using a single IP address as a central point.
 
 ## Commands
 

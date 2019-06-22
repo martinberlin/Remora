@@ -15,7 +15,7 @@ var HOST = '127.0.0.1';
 var dgram = require('dgram');
 var server = dgram.createSocket('udp4');
 var client = dgram.createSocket('udp4');
-
+server.bind(PORT, HOST);
 // Configuration. Read our IPs to redirect the incoming message
 var fs = require('fs');
 var configFile = 'ip-config.json';
@@ -37,16 +37,16 @@ server.on('message', function(message, remote) {
     if (DEBUG) console.log(remote.address + ':' + remote.port +' - ' + message + ' ipId: '+ipId);
     // Lookup id to extract destination IP {"1":"IpAddress"}
     if (ipConfig[ipId]) {
-        sendBuffer(new Buffer(message.toString().substring(1)), ipConfig[ipId]);
+        var outBuff = Buffer.from(message, 'utf8');
+        if (DEBUG) console.log("message:"+message+" L:"+message.length)
+        sendBuffer(outBuff, ipConfig[ipId]);
     } else {
         console.log('ERROR: Did not find id: '+ipId+' defined in '+configFile);
     }   
 });
-  
-server.bind(PORT, HOST);
 
 function sendBuffer(inBuffer, outHost) {
-    client.send(inBuffer, 0, inBuffer, PORT, outHost, function(err, bytes) {
+    client.send(inBuffer, 1, inBuffer.length, PORT, outHost, function(err, bytes) {
         if (err) throw err;
         if (DEBUG) console.log('Sent: ' + inBuffer.toString() + ' to ' + outHost +':'+ PORT);
     });

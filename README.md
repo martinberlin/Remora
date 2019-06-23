@@ -38,24 +38,9 @@ Note: Links are not affiliate links and are given just as a reference, check in 
 
 ![Schematics](/docs/Schematic_Remora.svg)
 
-## Instructions
-
-At the beginning instructions will be kept to a minimun just as a demo. The idea is that anyone can fork this and add their own customizations. Friendly pull requests are welcome. 
-UDP commands can be sent from Orca using the ;COMMAND
-Minimum brightness value will be 0 and maximum 99 and the instructions will be kept as short as possible.
-
-## Sending animations to multiple LED Stripes
-
-Change directory to extras. Run:   **nodejs udproxy.js**
-Configure your Id and IP combinations in ip-config.json ( Ex {"1" : "192.168.0.2"} )
-  
- From Orca: Prepend your animations using this one character to lookup the IP 
- Ex.  ;**1**52  Will lookup IP with id 1 and redirect the rest of the message (52) to 192.168.0.2
- This will enable to run multiple ID stripes using a single IP address as a central point.
-
 ## Commands
 
-[0-35 HSL Color angle] is optional and multiplied per 10 to give Hue angle. If it's not sent as default will play last color. Please check the table to understand how to go beyond 9. That is useful if you want to keep different animations running but trigger the colors universally. Default initial color is red.
+[0-35 HSL Color angle] is optional and multiplied per 10 to give Hue angle. If it's not sent as default will play last color. Please check the [base 36 table](#base36-table) to understand how to go beyond 9 for duration and hue values. Default initial color is red.
 
 **4**[ms*100][0-35 Hue] Launch animation left ex. 490 will take 900ms with red
 4990 900ms with green (Hue 90°)
@@ -75,8 +60,10 @@ Configure your Id and IP combinations in ip-config.json ( Ex {"1" : "192.168.0.2
 
 **0**[ms*100][Note:AG or ag][0-35 Hue] Divides the Lenght of the stripe in 7 and simulates the note being played. Ex. 02A0 will play an A note for 200 ms in red color (Hue 0)
 
-This 1 and 3 are experimental and not tested:
+The 1 and 3 are experimental and not tested:
+
 **3**[1-9][0-35 HSL Color angle] Launch fast random noise on/off animation right
+
 **1**[1-9][0-35 HSL Color angle] Launch fast random noise on/off animation right
 
 **x**[coordinate] Light only one Led to last color and leave it on. Ex. ;x1 will light the first led on the stripe
@@ -86,6 +73,8 @@ This 1 and 3 are experimental and not tested:
 For some Orca examples please refer to docs/*.orca.
 
 **Switch colors without doing any animation**
+
+Useful if you want to keep different animations running but trigger the colors universally.
 
 **r** Switch color to red
 
@@ -112,6 +101,16 @@ This will be used for the color angle of Hue. For example N will represent 24*10
 | **O** | **P** | **Q** | **R** | **S** | **T** | **U** | **V** | **W** | **X** | **Y** | **Z**  | 
 | 24    | 25    | 26    | 27    | 28    | 29    | 30    | 31    | 32    | 33    | 34    | 35     |
 
+
+## Sending animations to multiple LED Stripes
+
+Change directory to extras. Run:   **nodejs udproxy.js**
+Configure your Id and IP combinations in ip-config.json ( Ex {"1" : "192.168.0.2"} )
+  
+ From Orca: Prepend your animations using this one character to lookup the IP 
+ Ex.  ;**1**52  Will lookup IP with id 1 and redirect the rest of the message (52) to 192.168.0.2
+ This will enable to run multiple ID stripes using a single IP address as a central point.
+ 
 #### Proof of concept video
 
 [Take 1](https://twitter.com/martinfasani/status/1136687580374798341)

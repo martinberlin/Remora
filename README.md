@@ -57,15 +57,15 @@ Configure your Id and IP combinations in ip-config.json ( Ex {"1" : "192.168.0.2
 
 [0-35 HSL Color angle] is optional and multiplied per 10 to give Hue angle. If it's not sent as default will play last color. Please check the table to understand how to go beyond 9. That is useful if you want to keep different animations running but trigger the colors universally. Default initial color is red.
 
-**6**[ms duration *100][0-35 HSL Color angle] Launch animation right ex. 
-610 will take 100ms with color red
-69O 900ms with color blue (Hue 240° since O is 240)
-69C same but with color 120
-
 **4**[ms*100][0-35 Hue] Launch animation left ex. 490 will take 900ms with red
 4990 900ms with green (Hue 90°)
 
 **5**[ms*100][0-35 Hue] Launch 2 chaser animations left to right and right to left
+
+**6**[ms duration *100][0-35 HSL Color angle] Launch animation right ex. 
+610 will take 100ms with color red
+69O 900ms with color blue (Hue 240° since O is 240)
+69C same but with color 120
 
 **7**[ms*100][0-35 Hue] Make Noise (random on/off) all along the stripe
 
@@ -73,13 +73,19 @@ Configure your Id and IP combinations in ip-config.json ( Ex {"1" : "192.168.0.2
 
 **9**[ms*50] Short white flash
 
+**0**[ms*100][Note:AG or ag][0-35 Hue] Divides the Lenght of the stripe in 7 and simulates the note being played. Ex. 02A0 will play an A note for 200 ms in red color (Hue 0)
+
+This 1 and 3 are experimental and not tested:
+**3**[1-9][0-35 HSL Color angle] Launch fast random noise on/off animation right
+**1**[1-9][0-35 HSL Color angle] Launch fast random noise on/off animation right
+
 **x**[coordinate] Light only one Led to last color and leave it on. Ex. ;x1 will light the first led on the stripe
 
 **X**[coordinate] Light only one Led and fade in 100ms to black
 
 For some Orca examples please refer to docs/*.orca.
 
-**Switch to pure colors without doing any animation**
+**Switch colors without doing any animation**
 
 **r** Switch color to red
 
@@ -106,40 +112,6 @@ This will be used for the color angle of Hue. For example N will represent 24*10
 | **O** | **P** | **Q** | **R** | **S** | **T** | **U** | **V** | **W** | **X** | **Y** | **Z**  | 
 | 24    | 25    | 26    | 27    | 28    | 29    | 30    | 31    | 32    | 33    | 34    | 35     |
 
-#### Future color ideas
-
-Probably all this color operations will be replaced to a simple 
-
-**R**__**G**__**B**__
-
-OR
-
-**H**___**S**__**L**__ Hue wheel angle/ saturation
-
-**6**{Length}**R**{Bright: 2 digits from 00 to 99}   example:
-      **610R99**  Will make a 10 Red LEDs in maximun brightness slide right to the end and dissapear
-
-**4** Any running animation will change direction to left
-
-#### Coming soon: 
-
-**5** Crossing lights path, left to right, right to left
-
-**6|** Go rightwards and bump at the end to retun leftwards
-
-**6**{Length}**R**{Bright: 2 digits from 00 to 99}   example:
-      **>10R99**  Will make a 10 Red LEDs in maximun brightness slide right to the end and dissapear
-
-**>02R99G99B00**  Will make a 2 Yellow LEDs go to the right and dissapear
-
-**ALL_R00G99B00** Fade all LEDs to color green
-
-**X25B99** Turn LED 25 into maximun Blue
-
-**X25R99G99B99** Turn LED 25 into maximun Red, Green, Blue (White)
-
-Please feel free to fork this and add your new animation ideas. Pull requests are welcome!
-
 #### Proof of concept video
 
 [Take 1](https://twitter.com/martinfasani/status/1136687580374798341)
@@ -149,3 +121,5 @@ Please feel free to fork this and add your new animation ideas. Pull requests ar
 
 - [Orca](https://github.com/hundredrabbits/orca), ORCΛ Sequencer
 - [UDProxy](/extras) UDP Proxier to enable sending animations to multiple Led stripes. See comments at the start of js file for configuration
+
+Please feel free to fork this and add your new animation ideas. Pull requests are welcome!

@@ -9,7 +9,7 @@ This animations will run entirely in an ESP32 controller and are initially aimed
 
 UDP will be hearing in a configurable port so you can send short instructions from Orca or any other program you desire
 
-### Requirements
+### Requirements and discovering the ESP32 IP Address
 
 1. Get an ESP32 Board (Any) and compile this firmware using Plataformio or Arduino
 2. Make sure to update the settings for your LED Stripe **(data PIN, Length)** and also edit lib/Config/config.h adding your WiFi credentials
@@ -17,9 +17,11 @@ UDP will be hearing in a configurable port so you can send short instructions fr
 
 **ping led.local**
 
-And see if the ESP32 responds to mark it's IP Address. That's how you can hit an animation from any device connected to the same network, sending an UDP message to that IP:49161. Note that for windows you need to install Bonjour to resolve local mDNS to their IP Addresses. Update the default led.local in Config.h if you need another name. Check further details on how this works on [this blog post at fasani.de](https://fasani.de/2019/06/24/met-remora-a-simple-firmware-and-language-to-launch-addressable-led-animations-from-orc%ce%bb/)
+And see if the ESP32 responds to mark it's IP Address. That's how you can hit an animation from any device connected to the same network, sending an UDP message to that IP:49161. Note that for windows you need to install Bonjour to resolve local mDNS to their IP Addresses. If mDns discovery it's not an option, then connect the ESP32 board to the PC and open Serial debbugging in port 115200 on Arduino or Plataformio. Reset the board and you can see the IP Address as soon it connects to WiFi.
 
 If you use the [UDP redirector described in this section](#sending-animations-to-multiple-led-stripes) Orca can still send UDP messages to localhost and can be redirected by this background Nodejs script, enabling also the possibility to send to multiple devices from a single point. If you want to use only one, then you can just update the IP to your controller IP using the ip: command from ORCΛ
+
+Check further details on how this works on [this blog post at fasani.de](https://fasani.de/2019/06/24/met-remora-a-simple-firmware-and-language-to-launch-addressable-led-animations-from-orc%ce%bb/)
 
 ## Hardware list
 

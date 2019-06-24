@@ -15,13 +15,11 @@ UDP will be hearing in a configurable port so you can send short instructions fr
 2. Make sure to update the settings for your LED Stripe **(data PIN, Length)** and also edit lib/Config/config.h adding your WiFi credentials
 3. Update the default **Orca IP** [for UDP](https://github.com/hundredrabbits/Orca/issues/135) so it knows where to send the UDP Messages. Now Remora supports mDns so if you are on Linux or Mac try to make a ping to: 
 
-led.local
+**ping led.local**
 
-And see if the ESP32 responds. For windows you need to install Bonjour for this to work. Update the default led.local in Config.h if you need another name.
+And see if the ESP32 responds to mark it's IP Address. That's how you can hit an animation from any device connected to the same network, sending an UDP message to that IP:49161. Note that for windows you need to install Bonjour to resolve local mDNS to their IP Addresses. Update the default led.local in Config.h if you need another name. Check further details on how this works on [this blog post at fasani.de](https://fasani.de/2019/06/24/met-remora-a-simple-firmware-and-language-to-launch-addressable-led-animations-from-orc%ce%bb/)
 
-Update the default localhost IP used by Orca in the file:
-desktop/core/io/udp.js this.play line. Replace this by the IP of that the controller displays in Serial (Or by led.local if your system supports mDns).
-Note: Doing this will disable any other localhost running UDP communications from Orca to another programs
+If you use the [UDP redirector described in this section](#sending-animations-to-multiple-led-stripes) Orca can still send UDP messages to localhost and can be redirected by this background Nodejs script, enabling also the possibility to send to multiple devices from a single point. If you want to use only one, then you can just update the IP to your controller IP using the ip: command from ORCΛ
 
 ## Hardware list
 

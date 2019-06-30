@@ -2,7 +2,7 @@
 
 ![Remora Logo](/extras/img/remora-370.png)
 
-Remora will be a simple pseudo animation language to be a companion to Orca receiving UDP short instructions and sending animations to an addressable LEDs stripe.
+Remora will be a simple pseudo animation language to be a companion to Orca receiving UDP short instructions and sending animations to an addressable LED stripes.
 This animations will run entirely in an ESP32 controller and are initially aimed to be short so they can be triggered by [Orca sequencer](https://github.com/hundredrabbits/Orca) bangs
 
 ## Communications protocol
@@ -30,7 +30,8 @@ Check further details on how this works on [this blog post at fasani.de](https:/
 3. 1 mtr Aluminium profile (About 4€ in any store like Bauhaus)
 4. Additionally and if you use a Stripe larger as 72 elements then you will get a brown out error when many LEDs are on since USB delivers max. 500mA so we recommend to give power from an external source than USB:
    [SANMIN 1PCS AC110V/220V-DC5V 3A 15W Isolated switch power supply module 220 to 5v](https://www.aliexpress.com/item/SANMIN-1PCS-AC110V-220V-DC5V-3A-15W-Isolated-switch-power-supply-module-220-to-5v-black/32842935108.html)
-  
+5. Optional: [3D model to print the case](https://hackaday.io/project/166146-remora) In the project hackaday page you can file STL files for a simple case that fits a mini ESP32 
+
 That and soldiering 3 cables plus additing an optional 220v to 5VDC converter will do it. Usually the data cable is on the middle, so soldiering 5V positive, ground and data to a PIN in the ESP32 is the only electronic schema that you will need to make it work. 
 Note: Links are not affiliate links and are given just as a reference, check in others stores if you get a better price, I calculate in total should be not more than 19 € to put a one meter Stripe + Controller together.
 
@@ -60,21 +61,15 @@ Note: Links are not affiliate links and are given just as a reference, check in 
 
 **0**[ms*100][Note:AG or ag][0-35 Hue] Divides the Lenght of the stripe in 7 and simulates the note being played. Ex. 02A0 will play an A note for 200 ms in red color (Hue 0)
 
-The 1 and 3 are experimental and not tested:
-
-**3**[1-9][0-35 HSL Color angle] Launch fast random noise on/off animation right
-
-**1**[1-9][0-35 HSL Color angle] Launch fast random noise on/off animation right
-
 **x**[coordinate] Light only one Led to last color and leave it on. Ex. ;x1 will light the first led on the stripe
 
 **X**[coordinate] Light only one Led and fade in 100ms to black
 
-For some Orca examples please refer to docs/*.orca.
+To open a detailed list of Orca examples please check [docs/Remora-commands.orca](docs/Remora-commands.orca) or check the preview and video in [Patchstorage](https://patchstorage.com/remora-udp-animations/)
 
 **Switch colors without doing any animation**
 
-Useful if you want to keep different animations running but trigger the colors universally.
+Experimental and not thoughfully tested. Useful if you want to keep different animations running but trigger the colors universally.
 
 **r** Switch color to red
 
@@ -104,21 +99,28 @@ This will be used for the color angle of Hue. For example N will represent 24*10
 
 ## Sending animations to multiple LED Stripes
 
-Change directory to extras. Run:   **nodejs udproxy.js**
-Configure your Id and IP combinations in ip-config.json ( Ex {"1" : "192.168.0.2"} )
+Change directory to extras. Run:   
+**nodejs udproxy.js**
+
+Configure your Id and IP combinations in ip-config.json 
+
+    {
+        "1" : "192.168.0.2", 
+        "2" : "192.168.0.3" 
+    }
   
  From Orca: Prepend your animations using this one character to lookup the IP 
  Ex.  ;**1**52  Will lookup IP with id 1 and redirect the rest of the message (52) to 192.168.0.2
  This will enable to run multiple ID stripes using a single IP address as a central point.
  
-#### Proof of concept video
+#### Proof of concept videos
 
-[Take 1](https://twitter.com/martinfasani/status/1136687580374798341)
-[youtube Orca/Remora Take 2](https://www.youtube.com/watch?v=C8OmwIaXQIE)
+[Testing this firmware after upload](https://www.youtube.com/watch?v=ZHNhSbunzAY)
+[Orca/Remora example](https://www.youtube.com/watch?v=C8OmwIaXQIE)
 
 ## Companion Applications
 
 - [Orca](https://github.com/hundredrabbits/orca), ORCΛ Sequencer
 - [UDProxy](/extras) UDP Proxier to enable sending animations to multiple Led stripes. See comments at the start of js file for configuration
 
-Please feel free to fork this and add your new animation ideas. Pull requests are welcome!
+Please feel free to fork this and make it yous adding new animation ideas. Pull requests are welcome!

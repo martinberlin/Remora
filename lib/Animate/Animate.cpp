@@ -7,7 +7,7 @@ const uint16_t PixelCount = 72; // Length of LED stripe
 const uint8_t  PixelPin = 19;   // Data line of Addressable LEDs
 struct RgbColor CylonEyeColor(HslColor(0.0f,1.0f,0.5f)); // Red as default
 
-byte maxBrightness = 180;       // 0 to 255
+byte maxBrightness = 220;       // 0 to 255
 // </Configure>
 
 // Sent from main.cpp:
@@ -78,7 +78,7 @@ void darkenAll(const AnimationParam& param)
     for (uint16_t indexPixel = 0; indexPixel < strip.PixelCount(); indexPixel++)
     {
         color = strip.GetPixelColor(indexPixel);
-        color.Darken(10);
+        color.Darken(2);
         strip.SetPixelColor(indexPixel, color);
     }
     if (param.state == AnimationState_Completed)
@@ -348,10 +348,10 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             animations.StartAnimation(1, duration, moveAnimUpdate);
         }
 
-        // <- Full line from color to color: 1 char: duration ms * 2, 2; hue from, 3: hue to
-        if (command.charAt(0) == '1') {
+        // <- Full line from color to color: 1st char: duration ms * 2, 2; hue from, 3: hue to
+        if (command.charAt(0) == '3') {
             lastPixel = PixelCount;
-            int duration = commandToBase36(command, 1) * 2;
+            int duration = commandToBase36(command, 1);
             if (packet.length()>2) {
                 if (packet.length()>3) {
                     CylonEyeColor = HslColor(commandToBase36(command, 3) / 360.0f, 1.0f, 0.5f);
@@ -362,9 +362,9 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             
         }
 
-        // -> Full line from color to color 
-        if (command.charAt(0) == '3') {
-            int duration = commandToBase36(command, 1) * 2;
+        // -> Full line from color to color (same as 3)
+        if (command.charAt(0) == '1') {
+            int duration = commandToBase36(command, 1);
             if (packet.length()>3) {
                 CylonEyeColor = HslColor(commandToBase36(command, 2) / 360.0f, 1.0f, 0.5f);
                 DrawPixelColorToColor(true, CylonEyeColor, HslColor(commandToBase36(command, 3) / 360.0f, 1.0f, 0.1f));

@@ -7,7 +7,7 @@ const uint16_t PixelCount = 72; // Length of LED stripe
 const uint8_t  PixelPin = 19;   // Data line of Addressable LEDs
 struct RgbColor CylonEyeColor(HslColor(0.0f,1.0f,0.5f)); // Red as default
 
-byte maxBrightness = 180;       // 0 to 255
+byte maxBrightness = 220;       // 0 to 255
 // </Configure>
 
 // Sent from main.cpp:
@@ -19,7 +19,8 @@ struct config {
 AsyncUDP udp;
 
 NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
-NeoPixelAnimator animations(2); // only ever need 2 animations
+NeoPixelAnimator animations(2);
+NeoGamma<NeoGammaTableMethod> colorGamma;
 uint16_t lastPixel = 0; // track the eye position
 uint16_t rightPixel = PixelCount; // Used for 5: moveCrossedAnimUpdate()
 
@@ -77,7 +78,7 @@ void darkenAll(const AnimationParam& param)
     for (uint16_t indexPixel = 0; indexPixel < strip.PixelCount(); indexPixel++)
     {
         color = strip.GetPixelColor(indexPixel);
-        color.Darken(10);
+        color.Darken(2);
         strip.SetPixelColor(indexPixel, color);
     }
     if (param.state == AnimationState_Completed)
@@ -145,42 +146,6 @@ void moveAnimUpdate(const AnimationParam& param)
     strip.SetPixelColor(nextPixel, CylonEyeColor);
     lastPixel = nextPixel;
 
-    if (param.state == AnimationState_Completed)
-    {
-        animations.StopAll();
-        allBlack();
-    }
-}
-
-void moveAnimOneToThreeUpdate(const AnimationParam& param)
-{
-    // Apply the movement animation curve
-    float progress = moveEase(param.progress);
-    // use the curved progress to calculate the pixel to effect
-    uint16_t nextPixel;
-    if (moveDir > 0)
-    {
-        nextPixel = progress * PixelCount;
-    }
-    else
-    {
-        nextPixel = (1.0f - progress) * PixelCount;
-    }
-    if (lastPixel != nextPixel)
-    {  
-        for (uint16_t i = lastPixel + moveDir; i != nextPixel; i += moveDir)
-        {         
-            byte rand = random(2);
-            if (rand==1) {
-                strip.SetPixelColor(i, CylonEyeColor);
-            } else {
-                strip.SetPixelColor(i, HtmlColor(0x000000));
-            }
-        }
-    }
-    CylonEyeColor.Darken(3);
-    strip.SetPixelColor(nextPixel, CylonEyeColor);
-    lastPixel = nextPixel;
     if (param.state == AnimationState_Completed)
     {
         animations.StopAll();
@@ -259,6 +224,20 @@ String Animate::ipAddress2String(const IPAddress& ipAddress)
   String(ipAddress[1]) + String(".") +\
   String(ipAddress[2]) + String(".") +\
   String(ipAddress[3]);
+}
+
+void DrawPixelColorToColor(bool corrected, HslColor startColor, HslColor stopColor)
+{
+    for (uint16_t index = 0; index < strip.PixelCount(); index++)
+    {
+        float progress = index / static_cast<float>(strip.PixelCount() - 2);
+        RgbColor color = HslColor::LinearBlend<NeoHueBlendShortestDistance>(startColor, stopColor, progress);
+        if (corrected)
+        {
+            color = colorGamma.Correct(color);
+        }
+        strip.SetPixelColor(index, color);
+    }
 }
 
 /**
@@ -368,30 +347,31 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             animations.StartAnimation(0, 4, fadeAnimUpdate);
             animations.StartAnimation(1, duration, moveAnimUpdate);
         }
-        // <- just darker and more random than 4
-        if (command.charAt(0) == '1') {
-            lastPixel = PixelCount;
-            moveDir = -1;
-            int duration = commandToBase36(command, 1) * 10;
-            if (packet.length()>2) {
-                int colorAngle = commandToBase36(command, 2);
-                CylonEyeColor = HslColor(colorAngle / 360.0f, 0.8f, 0.25f);
-            }
-            animations.StartAnimation(0, 2, fadeAnimUpdate);
-            animations.StartAnimation(1, duration/2, moveAnimOneToThreeUpdate);
-        }
-        // -> just darker and more random than 6
+
+        // <- Full line from color to color: 1st char: duration ms * 2, 2; hue from, 3: hue to
         if (command.charAt(0) == '3') {
             lastPixel = PixelCount;
-            moveDir = 1;
-            int duration = commandToBase36(command, 1) * 10;
+            int duration = commandToBase36(command, 1);
             if (packet.length()>2) {
-                int colorAngle = commandToBase36(command, 2);
-                CylonEyeColor = HslColor(colorAngle / 360.0f, 0.8f, 0.25f);
+                if (packet.length()>3) {
+                    CylonEyeColor = HslColor(commandToBase36(command, 3) / 360.0f, 1.0f, 0.5f);
+                }
+                DrawPixelColorToColor(true, HslColor(commandToBase36(command, 2) / 360.0f, 1.0f, 0.1f), CylonEyeColor);
+                animations.StartAnimation(0, duration, fadeAnimUpdate);
             }
-            animations.StartAnimation(0, 2, fadeAnimUpdate);
-            animations.StartAnimation(1, duration/2, moveAnimOneToThreeUpdate);
+            
         }
+
+        // -> Full line from color to color (same as 3)
+        if (command.charAt(0) == '1') {
+            int duration = commandToBase36(command, 1);
+            if (packet.length()>3) {
+                CylonEyeColor = HslColor(commandToBase36(command, 2) / 360.0f, 1.0f, 0.5f);
+                DrawPixelColorToColor(true, CylonEyeColor, HslColor(commandToBase36(command, 3) / 360.0f, 1.0f, 0.1f));
+                animations.StartAnimation(0, duration, fadeAnimUpdate);
+            }
+        }
+
         // 2 chasers left->right right<-left
         if (command.charAt(0) == '5') {
             lastPixel = 0;

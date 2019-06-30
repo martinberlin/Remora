@@ -8,7 +8,7 @@
  * This will enable to run multiple ID stripes using a single IP address as a central point
  * Turn DEBUG false to disable console output
  */
-var DEBUG = true;
+var DEBUG = false;
 var PORT = 49161;       // Default Orca UDP output port
 var HOST = '127.0.0.1';
 

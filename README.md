@@ -2,12 +2,12 @@
 
 ![Remora Logo](/extras/img/remora-370.png)
 
-Remora will be a simple pseudo animation language to be a companion to Orca receiving UDP short instructions and sending animations to an addressable LED stripes.
-This animations will run entirely in an ESP32 controller and are initially aimed to be short so they can be triggered by [Orca sequencer](https://github.com/hundredrabbits/Orca) bangs
+Remora is a simple pseudo animation language that works as a companion to Orca receiving UDP short instructions and sending animations to addressable LED stripes.
+This animations run entirely in the ESP32 controller and are initially aimed to be short so they can be triggered by [Orca sequencer](https://github.com/hundredrabbits/Orca) bangs
 
 ## Communications protocol
 
-UDP will be hearing in a configurable port so you can send short instructions from Orca or any other program you desire
+UDP will be hearing in a configurable port so you can send short instructions from Orca or any other program you desire.
 
 ### Requirements and discovering the ESP32 IP Address
 
@@ -43,6 +43,10 @@ Note: Links are not affiliate links and are given just as a reference, check in 
 
 [0-35 HSL Color angle] is optional and multiplied per 10 to give Hue angle. If it's not sent as default will play last color. Please check the [base 36 table](#base36-table) to understand how to go beyond 9 for duration and hue values. Default initial color is red.
 
+**1**[ms*100][0-35 A Hue][0-35 B] Launch animation left with color A to B ex. 190O will take 900ms with one corner in red to blue 
+
+**3**[ms*100][0-35 A Hue][0-35 B] Launch animation right with color B to A ex. 350O will take 500ms with one corner in red to blue 
+
 **4**[ms*100][0-35 Hue] Launch animation left ex. 490 will take 900ms with red
 4990 900ms with green (Hue 90°)
 
@@ -51,11 +55,11 @@ Note: Links are not affiliate links and are given just as a reference, check in 
 **6**[ms duration *100][0-35 HSL Color angle] Launch animation right ex. 
 610 will take 100ms with color red
 69O 900ms with color blue (Hue 240° since O is 240)
-69C same but with color 120
+69C same but with color 120° green
 
-**7**[ms*100][0-35 Hue] Make Noise (random on/off) all along the stripe
+**7**[ms*100][0-35 Hue] Makes noise (random on/off) all along the stripe
 
-**8**[ms*100][0-35 Hue] Turn all to desired Hue color and fade to black
+**8**[ms*100][0-35 Hue] Turn all to desired Hue color and fade to black dissapearing on the center
 
 **9**[ms*50] Short white flash
 
@@ -116,11 +120,20 @@ Configure your Id and IP combinations in ip-config.json
 #### Proof of concept videos
 
 [Testing this firmware after upload](https://www.youtube.com/watch?v=ZHNhSbunzAY)
+
 [Orca/Remora example](https://www.youtube.com/watch?v=C8OmwIaXQIE)
+
+[Twitter videos](https://twitter.com/martinfasani/media)
 
 ## Companion Applications
 
 - [Orca](https://github.com/hundredrabbits/orca), ORCΛ Sequencer
-- [UDProxy](/extras) UDP Proxier to enable sending animations to multiple Led stripes. See comments at the start of js file for configuration
+- [UDProxy](/extras) UDP is a simple nodejs script to enable sending animations to multiple Led stripes. 
+
+See comments at the start of js file for configuration
+
+## Support 
+
+If you find a bug please make a git issue explaining how to reproduce it. For any other support please send mention me [in twitter](https://twitter.com/martinfasani) and I will add you as a contact so you can send me a private message. 
 
 Please feel free to fork this and make it yous adding new animation ideas. Pull requests are welcome!

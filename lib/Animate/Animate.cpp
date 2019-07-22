@@ -5,7 +5,7 @@
 #define DEFAULT_HUE_ANGLE 0
 const uint16_t PixelCount = 131; // Length of LED stripe 144 - 13 = 131 Leds in a 30cm diameter round
 const uint8_t  PixelPin = 26;   // Data line of Addressable LEDs
-struct RgbColor CylonEyeColor(HslColor(0.0f,1.0f,0.5f)); // Red as default
+struct RgbwColor CylonEyeColor(HslColor(0.0f,1.0f,0.5f)); // Red as default
 
 byte maxBrightness = 220;       // 0 to 255
 // </Configure>
@@ -18,7 +18,8 @@ struct config {
 // Message transport protocol
 AsyncUDP udp;
 
-NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
+// NOTE: Make sure to check what Feature is the right one for your LED Stripe: https://github.com/Makuna/NeoPixelBus/wiki/NeoPixelBus-object#neo-features
+NeoPixelBus<NeoRgbwFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
 NeoPixelAnimator animations(2);
 NeoGamma<NeoGammaTableMethod> colorGamma;
 uint16_t lastPixel = 0; // track the eye position
@@ -64,7 +65,7 @@ void allBlack()
  */
 void fadeAll(uint8_t darkenBy)
 {
-    RgbColor color;
+    RgbwColor color;
     for (uint16_t indexPixel = 0; indexPixel < strip.PixelCount(); indexPixel++)
     {
         color = strip.GetPixelColor(indexPixel);
@@ -74,7 +75,7 @@ void fadeAll(uint8_t darkenBy)
 }
 void darkenAll(const AnimationParam& param)
 {
-    RgbColor color;
+    RgbwColor color;
     for (uint16_t indexPixel = 0; indexPixel < strip.PixelCount(); indexPixel++)
     {
         color = strip.GetPixelColor(indexPixel);
@@ -231,7 +232,7 @@ void DrawPixelColorToColor(bool corrected, HslColor startColor, HslColor stopCol
     for (uint16_t index = 0; index < strip.PixelCount(); index++)
     {
         float progress = index / static_cast<float>(strip.PixelCount() - 2);
-        RgbColor color = HslColor::LinearBlend<NeoHueBlendShortestDistance>(startColor, stopColor, progress);
+        RgbwColor color = HslColor::LinearBlend<NeoHueBlendShortestDistance>(startColor, stopColor, progress);
         if (corrected)
         {
             color = colorGamma.Correct(color);
@@ -348,8 +349,8 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             animations.StartAnimation(1, duration, moveAnimUpdate);
         }
 
-        // <- Full line from color to color: 1st char: duration ms * 2, 2; hue from, 3: hue to
-        if (command.charAt(0) == '3') {
+
+/*         if (command.charAt(0) == '3') {
             lastPixel = PixelCount;
             int duration = commandToBase36(command, 1);
             if (packet.length()>2) {
@@ -362,7 +363,6 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             
         }
 
-        // -> Full line from color to color (same as 3)
         if (command.charAt(0) == '1') {
             int duration = commandToBase36(command, 1);
             if (packet.length()>3) {
@@ -370,7 +370,7 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
                 DrawPixelColorToColor(true, CylonEyeColor, HslColor(commandToBase36(command, 3) / 360.0f, 1.0f, 0.1f));
                 animations.StartAnimation(0, duration, fadeAnimUpdate);
             }
-        }
+        } */
 
         // 2 chasers left->right right<-left
         if (command.charAt(0) == '5') {

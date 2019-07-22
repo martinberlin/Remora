@@ -1,5 +1,5 @@
 // Remora Firmware Beta 1.1 First squeleton
-
+#include <M5StickC.h>
 #include <WiFi.h>
 // Config.h and Animate.h need configuration
 #include <Config.h>  // WiFi credentials, mDNS Domain
@@ -37,6 +37,16 @@ void connectToWifi() {
   Serial.println("Connecting to Wi-Fi...");
   WiFi.begin(WIFI_SSID1, WIFI_PASS1);
 }
+/**
+ * Convert the IP to string 
+ */
+String ipAddress2String(const IPAddress& ipAddress)
+{
+  return String(ipAddress[0]) + String(".") +\
+  String(ipAddress[1]) + String(".") +\
+  String(ipAddress[2]) + String(".") +\
+  String(ipAddress[3]);
+}
 
 void WiFiEvent(WiFiEvent_t event) {
     Serial.printf("[WiFi-event] event: %d\n", event);
@@ -45,6 +55,10 @@ void WiFiEvent(WiFiEvent_t event) {
         Serial.println("WiFi connected");
         Serial.println("IP address: ");
         Serial.println(WiFi.localIP());
+        
+        M5.Lcd.drawString(ipAddress2String(WiFi.localIP())+" : "+String(internalConfig.udpPort), 8, 18, 2);
+        M5.Lcd.drawString(WIFI_SSID1, 10, 50, 2);
+        M5.Lcd.drawString("ONLINE", 110, 50, 2);
         if (!MDNS.begin(localDomain)) {
           while(1) { 
           delay(100);
@@ -91,6 +105,13 @@ void WiFiEvent(WiFiEvent_t event) {
 
 void setup()
 {
+  M5.begin();
+  M5.Lcd.setRotation(3);
+  M5.Axp.ScreenBreath(8); // Brightness (min and visible 7 - 10 max)
+  M5.Lcd.setTextColor(TFT_WHITE, TFT_BLACK);
+  M5.Lcd.drawString("REMORA", 10, 2, 2);
+  M5.Lcd.setTextColor(TFT_RED, TFT_BLACK);
+  M5.Lcd.drawString(". . . . .", 90, 0, 2);
   Serial.begin(115200);
   connectToWifi();
   WiFi.onEvent(WiFiEvent);

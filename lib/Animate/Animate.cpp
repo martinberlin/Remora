@@ -3,8 +3,8 @@
 
 // <Configure> this to your own setup:
 #define DEFAULT_HUE_ANGLE 0
-const uint16_t PixelCount = 72; // Length of LED stripe
-const uint8_t  PixelPin = 19;   // Data line of Addressable LEDs
+const uint16_t PixelCount = 131; // Length of LED stripe 144 - 13 = 131 Leds in a 30cm diameter round
+const uint8_t  PixelPin = 26;   // Data line of Addressable LEDs
 struct RgbColor CylonEyeColor(HslColor(0.0f,1.0f,0.5f)); // Red as default
 
 byte maxBrightness = 220;       // 0 to 255

@@ -19,7 +19,7 @@ struct config {
 AsyncUDP udp;
 
 // NOTE: Make sure to check what Feature is the right one for your LED Stripe: https://github.com/Makuna/NeoPixelBus/wiki/NeoPixelBus-object#neo-features
-NeoPixelBus<NeoRgbwFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
+NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
 NeoPixelAnimator animations(2);
 NeoGamma<NeoGammaTableMethod> colorGamma;
 uint16_t lastPixel = 0; // track the eye position

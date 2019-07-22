@@ -112,6 +112,8 @@ void setup()
   M5.Lcd.drawString("REMORA", 10, 2, 2);
   M5.Lcd.setTextColor(TFT_RED, TFT_BLACK);
   M5.Lcd.drawString(". . . . .", 90, 0, 2);
+  M5.Lcd.drawString(String(M5.Axp.GetVbatData() * 1.1 / 1000) + " volt | " + String(-144.7 + M5.Axp.GetTempData() * 0.1) + " C", 10, 40);
+
   Serial.begin(115200);
   connectToWifi();
   WiFi.onEvent(WiFiEvent);

@@ -3,12 +3,17 @@
 
 // <Configure> this to your own setup:
 #define DEFAULT_HUE_ANGLE 0
-const uint16_t PixelCount = 131; // Length of LED stripe 144 - 13 = 131 Leds in a 30cm diameter round
-const uint8_t  PixelPin = 26;   // Data line of Addressable LEDs
+const uint16_t PixelCount = 131;     // Length of LED stripe 144 - 13 = 131 Leds in a 30cm diameter round
+const uint8_t  PixelPin = 26;        // Data line of Addressable LEDs
 struct RgbwColor CylonEyeColor(HslColor(0.0f,1.0f,0.5f)); // Red as default
+boolean enableBeatDetection = false; // Turn to true to enable Mic beat detection
+byte maxBrightness = 20;             // 0 to 255
 
-byte maxBrightness = 220;       // 0 to 255
 // </Configure>
+uint16_t lastSignalLevel = 0;
+#define READ_LEN (50)
+uint8_t BUFFER[READ_LEN] = {0};
+uint16_t *adcBuffer = NULL;
 
 // Sent from main.cpp:
 struct config {
@@ -35,8 +40,30 @@ AnimEaseFunction moveEase =
       NeoEase::QuarticInOut;
 
 Animate::Animate() {
-    // Constructor (Still need to research how to insert stuff here)
+    // Constructor: Let's start sampling here
+       i2s_config_t i2s_config = {
+    .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX | I2S_MODE_PDM),
+    .sample_rate =  44100,
+    .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT, // is fixed at 12bit, stereo, MSB
+    .channel_format = I2S_CHANNEL_FMT_ALL_RIGHT,
+    .communication_format = I2S_COMM_FORMAT_I2S,
+    .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
+    .dma_buf_count = 2,
+    .dma_buf_len = 128,
+   };
+
+   i2s_pin_config_t pin_config;
+   pin_config.bck_io_num   = I2S_PIN_NO_CHANGE;
+   pin_config.ws_io_num    = PIN_CLK;
+   pin_config.data_out_num = I2S_PIN_NO_CHANGE;
+   pin_config.data_in_num  = PIN_DATA;
+  
+   
+   i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL);
+   i2s_set_pin(I2S_NUM_0, &pin_config);
+   i2s_set_clk(I2S_NUM_0, 44100, I2S_BITS_PER_SAMPLE_16BIT, I2S_CHANNEL_MONO);
 }
+
 /**
  * Generic message printer. Modify this if you want to send this messages elsewhere (Display)
  */
@@ -110,7 +137,7 @@ void allToColorNoise(const AnimationParam& param)
 {
     for (uint16_t indexPixel = 0; indexPixel < strip.PixelCount(); indexPixel++)
     {
-        byte rand = random(2);
+        byte rand = random(5);
         if (rand==1) {
             strip.SetPixelColor(indexPixel, CylonEyeColor);
         } else {
@@ -482,10 +509,36 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
     }
 }
 
+
+void micRead() 
+{   
+
+    i2s_read_bytes(I2S_NUM_0, (char*) BUFFER, READ_LEN, (100 / portTICK_RATE_MS));
+    adcBuffer = (uint16_t *)BUFFER;
+    
+    int signalLevel = 0;   
+    for ( int i = 0; i < READ_LEN; i++ ) {
+       signalLevel += adcBuffer[i];
+    }
+    signalLevel = ((signalLevel/READ_LEN)/100 -290)*3;
+    
+   if (signalLevel>=30 && signalLevel<100 && (signalLevel!=lastSignalLevel)) {
+    // BEAT
+      //Serial.println(signalLevel);
+      CylonEyeColor = HslColor(signalLevel / 360.0f, 1.0f, 0.25f);
+      animations.StartAnimation(0, 1, allToColorNoise);
+      animations.StartAnimation(1, signalLevel, darkenAll);
+      lastSignalLevel = signalLevel;
+     }
+}
+
 void Animate::loop() {
     if(animations.IsAnimating()) {
         animations.UpdateAnimations();
     }
     
     strip.Show();
+    if (enableBeatDetection) {
+        micRead();
+    }
 }

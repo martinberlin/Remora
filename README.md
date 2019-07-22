@@ -4,6 +4,7 @@
 
 Remora is a simple pseudo animation language that works as a companion to Orca receiving UDP short instructions and sending animations to addressable LED stripes.
 This animations run entirely in the ESP32 controller and are initially aimed to be short so they can be triggered by [Orca sequencer](https://github.com/hundredrabbits/Orca) bangs
+In feature/ring branch we will use a M5StickC to power the LED stripe please note the plataformio.ini settings for this board.
 
 ## Communications protocol
 

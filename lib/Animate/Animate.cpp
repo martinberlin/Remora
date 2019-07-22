@@ -350,14 +350,11 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
         }
 
 
-/*         if (command.charAt(0) == '3') {
+        if (command.charAt(0) == '3') {
             lastPixel = PixelCount;
             int duration = commandToBase36(command, 1);
-            if (packet.length()>2) {
-                if (packet.length()>3) {
-                    CylonEyeColor = HslColor(commandToBase36(command, 3) / 360.0f, 1.0f, 0.5f);
-                }
-                DrawPixelColorToColor(true, HslColor(commandToBase36(command, 2) / 360.0f, 1.0f, 0.1f), CylonEyeColor);
+            if (packet.length()>3) {
+                DrawPixelColorToColor(true, HslColor(commandToBase36(command, 2) / 360.0f, 1.0f, 0.1f), HslColor(commandToBase36(command, 3) / 360.0f, 1.0f, 0.5f));
                 animations.StartAnimation(0, duration, fadeAnimUpdate);
             }
             
@@ -366,11 +363,10 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
         if (command.charAt(0) == '1') {
             int duration = commandToBase36(command, 1);
             if (packet.length()>3) {
-                CylonEyeColor = HslColor(commandToBase36(command, 2) / 360.0f, 1.0f, 0.5f);
-                DrawPixelColorToColor(true, CylonEyeColor, HslColor(commandToBase36(command, 3) / 360.0f, 1.0f, 0.1f));
+                DrawPixelColorToColor(true, HslColor(commandToBase36(command, 2) / 360.0f, 1.0f, 0.5f), HslColor(commandToBase36(command, 3) / 360.0f, 1.0f, 0.1f));
                 animations.StartAnimation(0, duration, fadeAnimUpdate);
             }
-        } */
+        } 
 
         // 2 chasers left->right right<-left
         if (command.charAt(0) == '5') {

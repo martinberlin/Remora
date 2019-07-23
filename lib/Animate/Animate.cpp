@@ -504,6 +504,18 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             CylonEyeColor.G = 0;
             CylonEyeColor.B = maxBrightness;
         }
+        // Beat detection switch
+        // TODO: Research if here we can inject M5 to enable display draw: M5.Lcd.drawString("BEAT On", 10, 50, 2);
+        if (command.charAt(0) == 'B') {
+            if (command.charAt(1) == '1') {
+                debugMessage("BEAT On");
+                enableBeatDetection = true;
+            } else {
+                debugMessage("BEAT Off");
+                enableBeatDetection = false;
+            }
+        }
+
         }); 
     } else {
         debugMessage("UDP Listener could not start");
@@ -525,7 +537,7 @@ void micRead()
     
    if (signalLevel>=30 && signalLevel<100 && (signalLevel!=lastSignalLevel)) {
     // BEAT
-      Serial.println(signalLevel);
+      debugMessage(String(signalLevel));
       
       animations.StartAnimation(0, 1, allToColorNoise);
       animations.StartAnimation(1, signalLevel, darkenAll);

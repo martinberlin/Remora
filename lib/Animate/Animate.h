@@ -14,10 +14,10 @@ class Animate
 {
   public:
     Animate();
-    //void micRead();
+    // Print out messages in Serial
     static const boolean debugMode = true;
     void startUdpListener(const IPAddress& ipAddress, int udpPort);
-
+    void micRead();
     String ipAddress2String(const IPAddress& ipAddress);
 
     void loop();

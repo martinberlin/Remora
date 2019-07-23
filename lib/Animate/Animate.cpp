@@ -9,9 +9,12 @@ float maxL = 0.2f;
 struct RgbwColor CylonEyeColor(HslColor(0.0f, 1.0f, maxL)); // Red as default
 boolean enableBeatDetection = true; // Turn to true to enable Mic beat detection
 byte maxBrightness = 20;             // 0 to 255 - Only for RGB
-
 // </Configure>
+
 uint16_t lastSignalLevel = 0;
+// MIC Detection levels
+int signalLevelMinorThan = 100;
+int signalLevelMajorThan = -50;
 #define READ_LEN (50)
 uint8_t BUFFER[READ_LEN] = {0};
 uint16_t *adcBuffer = NULL;
@@ -515,6 +518,19 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
                 enableBeatDetection = false;
             }
         }
+        // Beat sensibility values
+        if (command.charAt(0) == 'S') {
+            if (packet.length()>1) {
+                signalLevelMinorThan = commandToInt(command, packet.length(), 1);
+                debugMessage("signalLevelMinorThan: "+String(signalLevelMinorThan));
+            }
+        }
+        if (command.charAt(0) == 's') {
+            if (packet.length()>1) {
+                signalLevelMajorThan = commandToInt(command, packet.length(), 1);
+                debugMessage("signalLevelMajorThan: "+String(signalLevelMajorThan));
+            }
+        }
 
         }); 
     } else {
@@ -523,7 +539,7 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
 }
 
 
-void micRead() 
+void Animate::micRead() 
 {   
 
     i2s_read_bytes(I2S_NUM_0, (char*) BUFFER, READ_LEN, (100 / portTICK_RATE_MS));
@@ -534,10 +550,11 @@ void micRead()
        signalLevel += adcBuffer[i];
     }
     signalLevel = ((signalLevel/READ_LEN)/100 -290)*3;
-    
-   if (signalLevel>=30 && signalLevel<100 && (signalLevel!=lastSignalLevel)) {
+   //  && (signalLevel!=lastSignalLevel)
+
+   if (signalLevel>signalLevelMajorThan && signalLevel<signalLevelMinorThan) {
     // BEAT
-      debugMessage(String(signalLevel));
+      debugMessage(String(signalLevel) + ">" + String(signalLevelMajorThan) + " and < "+ String(signalLevelMinorThan));
       
       animations.StartAnimation(0, 1, allToColorNoise);
       animations.StartAnimation(1, signalLevel, darkenAll);
@@ -552,6 +569,6 @@ void Animate::loop() {
     
     strip.Show();
     if (enableBeatDetection) {
-        micRead();
+        Animate::micRead();
     }
 }

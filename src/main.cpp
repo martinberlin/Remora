@@ -1,6 +1,7 @@
 // Remora Firmware Beta 1.1 First squeleton
 #include <M5StickC.h>
 #include <WiFi.h>
+#include <WiFiManager.h>
 // Config.h and Animate.h need configuration
 #include <Config.h>  // WiFi credentials, mDNS Domain
 #include <Animate.h> // PixelCount, PixelPin
@@ -13,6 +14,7 @@ bool debugMode = false;
 TimerHandle_t wifiReconnectTimer;
 // Animation handling class
 Animate animate;
+
 const char* localDomain = MDNSDOMAIN; // mDNS: led.local (Config.h)
 struct config {
   char chipId[20];
@@ -48,10 +50,7 @@ String ipAddress2String(const IPAddress& ipAddress)
   String(ipAddress[3]);
 }
 
-void WiFiEvent(WiFiEvent_t event) {
-    Serial.printf("[WiFi-event] event: %d\n", event);
-    switch(event) {
-    case SYSTEM_EVENT_STA_GOT_IP:
+void wifiConnected() {
         Serial.println("WiFi connected");
         Serial.println("IP address: ");
         Serial.println(WiFi.localIP());
@@ -68,13 +67,20 @@ void WiFiEvent(WiFiEvent_t event) {
         printMessage(String(localDomain)+".local mDns started");
 
         animate.startUdpListener(WiFi.localIP(), internalConfig.udpPort);
+}
+
+void WiFiEvent(WiFiEvent_t event) {
+    Serial.printf("[WiFi-event] event: %d\n", event);
+    switch(event) {
+    case SYSTEM_EVENT_STA_GOT_IP:
+        wifiConnected();
         break;
     case SYSTEM_EVENT_STA_DISCONNECTED:
         Serial.println("WiFi lost connection");
-        // TODO: Ensure we don't start UDP while reconnecting to Wi-Fi (low prio)
+        //TODO: Ensure we don't start UDP while reconnecting to Wi-Fi (low prio)
 	      xTimerStart(wifiReconnectTimer, 0);
         break;
-                // Non used, just there to avoid warnings
+        // Non used, just there to avoid warnings
         case SYSTEM_EVENT_WIFI_READY:
         case SYSTEM_EVENT_SCAN_DONE:
         case SYSTEM_EVENT_STA_START:
@@ -105,6 +111,10 @@ void WiFiEvent(WiFiEvent_t event) {
 
 void setup()
 {
+      WiFiManager wifiManager;
+    //reset saved settings
+    //wifiManager.resetSettings();
+
   M5.begin();
   M5.Lcd.setRotation(3);
   M5.Axp.ScreenBreath(8); // Brightness (min and visible 7 - 10 max)
@@ -115,8 +125,10 @@ void setup()
   M5.Lcd.drawString(String(M5.Axp.GetVbatData() * 1.1 / 1000) + " volt | " + String(-144.7 + M5.Axp.GetTempData() * 0.1) + " C", 10, 40);
 
   Serial.begin(115200);
-  connectToWifi();
   WiFi.onEvent(WiFiEvent);
+  //Opens  "AutoConnectAP" and goes into a blocking loop awaiting configuration
+  wifiManager.autoConnect("AutoConnectAP");
+  
   itoa(ESP.getEfuseMac(), internalConfig.chipId, 16);
   printMessage("ESP32 ChipID: "+String(internalConfig.chipId));
   // Set up automatic reconnect timer

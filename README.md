@@ -17,7 +17,7 @@ UDP will be hearing in a configurable port so you can send short instructions fr
 
 **ping led.local**
 
-And see if the ESP32 responds to mark it's IP Address. That's how you can hit an animation from any device connected to the same network, sending an UDP message to that IP:49161. Note that for windows you need to install Bonjour to resolve local mDNS to their IP Addresses. If mDns discovery it's not an option, then connect the ESP32 board to the PC and open Serial debbugging in port 115200 on Arduino or Plataformio. Reset the board and you can see the IP Address as soon it connects to WiFi.
+And see if the ESP32 responds to mark it's IP Address. That's how you can hit an animation from any device connected to the same network, sending an UDP message to that IP and default port 49161. Note that for windows you need to install Bonjour to resolve local mDNS to their IP Addresses. If mDns discovery it's not an option, then connect the ESP32 board to the PC and open Serial debbugging in port 115200 on Arduino or Plataformio. Reset the board and you can see the IP Address as soon it connects to WiFi.
 
 If you use the [UDP redirector described in this section](#sending-animations-to-multiple-led-stripes) Orca can still send UDP messages to localhost and can be redirected by this background Nodejs script, enabling also the possibility to send to multiple devices from a single point. If you want to use only one, then you can just update the IP to your controller IP using the ip: command from ORCΛ
 
@@ -33,7 +33,7 @@ Check further details on how this works on [this blog post at fasani.de](https:/
 5. Optional: [3D model to print the case](https://hackaday.io/project/166146-remora) In the project hackaday page you can file STL files for a simple case that fits a mini ESP32 
 
 That and soldiering 3 cables plus additing an optional 220v to 5VDC converter will do it. Usually the data cable is on the middle, so soldiering 5V positive, ground and data to a PIN in the ESP32 is the only electronic schema that you will need to make it work. 
-Note: Links are not affiliate links and are given just as a reference, check in others stores if you get a better price, I calculate in total should be not more than 19 € to put a one meter Stripe + Controller together.
+Note: Check in others stores if you get a better price, in total should be not more than 19 € to put a one meter Stripe + Controller together.
 
 ## Electronic schematics
 
@@ -125,15 +125,15 @@ Configure your Id and IP combinations in ip-config.json
 
 [Twitter videos](https://twitter.com/martinfasani/media)
 
+## Support 
+
+If you find a bug please make a git issue explaining how to reproduce it. For any other support please send mention me [in twitter](https://twitter.com/martinfasani) and I will add you as a contact so you can send me a private message. 
+
+Please feel free to fork this and make it yours adding new animation ideas. Pull requests are welcome!
+
 ## Companion Applications
 
 - [Orca](https://github.com/hundredrabbits/orca), ORCΛ Sequencer
 - [UDProxy](/extras) UDP is a simple nodejs script to enable sending animations to multiple Led stripes. 
 
 See comments at the start of js file for configuration
-
-## Support 
-
-If you find a bug please make a git issue explaining how to reproduce it. For any other support please send mention me [in twitter](https://twitter.com/martinfasani) and I will add you as a contact so you can send me a private message. 
-
-Please feel free to fork this and make it yous adding new animation ideas. Pull requests are welcome!

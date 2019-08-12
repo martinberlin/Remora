@@ -9,7 +9,7 @@
 #include "freertos/timers.h"
 
 // Debug mode prints to serial
-bool debugMode = false;
+bool debugMode = true;
 TimerHandle_t wifiReconnectTimer;
 // Animation handling class
 Animate animate;

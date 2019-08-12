@@ -54,9 +54,9 @@ void wifiConnected() {
         Serial.println("WiFi connected");
         Serial.println("IP address: ");
         Serial.println(WiFi.localIP());
-        
-        M5.Lcd.drawString(ipAddress2String(WiFi.localIP())+" : "+String(internalConfig.udpPort), 8, 18, 2);
-        M5.Lcd.drawString(WIFI_SSID1, 10, 50, 2);
+        M5.Lcd.setTextColor(TFT_GREEN, TFT_BLACK);
+        M5.Lcd.drawString("IP: "+ipAddress2String(WiFi.localIP()), 8, 18, 2);
+        M5.Lcd.drawString("PORT: "+String(internalConfig.udpPort), 10, 50, 2);
         M5.Lcd.drawString("ONLINE", 110, 50, 2);
         if (!MDNS.begin(localDomain)) {
           while(1) { 
@@ -126,11 +126,13 @@ void setup()
 
   Serial.begin(115200);
   WiFi.onEvent(WiFiEvent);
+  // Set static IP in case your infrastructure needs it:
+  // wifiManager.setSTAStaticIPConfig(IPAddress(192,168,255,111), IPAddress(192,168,255,1), IPAddress(255,255,255,0));
   //Opens  "AutoConnectAP" and goes into a blocking loop awaiting configuration
   wifiManager.autoConnect("AutoConnectAP");
   
-  itoa(ESP.getEfuseMac(), internalConfig.chipId, 16);
-  printMessage("ESP32 ChipID: "+String(internalConfig.chipId));
+  //itoa(ESP.getEfuseMac(), internalConfig.chipId, 16);
+  //printMessage("ESP32 ChipID: "+String(internalConfig.chipId));
   // Set up automatic reconnect timer
   wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void *)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
 }

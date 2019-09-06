@@ -6,3 +6,4 @@
 
 # WiFi credentials
 lib/Config/Config.h
+node_modules

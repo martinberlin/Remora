@@ -1,23 +1,41 @@
-#box {
-   border: 1px solid black;
-   width: 388px;height: 100px;
-   margin-top: 5px;
+body {
+    font-family: Arial, Verdana;
 }
-#responsebox {
-  border: 1px solid black;
-  background-color: #222222;
-  color: rgb(255, 255, 255);
-  width: 388px;height: 20px;
-  margin-top: 5px;
+#midi-octaves {
+    border: 1px solid black;
+    background-color: #222222;
+    color: rgb(255, 255, 255);
+    width: 48%;height: 200px;
+    float: left;
+    margin-top: 5px;
+    padding: 3px;
 }
-#controlsbox {
-  border: 1px solid #CCC;
-  background-color: #222222;
-  color: rgb(255, 255, 255);
-  width: 388px;height: 34px;
-  margin-top:20px;
-  padding-top: 5px;padding-left:5px;
+#midi-chords {
+    border: 1px solid black;
+    background-color: #222222;
+    color: rgb(255, 255, 255);
+    width: 49%;height: 200px;
+    float: right;
+    margin-top: 5px;
+    margin-left: 2px;
+    padding: 3px;
 }
-#box_json {
-  margin-top: 15px;
+#midi-tracks {
+    border: 1px solid black;
+    background-color: #DDDDDD;
+    color: black;
+    width: 48%;height: 200px;
+    float: left;
+    margin-top: 5px;
+    padding: 3px;
+}
+#midi-settings {
+    border: 1px solid black;
+    background-color: #DDDDDD;
+    color: black;
+    width: 49%;height: 200px;
+    float: right;
+    margin-top: 5px;
+    margin-left: 2px;
+    padding: 3px;
 }

@@ -10,10 +10,12 @@
   
   <script>
   // load a midi file in the browser. await?
-const midi = await Midi.fromUrl("midis/old-town-road.mid");
+const midiPromise = Midi.fromUrl("midis/old-town-road.mid"); // Returns promise
 
-console.log(midi);
-//the file name decoded from the first track
+midiPromise.then(function(midi) {
+    // If promise is done
+    console.log(midi);
+    //the file name decoded from the first track
 const name = midi.name;
 //get the tracks
 midi.tracks.forEach(track => {
@@ -36,6 +38,10 @@ midi.tracks.forEach(track => {
   //the track also has a channel and instrument
   console.log(track.instrument.name);
 })
+});
+
+
+
 </script>
 </head>
 

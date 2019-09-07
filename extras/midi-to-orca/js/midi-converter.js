@@ -1,6 +1,6 @@
 let midi = {};
 
-notea = {'A':'A', 'B':'B', 'C':'C', 'D':'D', 'E':'E', 'F':'F', 'G':'G',
+notemap = {'A':'A', 'B':'B', 'C':'C', 'D':'D', 'E':'E', 'F':'F', 'G':'G',
          'A#':'a', 'B#':'b', 'C#':'c', 'D#':'d', 'E#':'e', 'F#':'f', 'G#':'g',  };
 
 /**
@@ -11,7 +11,7 @@ function midiOut(trackId = 1) {
 
     let tracks = $("div#midi-tracks"),
     settings   = $("div#midi-settings"),
-    octavesOut = $("#orca-octave"),
+    octavesOut = $("#orca-octaves"),
     notesOut = $("#orca-notes"),
     bpmEl  = $("input#bpm"),
     colsEl = $("input#cols"),
@@ -30,7 +30,8 @@ function midiOut(trackId = 1) {
     midiBpm = (midiHeaderTempos.length) ? Math.round(midiHeaderTempos[0].bpm) : 0;
     console.log("ORCΛ settings BPM:"+bpm+" COLS:"+cols+" / Midi BPM: "+midiBpm);
     let trackNr = 1;
-    let orcaNotes;
+    let orcaOctaves = "";
+    let orcaNotes   = "";
     tracks.html('<b>Midi select track</b><br>');
 
     outPrefix  = (wrap.is(":checked")) ? '#' :'';
@@ -56,12 +57,29 @@ function midiOut(trackId = 1) {
                 console.log(noteTime, note.name);
                 debug ++; 
             }
-            orcaNotes += note.name.substr(0,1);
+            // Extract Note 
+            console.log('Note: '+note.name);
+            // Check if # Sharp note 
+            if (note.name.substr(1,1) === '#') {
+                // Extract sharp
+                notesel = note.name.substr(0,2);
+                octasel = note.name.substr(2,1);
+            } else {
+                notesel = note.name.substr(0,1);
+                octasel = note.name.substr(1,1);
+            }
+            console.log(' orca: '+notemap[notesel]+' '+octasel);
+            // Most important part is the note falling into the bpm grid or is a silence            
+            orcaNotes += (notesel in notemap) ? notemap[notesel] : '';
+            orcaOctaves += octasel;
+            
             
             // Jump to next row
             if (notesCnt % cols == 0)  {
                 notesOut.val(notesOut.val()+outPrefix+orcaNotes+outPrepend+"\n");
+                octavesOut.val(octavesOut.val()+outPrefix+orcaOctaves+outPrepend+"\n");
                 orcaNotes = '';
+                orcaOctaves = '';
             }
             
             notesCnt++; 
@@ -78,9 +96,8 @@ function midiOut(trackId = 1) {
     }
 
 $(document).ready(function() {
-
-// Load a midi file in the browser. Demo: old-town-road.mid samba-pa-ti.mid tiersen_amelie.mid
-    const midiPromise = Midi.fromUrl("midis/tiersen_amelie.mid"); // Returns promise
+    // Load a midi file in the browser. Demo: old-town-road.mid samba-pa-ti.mid tiersen_amelie.mid
+    const midiPromise = Midi.fromUrl("midis/d-mode-rumours.mid"); // Returns promise
     midiPromise.then(function (midiIn) {
         midi = midiIn;
         midiOut();

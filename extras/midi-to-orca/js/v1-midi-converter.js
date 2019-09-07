@@ -1,8 +1,4 @@
 let midi = {};
-
-notea = {'A':'A', 'B':'B', 'C':'C', 'D':'D', 'E':'E', 'F':'F', 'G':'G',
-         'A#':'a', 'B#':'b', 'C#':'c', 'D#':'d', 'E#':'e', 'F#':'f', 'G#':'g',  };
-
 /**
  * Outputs the midi into Orca format
  * @param {*} midi 
@@ -10,8 +6,8 @@ notea = {'A':'A', 'B':'B', 'C':'C', 'D':'D', 'E':'E', 'F':'F', 'G':'G',
 function midiOut(trackId = 1) {
     let tracks = $("div#midi-tracks"),
     settings = $("div#midi-settings"),
-    octavesOut = $("div#midi-octave"),
-    notesOut = $("div#midi-notes"),
+    octaves = $("div#midi-octave"),
+    chords = $("div#midi-chords"),
     bpmEl  = $("input#bpm"),
     colsEl = $("input#cols"),
     rowsEl = $("input#rows"),
@@ -21,51 +17,36 @@ function midiOut(trackId = 1) {
     bpm  = bpmEl.val();
     cols = colsEl.val();
     rows = rowsEl.val();
-    //console.log(midi.header);
     midiHeaderTempos = midi.header.tempos;
-    midiBpm = (midiHeaderTempos.length) ? Math.round(midiHeaderTempos[0].bpm) : 0;
-    console.log("ORCΛ settings BPM:"+bpm+" COLS:"+cols+" / Midi BPM: "+midiBpm);
-
+    midiBpm = Math.round(midiHeaderTempos[0].bpm);
+    console.log("ORCΛ settings BPM:"+bpm+" COLS:"+cols+" ROWS:"+rows+ " Midi settings BPM: "+midiBpm);
     
     //the file name decoded from the first track
     const name = midi.name;
     let trackNr = 1;
-    let orcaNotes;
     tracks.html('<b>Midi select track</b><br>');
 
     //get the tracks
     midi.tracks.forEach(track => {
         //tracks have notes and controlChanges
         if (trackId === trackNr) {
-            console.log("Processing: "+track.instrument.name);
+
         //notes are an array
         const notes = track.notes;
-        console.log("Note    Time     Dur.    Name");
+        //console.log("Note    Time     Dur.    Name");
         let debug = 1; 
-        let notesCnt = 1;
         notes.forEach(note => {
             noteTime = Math.round(1000*note.time);
-            if (debug<=4) {
-                console.log(note.midi, note.time, note.duration, note.name);
+            if (debug<=3) {
+                console.log(note);
                 debug ++; 
             } 
-            if (debug>3 && debug<=6) {
+            if (debug<=4) {
                 console.log(noteTime, note.name);
                 debug ++; 
             }
-            orcaNotes += note.name.substr(0,1);
-            
-            // Jump to next row
-            if (notesCnt % cols == 0)  {
-                notesOut.append(orcaNotes);
-                notesOut.append('<br>');
-                orcaNotes = '';
-            }
-            
-            notesCnt++; 
-            
+            //console.log(note.midi, note.time, note.duration, note.name);
         });
-        
         
     }
         // the track also has a channel and instrument
@@ -78,8 +59,8 @@ function midiOut(trackId = 1) {
 
 $(document).ready(function() {
 
-// Load a midi file in the browser. Demo: old-town-road.mid samba-pa-ti.mid tiersen_amelie.mid
-    const midiPromise = Midi.fromUrl("midis/samba-pa-ti.mid"); // Returns promise
+// Load a midi file in the browser. Demo: old-town-road.mid samba-pa-ti.mid
+    const midiPromise = Midi.fromUrl("midis/tiersen_amelie.mid"); // Returns promise
     midiPromise.then(function (midiIn) {
         midi = midiIn;
         midiOut();

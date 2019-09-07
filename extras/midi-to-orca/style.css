@@ -42,3 +42,9 @@ body {
     margin-left: 2px;
     padding: 3px;
 }
+#millis-beat {
+    font-size: 9pt;width: 70%;float:left;
+}
+#settings {
+    font-size: 9pt;width: 70%;float:left
+}

@@ -102,5 +102,11 @@ $(document).ready(function() {
         midi = midiIn;
         midiOut();
     });
+    calculateMillisPerBeat();
 });
 
+function calculateMillisPerBeat() {
+    let bpm = $("input#bpm").val();
+    let millisPerBeat = Math.round(60000/bpm);
+    $("div#millis-beat").html(millisPerBeat +" millis per beat")
+}

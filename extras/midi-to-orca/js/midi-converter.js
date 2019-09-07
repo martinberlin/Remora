@@ -8,36 +8,39 @@ notea = {'A':'A', 'B':'B', 'C':'C', 'D':'D', 'E':'E', 'F':'F', 'G':'G',
  * @param {*} midi 
  */
 function midiOut(trackId = 1) {
+
     let tracks = $("div#midi-tracks"),
-    settings = $("div#midi-settings"),
-    octavesOut = $("div#midi-octave"),
-    notesOut = $("div#midi-notes"),
+    settings   = $("div#midi-settings"),
+    octavesOut = $("#orca-octave"),
+    notesOut = $("#orca-notes"),
     bpmEl  = $("input#bpm"),
     colsEl = $("input#cols"),
-    rowsEl = $("input#rows"),
+    wrap = $("input#wrap"),
     trackEl = $("input:radio")
-    ;
+    
+    // Clean out output areas
+    octavesOut.val('')
+    notesOut.val('')
+
     // If promise is done
     bpm  = bpmEl.val();
     cols = colsEl.val();
-    rows = rowsEl.val();
     //console.log(midi.header);
     midiHeaderTempos = midi.header.tempos;
     midiBpm = (midiHeaderTempos.length) ? Math.round(midiHeaderTempos[0].bpm) : 0;
     console.log("ORCΛ settings BPM:"+bpm+" COLS:"+cols+" / Midi BPM: "+midiBpm);
-
-    
-    //the file name decoded from the first track
-    const name = midi.name;
     let trackNr = 1;
     let orcaNotes;
     tracks.html('<b>Midi select track</b><br>');
 
-    //get the tracks
+    outPrefix  = (wrap.is(":checked")) ? '#' :'';
+    outPrepend = (wrap.is(":checked")) ? '#' :'';
+
+    // Read the tracks
     midi.tracks.forEach(track => {
         //tracks have notes and controlChanges
         if (trackId === trackNr) {
-            console.log("Processing: "+track.instrument.name);
+        console.log("Processing: "+track.instrument.name);
         //notes are an array
         const notes = track.notes;
         console.log("Note    Time     Dur.    Name");
@@ -57,13 +60,11 @@ function midiOut(trackId = 1) {
             
             // Jump to next row
             if (notesCnt % cols == 0)  {
-                notesOut.append(orcaNotes);
-                notesOut.append('<br>');
+                notesOut.val(notesOut.val()+outPrefix+orcaNotes+outPrepend+"\n");
                 orcaNotes = '';
             }
             
             notesCnt++; 
-            
         });
         
         
@@ -79,7 +80,7 @@ function midiOut(trackId = 1) {
 $(document).ready(function() {
 
 // Load a midi file in the browser. Demo: old-town-road.mid samba-pa-ti.mid tiersen_amelie.mid
-    const midiPromise = Midi.fromUrl("midis/samba-pa-ti.mid"); // Returns promise
+    const midiPromise = Midi.fromUrl("midis/tiersen_amelie.mid"); // Returns promise
     midiPromise.then(function (midiIn) {
         midi = midiIn;
         midiOut();

@@ -26,18 +26,20 @@
   <label>Midi to chords area:</label><br><br>
   <label for="cols">Cols</label>
   <input id="cols" type="number" max="100" maxlength="3" value="16" style="width: 4em">
-  <label for="rows">max Rows</label>
-  <input id="rows" type="number" max="100" maxlength="3" value="" style="width: 4em"><br>
-  <span style="font-size: 9pt">Max rows is 
-    <a target="_blank" href="https://github.com/hundredrabbits/Orca#transpose-table">anyways 35</a> if you leave this empty
+  <input type="checkbox" value="1" id="wrap" checked>
+  <label for="wrap">Wrap grid with #</label>
+
   </span><br>
 </div>
 
 <div id="midi-octaves">
-  ORCΛ Octave
+  ORCΛ Octave<br>
+  <textarea style="width:100%" id="orca-octaves"></textarea>
 </div>
 <div id="midi-notes">
-  ORCΛ Note
+    ORCΛ Note<br>
+  <textarea style="width:400px" rows="36" id="orca-notes"></textarea>
+  
 </div>
 
 

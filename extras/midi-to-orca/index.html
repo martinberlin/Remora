@@ -16,18 +16,21 @@
 <h4>Midi chord extractor for ORCΛ</h4>
 
 <div id="midi-tracks">
-
+  <b>Midi select track</b><br>
 </div>
 <div id="midi-settings">
   <b>ORCΛ settings</b><br><br>
   <label for="bpm">BPM</label>
-  <input id="bpm" type="number" max="400" maxlength="3" value="120" style="width: 4em"><br><br>
+  <input id="bpm" type="number" max="400" maxlength="3" value="120" style="width: 4em">
 
-  <label>Midi to chords area:</label><br>
+  <label>Midi to chords area:</label><br><br>
   <label for="cols">Cols</label>
   <input id="cols" type="number" max="100" maxlength="3" value="16" style="width: 4em">
-  <label for="rows">Rows</label>
-  <input id="rows" type="number" max="100" maxlength="3" value="8" style="width: 4em"><br>
+  <label for="rows">max Rows</label>
+  <input id="rows" type="number" max="100" maxlength="3" value="" style="width: 4em"><br>
+  <span style="font-size: 9pt">Max rows is 
+    <a target="_blank" href="https://github.com/hundredrabbits/Orca#transpose-table">anyways 35</a> if you leave this empty
+  </span><br>
 </div>
 
 <div id="midi-octaves">

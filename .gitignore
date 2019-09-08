@@ -6,4 +6,6 @@
 
 # WiFi credentials
 lib/Config/Config.h
+# Midi demos folder
+extras/midi-to-orca/midis
 node_modules

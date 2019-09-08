@@ -6,7 +6,7 @@ body {
     border: 1px solid black;
     background-color: #222222;
     color: rgb(255, 255, 255);
-    width: 48%;
+    width: 32%;
     float: left;
     margin-top: 5px;
     padding: 3px;
@@ -15,7 +15,17 @@ body {
     border: 1px solid black;
     background-color: #222222;
     color: rgb(255, 255, 255);
-    width: 49%;
+    width: 32%;
+    float: left;
+    margin-top: 5px;
+    margin-left: 2px;
+    padding: 3px;
+}
+#midi-durations {
+    border: 1px solid black;
+    background-color: #222222;
+    color: rgb(255, 255, 255);
+    width: 32%;
     float: right;
     margin-top: 5px;
     margin-left: 2px;

@@ -50,7 +50,7 @@ function midiOut(trackId = 1) {
                 noteDurCalc = Math.round(note.duration*10);
                 noteDuration = (noteDurCalc in orcamap) ? orcamap[noteDurCalc] : 9;
 
-                if (debugMode && debugCnt <= 4) {
+                if (debugMode && debugCnt <= 10) {
                     console.log(note.midi, note.time, note.duration, note.name);
                     console.log(noteTime, note.name);
                     debugCnt++;
@@ -146,7 +146,7 @@ function midiOut(trackId = 1) {
                         orcaOctaves = '';
                         orcaDurations = '';
                     }
-                    if (debugMode && debugCnt<=10) {
+                    if (debugMode && debugCnt<=20) {
                         console.log("noteTime:" + notetimes[notesCnt] + ">=" + lastIndex + " && <= " + i);
                         if ((notetimes[notesCnt] >= lastIndex && notetimes[notesCnt] <= i)) {
                             console.log("note: "+notenotes[notesCnt]+" found for gridIndex: "+ gridIndex);

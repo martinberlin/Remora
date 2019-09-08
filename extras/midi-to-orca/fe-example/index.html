@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Midi extractor for ORCΛ</title>
-  <script src='./node_modules/jquery/dist/jquery.min.js'></script>
+  <script src='../node_modules/jquery/dist/jquery.min.js'></script>
   <script src="https://unpkg.com/@tonejs/midi"></script>
   <script src="./js/midi-out-simple.js"></script>
 
@@ -53,7 +53,7 @@
     $(document).ready(function() {
       // Load a midi file. Demo: old-town-road.mid samba-pa-ti.mid tiersen_amelie.mid
       // Demo 2 multi-track: d-mode-rumours.mid
-      const midiPromise = Midi.fromUrl("midis/d-mode-rumours.mid"); // Returns promise
+      const midiPromise = Midi.fromUrl("../midis/samba.mid"); // Returns promise
       midiPromise.then(function (midiIn) {
           midi = midiIn;
           midiOut();

@@ -6,6 +6,7 @@ function midiOut(trackId = 1) {
     let notetimes = [];
     let notenotes = [];
     let noteocta = [];
+    // Pointers to DOM objects
     let tracks = $("div#midi-tracks"), settings = $("div#midi-settings"), octavesOut = $("#orca-octaves"), notesOut = $("#orca-notes"), bpmEl = $("input#bpm"), colsEl = $("input#cols"), wrap = $("input#wrap"), silenced = $("input#silence-detect"), trackEl = $("input:radio");
     // Clean out output areas
     octavesOut.val('');
@@ -136,10 +137,21 @@ function midiOut(trackId = 1) {
                 }
             } // Silence mapping
         } // End of track loop
+
         // The track also has a channel and instrument
         trackChecked = (trackNr === trackId) ? "checked" : "";
-        trackRadio = $('<input type="radio" name="track" value="' + trackNr + '" onchange="midiOut(' + trackNr + ')" id="t' + trackNr + '" ' + trackChecked + ' /> <label for="t' + trackNr + '">' + track.instrument.name + '</label><br>');
+        trackRadio = $('<input type="radio" name="track" value="' + trackNr + '" onchange="midiTrack(' + trackNr + ')" id="t' + trackNr + '" ' + trackChecked + ' /> <label for="t' + trackNr + '">' + track.instrument.name + '</label><br>');
         tracks.append(trackRadio);
         trackNr++;
     });
+}
+
+/**
+ * Update the track 
+ * @param {*} trackId 
+ */
+function midiTrack(trackId) {
+    let miditrack = $("#midi-track");
+    miditrack.val(trackId);
+    midiOut(trackId);
 }

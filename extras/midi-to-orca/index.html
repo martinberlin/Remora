@@ -6,7 +6,6 @@
   <script src='./node_modules/jquery/dist/jquery.min.js'></script>
   <script src="https://unpkg.com/@tonejs/midi"></script>
   <script src="./js/midi-out.js"></script>
-  <script src="./js/midi-converter.js"></script>
 
   <link rel="stylesheet" href="./style.css">
 </head>
@@ -16,7 +15,8 @@
 <h4>Midi chord extractor for ORCΛ</h4>
 
 <div id="midi-tracks">
-  <b>Midi select track</b><br>
+  <b>Midi select track</b> 
+  <br>
 </div>
 <div id="midi-settings">
   <b>ORCΛ settings</b><br><br>
@@ -33,6 +33,8 @@
   <label for="wrap">Wrap grid with #</label><br>
   <input type="checkbox" value="1" id="silence-detect" checked>
   <label for="silence-detect">Detect grid silences</label>
+
+  <br><br>Export track: <input id="midi-track" type="number" max="99" style="width: 2em;margin-left:2px">
 </div>
 </div>
 
@@ -45,5 +47,6 @@
   <textarea cols="35" rows="35" id="orca-notes"></textarea>
 </div>
 
-
+<!-- End javascript: After most DOM is loaded -->
+<script src="./js/midi-converter.js"></script>
 </body>

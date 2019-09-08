@@ -11,17 +11,6 @@ let debugMode = false;
 let wrap = $("input#wrap"), silenced = $("input#silence-detect")
 let bpm = $("input#bpm"), cols = $("input#cols"), track = $("input#midi-track")
 
-$(document).ready(function() {
-    // Load a midi file. Demo: old-town-road.mid samba-pa-ti.mid tiersen_amelie.mid
-    // Demo 2 multi-track: d-mode-rumours.mid
-    const midiPromise = Midi.fromUrl("midis/d-mode-rumours.mid"); // Returns promise
-    midiPromise.then(function (midiIn) {
-        midi = midiIn;
-        midiOut();
-    });
-    calculateMillisPerBeat();
-});
-
 // Event handlers
 wrap.change(function(){
     midiOut(parseInt(track.val()));

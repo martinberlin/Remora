@@ -1,20 +1,17 @@
 /**
  * Outputs the midi into Orca format
- * This midi out exports also duration (velocity)
+ * Extracts only octave and note from midi
  * @param {*} midi
  */
 function midiOut(trackId = 1) {
     let notetimes = [];
     let notenotes = [];
-    let noteocta  = [];
-    let notedur   = [];
+    let noteocta = [];
     // Pointers to DOM objects
-    let tracks = $("div#midi-tracks"), settings = $("div#midi-settings"), 
-        octavesOut = $("#orca-octaves"), notesOut = $("#orca-notes"), durOut = $("#orca-durations"), bpmEl = $("input#bpm"), colsEl = $("input#cols"), wrap = $("input#wrap"), silenced = $("input#silence-detect"), trackEl = $("input:radio");
+    let tracks = $("div#midi-tracks"), settings = $("div#midi-settings"), octavesOut = $("#orca-octaves"), notesOut = $("#orca-notes"), bpmEl = $("input#bpm"), colsEl = $("input#cols"), wrap = $("input#wrap"), silenced = $("input#silence-detect"), trackEl = $("input:radio");
     // Clean out output areas
     octavesOut.val('');
     notesOut.val('');
-    durOut.val('');
     bpm = bpmEl.val();
     cols = colsEl.val();
     //console.log(midi.header); // Note: Not all midis have a tempo header
@@ -27,7 +24,6 @@ function midiOut(trackId = 1) {
     let trackMillis = 0;
     let orcaOctaves = "";
     let orcaNotes = "";
-    let orcaDurations = "";
     tracks.html('<b>Midi select track</b><br>');
     outPrefix = (wrap.is(":checked")) ? '#' : '';
     outPrepend = (wrap.is(":checked")) ? '#' : '';
@@ -46,10 +42,6 @@ function midiOut(trackId = 1) {
             // Iterate notes array
             notes.forEach(note => {
                 noteTime = Math.round(1000 * note.time);
-                // We simply make 0.31234 into 3 for duration
-                noteDurCalc = Math.round(note.duration*10);
-                noteDuration = (noteDurCalc in orcamap) ? orcamap[noteDurCalc] : 9;
-
                 if (debugMode && debugCnt <= 4) {
                     console.log(note.midi, note.time, note.duration, note.name);
                     console.log(noteTime, note.name);
@@ -66,8 +58,6 @@ function midiOut(trackId = 1) {
                     notesel = note.name.substr(0, 1);
                     octasel = note.name.substr(1, 1);
                 }
-
-                
                 // console.log(' orca: '+notemap[notesel]+' '+octasel);
                 // Detect if the note lands into the output grid or there is a silence
                 // The most important part of the music is the silence
@@ -77,27 +67,21 @@ function midiOut(trackId = 1) {
                     notetimes.push(noteTime);
                     notenotes.push(n);
                     noteocta.push(octasel);
-                    notedur.push(noteDuration);
                 }
                 else {
                     // All notes together no silence is taken in account
                     orcaNotes += (notesel in notemap) ? notemap[notesel] : '';
                     orcaOctaves += octasel;
-                    orcaDurations += noteDuration;
-
                     if (notesCnt % cols == 0) {
                         notesOut.val(notesOut.val() + outPrefix + orcaNotes + outPrepend + "\n");
                         orcaNotes = '';
                         octavesOut.val(octavesOut.val() + outPrefix + orcaOctaves + outPrepend + "\n");
                         orcaOctaves = '';
-                        durOut.val(durOut.val() + outPrefix + orcaDurations + outPrepend + "\n");
-                        orcaDurations = '';
                     }
                 }
                 notesCnt++;
             });
-
-            // Only when detect silences is checked
+            // All this will happen if detect silences is checked
             if (silenced.is(":checked")) {
                 lastnotetime = (notetimes[notetimes.length - 1]);
                 /* We iterate a stepper jumps millis per beat at a time from 0 to lastnotetime
@@ -110,27 +94,23 @@ function midiOut(trackId = 1) {
                 gridIndex = 1;
                 orcaNotes = '';
                 orcaOctaves = '';
-                orcaDurations = '';
                 if (debugMode) {
                     console.log('Note end time: ' + lastnotetime);
                     console.log(notetimes);
                     console.log(noteocta);
                     console.log(notenotes);
-                    console.log(notedur);
                 }
                 debugCnt = 1;
                 for (var i = notetimes[0]; i <= lastnotetime; i += mb) {
                     
                     if (notetimes[notesCnt] >= lastIndex && notetimes[notesCnt] <= i) {
-                        // Note + octave + duration lands in grid
+                        // Note + octave lands in grid
                         orcaNotes += notenotes[notesCnt];
                         orcaOctaves += noteocta[notesCnt];
-                        orcaDurations += notedur[notesCnt];
                     } else {
                     // We detected a silence
                         orcaNotes += ".";
                         orcaOctaves += ".";
-                        orcaDurations += ".";
                         // This will skip notes to maintein time (Bad option, but there is any other?)
                         while (i > notetimes[notesCnt]) {
                             notesCnt++;
@@ -141,10 +121,8 @@ function midiOut(trackId = 1) {
                         //console.log('%'+cols+' matched. orcaNotes:'+orcaNotes);
                         notesOut.val(notesOut.val() + outPrefix + orcaNotes + outPrepend + "\n");
                         octavesOut.val(octavesOut.val() + outPrefix + orcaOctaves + outPrepend + "\n");
-                        durOut.val(durOut.val() + outPrefix + orcaDurations + outPrepend + "\n");
                         orcaNotes = '';
                         orcaOctaves = '';
-                        orcaDurations = '';
                     }
                     if (debugMode && debugCnt<=10) {
                         console.log("noteTime:" + notetimes[notesCnt] + ">=" + lastIndex + " && <= " + i);

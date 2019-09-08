@@ -69,6 +69,10 @@
     ORCΛ Notes<br>
   <textarea cols="35" rows="35" id="orca-notes"></textarea>
 </div>
+<div id="midi-durations">
+    ORCΛ Velocity<br>
+  <textarea cols="35" rows="35" id="orca-durations"></textarea>
+</div>
 
 <!-- End javascript: After most DOM is loaded -->
 <script src="./js/midi-converter.js"></script>

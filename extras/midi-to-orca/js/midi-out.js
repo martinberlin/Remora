@@ -10,7 +10,9 @@ function midiOut(trackId = 1) {
     let notedur   = [];
     // Pointers to DOM objects
     let tracks = $("div#midi-tracks"), settings = $("div#midi-settings"), 
-        octavesOut = $("#orca-octaves"), notesOut = $("#orca-notes"), durOut = $("#orca-durations"), bpmEl = $("input#bpm"), colsEl = $("input#cols"), wrap = $("input#wrap"), silenced = $("input#silence-detect"), trackEl = $("input:radio");
+        octavesOut = $("#orca-octaves"), notesOut = $("#orca-notes"), durOut = $("#orca-durations"),
+        bpmEl = $("input#bpm"), colsEl = $("input#cols"), wrap = $("input#wrap"),
+        silenced = $("input#silence-detect"), trackEl = $("input:radio");
     // Clean out output areas
     octavesOut.val('');
     notesOut.val('');
@@ -20,7 +22,16 @@ function midiOut(trackId = 1) {
     //console.log(midi.header); // Note: Not all midis have a tempo header
     midiHeaderTempos = midi.header.tempos;
     midiBpm = (midiHeaderTempos.length) ? Math.round(midiHeaderTempos[0].bpm) : 0;
+
     console.log("ORCΛ settings BPM:" + bpm + " COLS:" + cols + " / Midi BPM: " + midiBpm);
+    // Build left midi input panel
+    tracks.append('<b>Midi select track</b>');
+    if (midiBpm) {
+        tracks.append('<div id="midi-info">Midi bpm: '+midiBpm+'</div><br>');
+    } else {
+        tracks.append('<br>');
+    }
+
     let trackNr = 1;
     // Millis per beat from BMP calculation
     let mb = Math.round(60000 / bpmEl.val());
@@ -28,7 +39,7 @@ function midiOut(trackId = 1) {
     let orcaOctaves = "";
     let orcaNotes = "";
     let orcaDurations = "";
-    tracks.html('<b>Midi select track</b><br>');
+    
     outPrefix = (wrap.is(":checked")) ? '#' : '';
     outPrepend = (wrap.is(":checked")) ? '#' : '';
     // Read the tracks
@@ -95,7 +106,7 @@ function midiOut(trackId = 1) {
                     }
                 }
                 notesCnt++;
-            });
+            }); // Note loop
 
             // Only when detect silences is checked
             if (silenced.is(":checked")) {
@@ -158,15 +169,20 @@ function midiOut(trackId = 1) {
                     lastIndex = i;
                     gridIndex++;
                 }
-            } // Silence mapping
-        } // End of track loop
+            } 
+            
+        } // End of selected track conditional
 
         // The track also has a channel and instrument
+        // Build left midi input panel: Track select 
         trackChecked = (trackNr === trackId) ? "checked" : "";
         trackRadio = $('<input type="radio" name="track" value="' + trackNr + '" onchange="midiTrack(' + trackNr + ')" id="t' + trackNr + '" ' + trackChecked + ' /> <label for="t' + trackNr + '">' + track.instrument.name + '</label><br>');
         tracks.append(trackRadio);
+
+        
         trackNr++;
-    });
+    }); // Track loop
+
 }
 
 /**

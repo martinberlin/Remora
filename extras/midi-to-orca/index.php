@@ -10,9 +10,8 @@
   <meta charset="UTF-8">
   <title>Midi extractor for ORCΛ - PHP upload</title>
   <script src='./node_modules/jquery/dist/jquery.min.js'></script>
-  <script src="https://unpkg.com/@tonejs/midi"></script>
+  <script src='./node_modules/@tonejs/midi/build/Midi.js'></script>
   <script src="./js/midi-out.js"></script>
-
   <link rel="stylesheet" href="./style.css">
 </head>
 
@@ -21,8 +20,8 @@
 <?php  
   // Do you like spaghetti?
   if (isset($midiFile)) { ?>
-  <h4><?=$title ?>    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  Importing: <?=$midiFile ?> <a href="index.php">Upload midi</a>
+  <h4><?=$title ?>    &nbsp;&nbsp;&nbsp;
+  <span class="midi-title"><?=$midiFile ?> <a href="index.php">Upload midi</a></span>
   </h4>
 
 
@@ -37,10 +36,7 @@
     </h4>
   <?php } ?>
 
-<div id="midi-tracks">
-  <b>Midi select track</b> 
-  <br>
-</div>
+<div id="midi-tracks"></div>
 <div id="midi-settings">
   <b>ORCΛ settings</b><br><br>
   

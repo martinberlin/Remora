@@ -52,8 +52,14 @@ body {
     margin-left: 2px;
     padding: 3px;
 }
+.midi-title {
+    font-size: 10pt;
+}
 #millis-beat {
     font-size: 9pt;width: 70%;float:left;
+}
+#midi-info {
+    font-size: 9pt;float: right;
 }
 #settings {
     font-size: 9pt;width: 70%;float:left

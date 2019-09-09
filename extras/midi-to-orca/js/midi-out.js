@@ -25,6 +25,7 @@ function midiOut(trackId = 1) {
 
     console.log("ORCΛ settings BPM:" + bpm + " COLS:" + cols + " / Midi BPM: " + midiBpm);
     // Build left midi input panel
+    tracks.html('');
     tracks.append('<b>Midi select track</b>');
     if (midiBpm) {
         tracks.append('<div id="midi-info">Midi bpm: '+midiBpm+'</div><br>');

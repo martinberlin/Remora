@@ -118,13 +118,25 @@ function midiOut(trackId = 1) {
                     orcaNotes += (notesel in notemap) ? notemap[notesel] : '';
                     orcaOctaves += octasel;
                     orcaDurations += noteDuration;
+
                     if (notesCnt % silenceEveryNotes == 0) {
                         for (var i = 1; i <= silenceQuantity; i ++) {
+                            if (notesCnt % cols == 0) {
+                                notesOut.val(notesOut.val() + outPrefix + orcaNotes + outPrepend + "\n");
+                                orcaNotes = '';
+                                octavesOut.val(octavesOut.val() + outPrefix + orcaOctaves + outPrepend + "\n");
+                                orcaOctaves = '';
+                                durOut.val(durOut.val() + outPrefix + orcaDurations + outPrepend + "\n");
+                                orcaDurations = '';
+                            }
                             orcaNotes += '.';
                             orcaOctaves += '.';
                             orcaDurations += '.';
+
+                            notesCnt++;
                         }
-                    }
+                    } 
+
                     if (notesCnt % cols == 0) {
                         notesOut.val(notesOut.val() + outPrefix + orcaNotes + outPrepend + "\n");
                         orcaNotes = '';
@@ -133,6 +145,7 @@ function midiOut(trackId = 1) {
                         durOut.val(durOut.val() + outPrefix + orcaDurations + outPrepend + "\n");
                         orcaDurations = '';
                     }
+                    
                     break;
                 }
               

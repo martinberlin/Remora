@@ -10,10 +10,11 @@ let orcamap = {'1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','
     '31':'V', '32':'W','33':'X','34':'Y','35':'Z'};
 
 // Set this to false to remove console.logs
-let debugMode = true;
+let debugMode = false;
 
 // Pointers to DOM
-let wrap = $("input#wrap"), silenced = $("input#silence-detect")
+let wrap = $("input#wrap"), silenced = $("input#silence-detect"), silenceno = $("input#silence-no");
+let silencemanual = $("input#silence-manual"),silencen = $("input#silence-m-notes"), silenceq = $("input#silence-m-quantity");
 let bpm = $("input#bpm"), cols = $("input#cols"), track = $("input#midi-track")
 
 // Event handlers
@@ -23,6 +24,19 @@ wrap.change(function(){
 silenced.change(function(){
     midiOut(parseInt(track.val()));
 });
+silenceno.change(function(){
+    midiOut(parseInt(track.val()));
+});
+silencen.change(function(){
+    midiOut(parseInt(track.val()));
+});
+silenceq.change(function(){
+    midiOut(parseInt(track.val()));
+});
+silencemanual.change(function(){
+    midiOut(parseInt(track.val()));
+});
+
 bpm.change(function(){
     midiOut(parseInt(track.val()));
 });

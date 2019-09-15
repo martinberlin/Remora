@@ -13,6 +13,9 @@ function midiOut(trackId = 1) {
         octavesOut = $("#orca-octaves"), notesOut = $("#orca-notes"), durOut = $("#orca-durations"),
         bpmEl = $("input#bpm"), colsEl = $("input#cols"), wrap = $("input#wrap"),
         silenced = $("input#silence-detect"), trackEl = $("input:radio");
+    let silenceQuantity   = parseInt($("input#silence-m-quantity").val());
+    let silenceEveryNotes = parseInt($("input#silence-m-notes").val());
+
     // Clean out output areas
     octavesOut.val('');
     notesOut.val('');
@@ -48,13 +51,14 @@ function midiOut(trackId = 1) {
         //Tracks have notes and controlChanges for the moment we ignore the second ones
         if (trackId === trackNr) {
             if (debugMode) {
+                console.log("Λlgo:" + algo);
                 console.log("Processing: " + track.instrument.name);
                 console.log("Note    Time     Dur.    Name");
             }
             const notes = track.notes;
             let debugCnt = 1;
             let notesCnt = 1;
-
+            let algo = $("input[name='algo']:checked").val();
             // Iterate notes array
             notes.forEach(note => {
                 noteTime = Math.round(1000 * note.time);
@@ -83,15 +87,17 @@ function midiOut(trackId = 1) {
                 // console.log(' orca: '+notemap[notesel]+' '+octasel);
                 // Detect if the note lands into the output grid or there is a silence
                 // The most important part of the music is the silence
-                if (silenced.is(":checked")) {
-                    // We generate the array here but output notes later
+                switch(algo) {
+                    case "1":
+                         // We generate the array here but output notes later
                     n = (notesel in notemap) ? notemap[notesel] : '';
                     notetimes.push(noteTime);
                     notenotes.push(n);
                     noteocta.push(octasel);
                     notedur.push(noteDuration);
-                }
-                else {
+                        break;
+
+                    case "2":
                     // All notes together no silence is taken in account
                     orcaNotes += (notesel in notemap) ? notemap[notesel] : '';
                     orcaOctaves += octasel;
@@ -105,12 +111,36 @@ function midiOut(trackId = 1) {
                         durOut.val(durOut.val() + outPrefix + orcaDurations + outPrepend + "\n");
                         orcaDurations = '';
                     }
+                    break;
+
+                    case "3":
+                    // Manual INT silence every INT Notes
+                    orcaNotes += (notesel in notemap) ? notemap[notesel] : '';
+                    orcaOctaves += octasel;
+                    orcaDurations += noteDuration;
+                    if (notesCnt % silenceEveryNotes == 0) {
+                        for (var i = 1; i <= silenceQuantity; i ++) {
+                            orcaNotes += '.';
+                            orcaOctaves += '.';
+                            orcaDurations += '.';
+                        }
+                    }
+                    if (notesCnt % cols == 0) {
+                        notesOut.val(notesOut.val() + outPrefix + orcaNotes + outPrepend + "\n");
+                        orcaNotes = '';
+                        octavesOut.val(octavesOut.val() + outPrefix + orcaOctaves + outPrepend + "\n");
+                        orcaOctaves = '';
+                        durOut.val(durOut.val() + outPrefix + orcaDurations + outPrepend + "\n");
+                        orcaDurations = '';
+                    }
+                    break;
                 }
+              
                 notesCnt++;
             }); // Note loop
 
             // Only when detect silences is checked
-            if (silenced.is(":checked")) {
+            if (algo === "1") {
                 lastnotetime = (notetimes[notetimes.length - 1]);
                 /* We iterate a stepper jumps millis per beat at a time from 0 to lastnotetime
                    that goes from initial to last note and cherry picks the note or silence

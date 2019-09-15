@@ -40,34 +40,45 @@
 <div id="midi-settings">
   <b>ORCΛ settings</b><br><br>
   
-  <div style="width: 30%;float:left">
-      <label for="bpm">BPM</label> <input id="bpm" onchange="calculateMillisPerBeat()" type="number" max="400" maxlength="3" value="120" style="width: 4em">
-      <br>
+  <div id="settings-bpm">
+      <label for="bpm">BPM</label> <input id="bpm" onchange="calculateMillisPerBeat()" type="number" max="400" maxlength="3" value="120" style="width: 4em"><br>
       <label for="cols">Cols</label>
-      <input id="cols" type="number" max="100" maxlength="3" value="16" style="width: 4em;margin-left:2px">
+      <input id="cols" type="number" max="35" maxlength="2" value="16" style="width: 4em;margin-left:2px"><br>
+      Track<input id="midi-track" type="number" max="99" style="margin-left:2px" class="input-2"><br>
+      <br>
+      <div style="margin-left:-6px">
+        <input type="checkbox" value="1" id="wrap" checked>
+        <label for="wrap" id="wrap-label">Wrap with #</label>
+      </div>
   </div>
-<div id="millis-beat"> - </div>
-<div id="settings">
-  <input type="checkbox" value="1" id="wrap" checked>
-  <label for="wrap">Wrap grid with #</label><br>
-  <input type="checkbox" value="1" id="silence-detect" checked>
-  <label for="silence-detect">Detect grid silences</label>
 
-  <br><br>Export track: <input id="midi-track" type="number" max="99" style="width: 2em;margin-left:2px">
+<div id="settings-algo">
+  <div id="millis-beat"> - </div>Silence detection:<br>
+  <input type="radio" value="1" id="silence-detect" name="algo">
+  <label for="silence-detect">Λlgo 1 Note chopper</label><br>
+  <input type="radio" value="2" id="silence-no" name="algo" checked>
+  <label for="silence-no">No silences</label><br>
+  <input type="radio" value="3" id="silence-manual" name="algo">
+  <label for="silence-manual">Manual. Fill the sentence:</label><br>
+  <input id="silence-m-quantity" class="input-2" type="number" max="35" maxlength="2"> silence each 
+  <input id="silence-m-notes" class="input-2" type="number" max="35" maxlength="2"> notes.
+
+  
+  
 </div>
 </div>
 
 <div id="midi-octaves">
-  ORCΛ Octaves<br>
-  <textarea cols="35" rows="35" id="orca-octaves"></textarea>
+  Octaves<br>
+  <textarea cols="36" rows="35" id="orca-octaves"></textarea>
 </div>
 <div id="midi-notes">
-    ORCΛ Notes<br>
-  <textarea cols="35" rows="35" id="orca-notes"></textarea>
+  Notes<br>
+  <textarea cols="36" rows="35" id="orca-notes"></textarea>
 </div>
 <div id="midi-durations">
-    ORCΛ Velocity<br>
-  <textarea cols="35" rows="35" id="orca-durations"></textarea>
+  Velocity<br>
+  <textarea cols="36" rows="35" id="orca-durations"></textarea>
 </div>
 
 <!-- End javascript: After most DOM is loaded -->

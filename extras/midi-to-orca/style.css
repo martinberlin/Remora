@@ -1,10 +1,11 @@
 body {
     font-family: Arial, Verdana;
+    background-color: #778899;
 }
 
 #midi-octaves {
     border: 1px solid black;
-    background-color: #222222;
+    background-color: #2F4F4F;
     color: rgb(255, 255, 255);
     width: 32%;
     float: left;
@@ -13,7 +14,7 @@ body {
 }
 #midi-notes {
     border: 1px solid black;
-    background-color: #222222;
+    background-color: #696969;
     color: rgb(255, 255, 255);
     width: 32%;
     float: left;
@@ -23,10 +24,10 @@ body {
 }
 #midi-durations {
     border: 1px solid black;
-    background-color: #222222;
+    background-color: #696969;
     color: rgb(255, 255, 255);
     width: 32%;
-    float: right;
+    float: left;
     margin-top: 5px;
     margin-left: 2px;
     padding: 3px;
@@ -34,7 +35,7 @@ body {
 
 #midi-tracks {
     border: 1px solid black;
-    background-color: #DDDDDD;
+    background-color: #A9A9A9;
     color: black;
     width: 48%;height: 150px;
     float: left;
@@ -44,7 +45,7 @@ body {
 }
 #midi-settings {
     border: 1px solid black;
-    background-color: #DDDDDD;
+    background-color: #A9A9A9;
     color: black;
     width: 49%;height: 150px;
     float: right;
@@ -55,12 +56,32 @@ body {
 .midi-title {
     font-size: 10pt;
 }
-#millis-beat {
-    font-size: 9pt;width: 70%;float:left;
+
+.wrap-label {
+    font-size: 10pt;
 }
+
 #midi-info {
-    font-size: 9pt;float: right;
+    font-size: 9pt;
+    float: right;
 }
-#settings {
-    font-size: 9pt;width: 70%;float:left
+#settings-bpm {
+    width: 35% !important;
+    font-size: 9pt;
+    margin-left: 1em;
+    float:left;
+}
+#millis-beat {
+    width: 60%;
+    font-size: 9pt;
+    float:left;
+}
+#settings-algo {
+    width: 50%;
+    font-size: 9pt;
+    float:left;
+}
+
+.input-2 {
+    width: 2em;
 }

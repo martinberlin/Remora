@@ -58,6 +58,7 @@ function midiOut(trackId = 1) {
             const notes = track.notes;
             let debugCnt = 1;
             let notesCnt = 1;
+            let silenceCnt = 1;
             let algo = $("input[name='algo']:checked").val();
             // Iterate notes array
             notes.forEach(note => {
@@ -115,29 +116,29 @@ function midiOut(trackId = 1) {
 
                     case "3":
                     // Manual INT silence every INT Notes
-                    orcaNotes += (notesel in notemap) ? notemap[notesel] : '';
-                    orcaOctaves += octasel;
-                    orcaDurations += noteDuration;
-
                     if (notesCnt % silenceEveryNotes == 0) {
                         for (var i = 1; i <= silenceQuantity; i ++) {
-                            if (notesCnt % cols == 0) {
+                            orcaNotes += '.';
+                            orcaOctaves += '.';
+                            orcaDurations += '.';
+
+                            if (silenceCnt % cols == 0) {
                                 notesOut.val(notesOut.val() + outPrefix + orcaNotes + outPrepend + "\n");
                                 orcaNotes = '';
                                 octavesOut.val(octavesOut.val() + outPrefix + orcaOctaves + outPrepend + "\n");
                                 orcaOctaves = '';
                                 durOut.val(durOut.val() + outPrefix + orcaDurations + outPrepend + "\n");
                                 orcaDurations = '';
-                            }
-                            orcaNotes += '.';
-                            orcaOctaves += '.';
-                            orcaDurations += '.';
-
-                            notesCnt++;
+                            } 
+                            
+                            silenceCnt++;
                         }
                     } 
+                    orcaNotes += (notesel in notemap) ? notemap[notesel] : '';
+                    orcaOctaves += octasel;
+                    orcaDurations += noteDuration;
 
-                    if (notesCnt % cols == 0) {
+                    if (silenceCnt % cols == 0) {
                         notesOut.val(notesOut.val() + outPrefix + orcaNotes + outPrepend + "\n");
                         orcaNotes = '';
                         octavesOut.val(octavesOut.val() + outPrefix + orcaOctaves + outPrepend + "\n");
@@ -148,7 +149,7 @@ function midiOut(trackId = 1) {
                     
                     break;
                 }
-              
+                silenceCnt++;
                 notesCnt++;
             }); // Note loop
 

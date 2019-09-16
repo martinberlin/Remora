@@ -5,6 +5,10 @@
 Remora is a simple pseudo animation language that works as a companion to Orca receiving UDP short instructions and sending animations to addressable LED stripes.
 This animations run entirely in the ESP32 controller and are initially aimed to be short so they can be triggered by [Orca sequencer](https://github.com/hundredrabbits/Orca) bangs
 
+## midi-orca branch
+
+Just my simple attempt to extract MIDI notes using Tonejs please check /extras folder
+
 ## Communications protocol
 
 UDP will be hearing in a configurable port so you can send short instructions from Orca or any other program you desire.

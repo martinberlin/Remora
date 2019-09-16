@@ -38,7 +38,7 @@
 
 <div id="midi-tracks"></div>
 <div id="midi-settings">
-  <b>ORCΛ settings</b><br><br>
+  <b>ORCΛ settings</b><br>
   
   <div id="settings-bpm">
       <label for="bpm">BPM</label> <input id="bpm" onchange="calculateMillisPerBeat()" type="number" max="400" maxlength="3" value="120" style="width: 4em"><br>
@@ -53,17 +53,17 @@
   </div>
 
 <div id="settings-algo">
-  <div id="millis-beat"> - </div>Silence detection:<br>
+  <div id="millis-beat"> - </div>Options:<br>
   <input type="radio" value="1" id="silence-detect" name="algo">
   <label for="silence-detect">Λlgo 1 Note chopper</label><br>
   <input type="radio" value="2" id="silence-no" name="algo" checked>
   <label for="silence-no">No silences</label><br>
   <input type="radio" value="3" id="silence-manual" name="algo">
-  <label for="silence-manual">Manual. Fill the sentence:</label><br>
-  <input id="silence-m-quantity" class="input-2" type="number" max="35" maxlength="2"> silence each 
-  <input id="silence-m-notes" class="input-2" type="number" max="35" maxlength="2"> notes.
-
   
+  <input id="silence-m-quantity" class="input-2" type="number" max="35" maxlength="2"> <label for="silence-manual">silence each</label> 
+  <input id="silence-m-notes" class="input-2" type="number" max="35" maxlength="2"> <label for="silence-m-notes">notes</label><br>
+  <div style="width:100%;height:6px"></div>
+  <input id="octave-transpose" class="input-2" value="0" type="number" max="5" maxlength="1"> +/- Transpose octave 
   
 </div>
 </div>

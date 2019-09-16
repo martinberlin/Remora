@@ -15,7 +15,8 @@ function midiOut(trackId = 1) {
         silenced = $("input#silence-detect"), trackEl = $("input:radio");
     let silenceQuantity   = parseInt($("input#silence-m-quantity").val());
     let silenceEveryNotes = parseInt($("input#silence-m-notes").val());
-
+    let octaveTranspose = parseInt($("input#octave-transpose").val());
+    
     // Clean out output areas
     octavesOut.val('');
     notesOut.val('');
@@ -83,7 +84,10 @@ function midiOut(trackId = 1) {
                     notesel = note.name.substr(0, 1);
                     octasel = note.name.substr(1, 1);
                 }
-
+                // Transpose Octave
+                if(parseInt(octasel)+octaveTranspose >= 0) {
+                   octasel = parseInt(octasel)+octaveTranspose; 
+                }
                 
                 // console.log(' orca: '+notemap[notesel]+' '+octasel);
                 // Detect if the note lands into the output grid or there is a silence
@@ -121,7 +125,6 @@ function midiOut(trackId = 1) {
                             orcaNotes += '.';
                             orcaOctaves += '.';
                             orcaDurations += '.';
-
                             if (silenceCnt % cols == 0) {
                                 notesOut.val(notesOut.val() + outPrefix + orcaNotes + outPrepend + "\n");
                                 orcaNotes = '';
@@ -129,8 +132,7 @@ function midiOut(trackId = 1) {
                                 orcaOctaves = '';
                                 durOut.val(durOut.val() + outPrefix + orcaDurations + outPrepend + "\n");
                                 orcaDurations = '';
-                            } 
-                            
+                            }
                             silenceCnt++;
                         }
                     } 

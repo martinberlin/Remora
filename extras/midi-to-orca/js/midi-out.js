@@ -120,6 +120,9 @@ function midiOut(trackId = 1) {
 
                     case "3":
                     // Manual INT silence every INT Notes
+                    orcaNotes += (notesel in notemap) ? notemap[notesel] : '';
+                    orcaOctaves += octasel;
+                    orcaDurations += noteDuration;
                     if (notesCnt % silenceEveryNotes == 0) {
                         for (var i = 1; i <= silenceQuantity; i ++) {
                             orcaNotes += '.';
@@ -136,9 +139,6 @@ function midiOut(trackId = 1) {
                             silenceCnt++;
                         }
                     } 
-                    orcaNotes += (notesel in notemap) ? notemap[notesel] : '';
-                    orcaOctaves += octasel;
-                    orcaDurations += noteDuration;
 
                     if (silenceCnt % cols == 0) {
                         notesOut.val(notesOut.val() + outPrefix + orcaNotes + outPrepend + "\n");

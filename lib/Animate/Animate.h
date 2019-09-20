@@ -5,6 +5,7 @@
     #include <NeoPixelBus.h>
     #include <NeoPixelAnimator.h>
 #endif
+// Microfone Clock and Data pin
 #define PIN_CLK  0
 #define PIN_DATA 34
 

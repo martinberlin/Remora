@@ -1,0 +1,5 @@
+# https://github.com/alexkaratarakis/gitattributes
+extras/midi-to-orca export-ignore
+orca-examples export-ignore
+
+extras/* linguist-detectable=false

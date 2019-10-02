@@ -3,10 +3,18 @@
 
 // <Configure> this to your own setup:
 #define DEFAULT_HUE_ANGLE 0
+// Uncomment for RGBW (with 4 leds per pixel)
+//#define RGBW 
+
 const uint16_t PixelCount = 131;     // Length of LED stripe 144 - 13 = 131 Leds in a 30cm diameter round
 const uint8_t  PixelPin = 26;        // Data line of Addressable LEDs
 float maxL = 0.2f;
-struct RgbwColor CylonEyeColor(HslColor(0.0f, 1.0f, maxL)); // Red as default
+#ifdef RGBW
+  struct RgbwColor CylonEyeColor(HslColor(0.0f, 1.0f, maxL)); // Red as default
+#else
+  struct RgbColor CylonEyeColor(HslColor(0.0f, 1.0f, maxL)); // Red as default
+#endif
+
 boolean enableBeatDetection = true; // Turn to true to enable Mic beat detection
 byte maxBrightness = 20;             // 0 to 255 - Only for RGB
 // </Configure>
@@ -28,7 +36,12 @@ struct config {
 AsyncUDP udp;
 
 // NOTE: Make sure to check what Feature is the right one for your LED Stripe: https://github.com/Makuna/NeoPixelBus/wiki/NeoPixelBus-object#neo-features
-NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
+#ifdef RGBW
+  NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
+#else
+  NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
+#endif
+
 NeoPixelAnimator animations(2);
 NeoGamma<NeoGammaTableMethod> colorGamma;
 uint16_t lastPixel = 0; // track the eye position
@@ -96,7 +109,12 @@ void allBlack()
  */
 void fadeAll(uint8_t darkenBy)
 {
-    RgbwColor color;
+    #ifdef RGBW
+        RgbwColor color;
+    #else
+        RgbColor color;
+    #endif
+    
     for (uint16_t indexPixel = 0; indexPixel < strip.PixelCount(); indexPixel++)
     {
         color = strip.GetPixelColor(indexPixel);
@@ -106,7 +124,11 @@ void fadeAll(uint8_t darkenBy)
 }
 void darkenAll(const AnimationParam& param)
 {
-    RgbwColor color;
+    #ifdef RGBW
+        RgbwColor color;
+    #else
+        RgbColor color;
+    #endif
     for (uint16_t indexPixel = 0; indexPixel < strip.PixelCount(); indexPixel++)
     {
         color = strip.GetPixelColor(indexPixel);
@@ -263,7 +285,12 @@ void DrawPixelColorToColor(bool corrected, HslColor startColor, HslColor stopCol
     for (uint16_t index = 0; index < strip.PixelCount(); index++)
     {
         float progress = index / static_cast<float>(strip.PixelCount() - 2);
-        RgbwColor color = HslColor::LinearBlend<NeoHueBlendShortestDistance>(startColor, stopColor, progress);
+        #ifdef RGBW
+          RgbwColor color = HslColor::LinearBlend<NeoHueBlendShortestDistance>(startColor, stopColor, progress);
+        #else
+          RgbColor color = HslColor::LinearBlend<NeoHueBlendShortestDistance>(startColor, stopColor, progress);
+        #endif
+        
         if (corrected)
         {
             color = colorGamma.Correct(color);

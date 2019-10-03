@@ -3,12 +3,23 @@
 
 // <Configure> this to your own setup:
 #define DEFAULT_HUE_ANGLE 0
-const uint16_t PixelCount = 72; // Length of LED stripe
-const uint8_t  PixelPin = 19;   // Data line of Addressable LEDs
-struct RgbColor CylonEyeColor(HslColor(0.0f,1.0f,0.5f)); // Red as default
+// Uncomment for RGBW (with 4 leds per pixel)
+//#define RGBW 
 
-byte maxBrightness = 220;       // 0 to 255
+const uint16_t PixelCount = 72;     // Length of LED stripe 144 - 13 = 131 Leds in a 30cm diameter round
+const uint8_t  PixelPin = 19;       // Data line of Addressable LEDs
+float maxL = 0.2f;
+#ifdef RGBW
+  struct RgbwColor CylonEyeColor(HslColor(0.0f, 1.0f, maxL)); // Red as default
+#else
+  struct RgbColor CylonEyeColor(HslColor(0.0f, 1.0f, maxL)); // Red as default
+#endif
+byte maxBrightness = 20;             // 0 to 255 - Only for RGB
 // </Configure>
+
+
+// Output class receives binary and outputs to Neopixel
+Animate pix;
 
 // Sent from main.cpp:
 struct config {
@@ -18,7 +29,13 @@ struct config {
 // Message transport protocol
 AsyncUDP udp;
 
-NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
+// NOTE: Make sure to check what Feature is the right one for your LED Stripe: https://github.com/Makuna/NeoPixelBus/wiki/NeoPixelBus-object#neo-features
+#ifdef RGBW
+  NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
+#else
+  NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
+#endif
+
 NeoPixelAnimator animations(2);
 NeoGamma<NeoGammaTableMethod> colorGamma;
 uint16_t lastPixel = 0; // track the eye position
@@ -34,8 +51,30 @@ AnimEaseFunction moveEase =
       NeoEase::QuarticInOut;
 
 Animate::Animate() {
-    // Constructor (Still need to research how to insert stuff here)
+    // Constructor: Let's start sampling here
+       i2s_config_t i2s_config = {
+    .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX | I2S_MODE_PDM),
+    .sample_rate =  44100,
+    .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT, // is fixed at 12bit, stereo, MSB
+    .channel_format = I2S_CHANNEL_FMT_ALL_RIGHT,
+    .communication_format = I2S_COMM_FORMAT_I2S,
+    .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
+    .dma_buf_count = 2,
+    .dma_buf_len = 128,
+   };
+
+   i2s_pin_config_t pin_config;
+   pin_config.bck_io_num   = I2S_PIN_NO_CHANGE;
+   pin_config.ws_io_num    = PIN_CLK;
+   pin_config.data_out_num = I2S_PIN_NO_CHANGE;
+   pin_config.data_in_num  = PIN_DATA;
+  
+   
+   i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL);
+   i2s_set_pin(I2S_NUM_0, &pin_config);
+   i2s_set_clk(I2S_NUM_0, 44100, I2S_BITS_PER_SAMPLE_16BIT, I2S_CHANNEL_MONO);
 }
+
 /**
  * Generic message printer. Modify this if you want to send this messages elsewhere (Display)
  */
@@ -64,7 +103,12 @@ void allBlack()
  */
 void fadeAll(uint8_t darkenBy)
 {
-    RgbColor color;
+    #ifdef RGBW
+        RgbwColor color;
+    #else
+        RgbColor color;
+    #endif
+    
     for (uint16_t indexPixel = 0; indexPixel < strip.PixelCount(); indexPixel++)
     {
         color = strip.GetPixelColor(indexPixel);
@@ -74,7 +118,11 @@ void fadeAll(uint8_t darkenBy)
 }
 void darkenAll(const AnimationParam& param)
 {
-    RgbColor color;
+    #ifdef RGBW
+        RgbwColor color;
+    #else
+        RgbColor color;
+    #endif
     for (uint16_t indexPixel = 0; indexPixel < strip.PixelCount(); indexPixel++)
     {
         color = strip.GetPixelColor(indexPixel);
@@ -109,7 +157,7 @@ void allToColorNoise(const AnimationParam& param)
 {
     for (uint16_t indexPixel = 0; indexPixel < strip.PixelCount(); indexPixel++)
     {
-        byte rand = random(2);
+        byte rand = random(5);
         if (rand==1) {
             strip.SetPixelColor(indexPixel, CylonEyeColor);
         } else {
@@ -231,7 +279,12 @@ void DrawPixelColorToColor(bool corrected, HslColor startColor, HslColor stopCol
     for (uint16_t index = 0; index < strip.PixelCount(); index++)
     {
         float progress = index / static_cast<float>(strip.PixelCount() - 2);
-        RgbColor color = HslColor::LinearBlend<NeoHueBlendShortestDistance>(startColor, stopColor, progress);
+        #ifdef RGBW
+          RgbwColor color = HslColor::LinearBlend<NeoHueBlendShortestDistance>(startColor, stopColor, progress);
+        #else
+          RgbColor color = HslColor::LinearBlend<NeoHueBlendShortestDistance>(startColor, stopColor, progress);
+        #endif
+        
         if (corrected)
         {
             color = colorGamma.Correct(color);
@@ -287,6 +340,13 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
 
     // Callback that gets fired every time an UDP Message arrives
     udp.onPacket([](AsyncUDPPacket packet) {
+
+        if (packet.length()>9) {
+            //Serial.println("Call pixels->receive()");
+            pix.receive(packet.data(), packet.length());
+            return;
+        }
+
         if(debugMode) {
             Serial.print("Data L "+String(packet.length())+" : ");
             Serial.write(packet.data(), packet.length());Serial.println();
@@ -302,7 +362,7 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             int duration = commandToBase36(command, 1) * 10;
             if (packet.length()>3) {
                 int colorAngle = commandToInt(command, packet.length(), 3);
-                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
+                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, maxL);
             }
             // A -> G
             byte note = (int)command.charAt(2)-65;
@@ -327,7 +387,7 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             int duration = commandToBase36(command, 1) * 10;
             if (packet.length()>2) { // Only change the color if Hue angle is sent otherwise keep last Hue
                 int colorAngle = commandToBase36(command, 2);
-                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
+                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, maxL);
                 debugMessage("colorAngle:"+String(colorAngle));
             }
             debugMessage("> duration: "+String(duration));
@@ -342,35 +402,30 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             int duration = commandToBase36(command, 1) * 10;
             if (packet.length()>2) {
                 int colorAngle = commandToBase36(command, 2);
-                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
+                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, maxL);
             }
             animations.StartAnimation(0, 4, fadeAnimUpdate);
             animations.StartAnimation(1, duration, moveAnimUpdate);
         }
 
-        // <- Full line from color to color: 1st char: duration ms * 2, 2; hue from, 3: hue to
+
         if (command.charAt(0) == '3') {
             lastPixel = PixelCount;
             int duration = commandToBase36(command, 1);
-            if (packet.length()>2) {
-                if (packet.length()>3) {
-                    CylonEyeColor = HslColor(commandToBase36(command, 3) / 360.0f, 1.0f, 0.5f);
-                }
-                DrawPixelColorToColor(true, HslColor(commandToBase36(command, 2) / 360.0f, 1.0f, 0.1f), CylonEyeColor);
+            if (packet.length()>3) {
+                DrawPixelColorToColor(true, HslColor(commandToBase36(command, 2) / 360.0f, 1.0f, 0.1f), HslColor(commandToBase36(command, 3) / 360.0f, 1.0f, maxL));
                 animations.StartAnimation(0, duration, fadeAnimUpdate);
             }
             
         }
 
-        // -> Full line from color to color (same as 3)
         if (command.charAt(0) == '1') {
             int duration = commandToBase36(command, 1);
             if (packet.length()>3) {
-                CylonEyeColor = HslColor(commandToBase36(command, 2) / 360.0f, 1.0f, 0.5f);
-                DrawPixelColorToColor(true, CylonEyeColor, HslColor(commandToBase36(command, 3) / 360.0f, 1.0f, 0.1f));
+                DrawPixelColorToColor(true, HslColor(commandToBase36(command, 2) / 360.0f, 1.0f, maxL), HslColor(commandToBase36(command, 3) / 360.0f, 1.0f, 0.1f));
                 animations.StartAnimation(0, duration, fadeAnimUpdate);
             }
-        }
+        } 
 
         // 2 chasers left->right right<-left
         if (command.charAt(0) == '5') {
@@ -379,7 +434,7 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             int duration = commandToBase36(command, 1) * 10;
             if (packet.length()>2) {
                 int colorAngle = commandToBase36(command, 2);
-                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
+                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, maxL);
             }
             animations.StartAnimation(0, 4, fadeAnimUpdate);
             animations.StartAnimation(1, duration, moveCrossedAnimUpdate);
@@ -390,7 +445,7 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             int duration = commandToBase36(command, 1) * 10;
             if (packet.length()>2) { 
                 int colorAngle = commandToBase36(command, 2);
-                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
+                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, maxL);
             }
             debugMessage("7 rand-noise duration: "+String(duration));
             animations.StartAnimation(0, 1, allToColorNoise);
@@ -402,7 +457,7 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             int duration = commandToBase36(command, 1) * 10;
             if (packet.length()>2) {
                 int colorAngle = commandToBase36(command, 2);
-                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, 0.25f);
+                CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, maxL);
                 debugMessage("Hue: "+String(colorAngle));
             }
             debugMessage("Fade duration: "+String(duration));
@@ -480,6 +535,7 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             CylonEyeColor.G = 0;
             CylonEyeColor.B = maxBrightness;
         }
+ 
         }); 
     } else {
         debugMessage("UDP Listener could not start");
@@ -492,4 +548,87 @@ void Animate::loop() {
     }
     
     strip.Show();
+}
+
+
+// @iotPanic Pixels library
+bool Animate::receive(uint8_t *pyld, unsigned length){
+    uint16_t pixCnt = 0;
+    pixel *pattern = unmarshal(pyld, length, &pixCnt);
+    if(pixCnt==0){
+        Serial.println("Returning from failed marshal");
+        Serial.println("Received length: "+String(length));
+        return false;
+    }
+    
+    this->show(pattern, pixCnt);
+    delete pattern;
+    return true;
+}
+
+void Animate::write(unsigned location, uint8_t R, uint8_t G, uint8_t B, uint8_t W){
+    #ifdef RGBW
+    strip.setPixelColor(location, RgbwColor(R,G,B,W));
+    #else
+    strip.SetPixelColor(location, RgbColor(R,G,B));
+    #endif
+}
+
+void Animate::show(){
+    strip.Show();
+}
+
+void Animate::show(pixel *pixels, unsigned cnt){
+    for(unsigned i = 0; i<cnt; i++){
+        #ifdef RGBW
+        strip.setPixelColor(i, RgbwColor(pixels[i].R,pixels[i].G,pixels[i].B,pixels[i].W));
+        #else
+        strip.SetPixelColor(i, RgbColor(pixels[i].R,pixels[i].G,pixels[i].B));
+        #endif
+    }
+    strip.Show();
+}
+
+pixel *Animate::unmarshal(uint8_t *pyld, unsigned len, uint16_t *pixCnt, uint8_t *channel){
+    if(pyld[0]!=0x50){
+        Serial.println("Missing checkvalue, instead got: ");
+        Serial.print(pyld[0], HEX);
+        // Set pixCnt to zero as we have not decoded any pixels and return NULL
+        *pixCnt = 0;
+        return NULL;
+    }
+    
+    if(channel!=NULL){
+        *channel = pyld[2];
+    }
+    // Decode number of pixels, we don't have to send the entire strip if we don't want to
+    uint16_t cnt = pyld[3] | pyld[4]<<8;
+    if(cnt>PixelCount){
+        // We got more pixels than the strip allows
+        *pixCnt = 0;
+        return NULL;
+    }
+    if (cnt ==0)
+    {
+        return NULL;
+    }
+    pixel *result = new pixel[cnt];
+    // TODO Add logic to return if len is impossibly large or small
+    for(uint16_t i = 0; i<cnt; i++){
+        #ifdef RGBW
+        result[i].R = pyld[5+(i*4)];
+        result[i].G = pyld[5+(i*4)+1];
+        result[i].B = pyld[5+(i*4)+2];
+        result[i].W = pyld[5+(i*4)+3]
+        #else
+        result[i].R = pyld[5+(i*3)];
+        result[i].G = pyld[5+(i*3)+1];
+        result[i].B = pyld[5+(i*3)+2];
+        #endif
+    }
+
+
+    // TODO Add CRC check before setting pixCnt
+    *pixCnt = cnt;
+    return result; 
 }

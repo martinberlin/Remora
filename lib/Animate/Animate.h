@@ -5,10 +5,6 @@
     #include <NeoPixelBus.h>
     #include <NeoPixelAnimator.h>
 #endif
-// Microfone Clock and Data pin
-#define PIN_CLK  0
-#define PIN_DATA 34
-#include <driver/i2s.h>
 
 typedef struct{
     uint8_t R = 0;

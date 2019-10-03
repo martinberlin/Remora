@@ -111,20 +111,20 @@ void WiFiEvent(WiFiEvent_t event) {
 
 void setup()
 {
-      WiFiManager wifiManager;
-    //reset saved settings
-    //wifiManager.resetSettings();
-
+  WiFiManager wifiManager;
+  //reset saved settings
+  //wifiManager.resetSettings();
+  Serial.begin(115200);
   M5.begin();
   M5.Lcd.setRotation(3);
-  M5.Axp.ScreenBreath(8); // Brightness (min and visible 7 - 10 max)
+  //M5.Axp.ScreenBreath(9); // Brightness (min and visible 7 - 10 max)
   M5.Lcd.setTextColor(TFT_WHITE, TFT_BLACK);
   M5.Lcd.drawString("REMORA", 10, 2, 2);
   M5.Lcd.setTextColor(TFT_RED, TFT_BLACK);
   M5.Lcd.drawString(". . . . .", 90, 0, 2);
   M5.Lcd.drawString(String(M5.Axp.GetVbatData() * 1.1 / 1000) + " volt | " + String(-144.7 + M5.Axp.GetTempData() * 0.1) + " C", 10, 40);
-
-  Serial.begin(115200);
+  delay(900);
+  
   WiFi.onEvent(WiFiEvent);
   // Set static IP in case your infrastructure needs it:
   // wifiManager.setSTAStaticIPConfig(IPAddress(192,168,255,111), IPAddress(192,168,255,1), IPAddress(255,255,255,0));

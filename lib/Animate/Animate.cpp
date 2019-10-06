@@ -8,11 +8,11 @@
 
 const uint16_t PixelCount = 131;     // Length of LED stripe 144 - 13 = 131 Leds in a 30cm diameter round
 const uint8_t  PixelPin = 26;        // Data line of Addressable LEDs
-float maxL = 0.2f;
+float maxL = 0.6f;
 #ifdef RGBW
   struct RgbwColor CylonEyeColor(HslColor(0.0f, 1.0f, maxL)); // Red as default
 #else
-  struct RgbColor CylonEyeColor(HslColor(0.0f, 1.0f, maxL)); // Red as default
+  struct RgbColor CylonEyeColor(HslColor(0.0f, 0.8f, maxL)); // Red as default
 #endif
 
 boolean enableBeatDetection = true; // Turn to true to enable Mic beat detection
@@ -380,6 +380,9 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
                note = (int)command.charAt(2)-96; 
                noteLength = noteLength /2;
             }
+            int colorAngle = commandToBase36(command, 3);
+            CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, maxL);
+
             for (uint16_t x = note*noteLength+1; x < (note+1)*noteLength; x++){
                 strip.SetPixelColor(x, CylonEyeColor);
             }

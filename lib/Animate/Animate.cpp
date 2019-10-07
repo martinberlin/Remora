@@ -6,7 +6,7 @@
 // Uncomment for RGBW (with 4 leds per pixel)
 //#define RGBW 
 
-const uint16_t PixelCount = 131;     // Length of LED stripe 144 - 13 = 131 Leds in a 30cm diameter round
+const uint16_t PixelCount = 130;     // Length of LED stripe 144 - 14 = 130 Leds in a 30cm diameter round
 const uint8_t  PixelPin = 26;        // Data line of Addressable LEDs
 float maxL = 0.6f;
 #ifdef RGBW
@@ -15,8 +15,8 @@ float maxL = 0.6f;
   struct RgbColor CylonEyeColor(HslColor(0.0f, 0.8f, maxL)); // Red as default
 #endif
 
-boolean enableBeatDetection = true; // Turn to true to enable Mic beat detection
-byte maxBrightness = 20;             // 0 to 255 - Only for RGB
+boolean enableBeatDetection = false; // Turn to true to enable Mic beat detection
+byte maxBrightness = 120;             // 0 to 255 - Only for RGB
 // </Configure>
 
 uint16_t lastSignalLevel = 0;
@@ -580,8 +580,8 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
 
 void Animate::micRead() 
 {   
-
     i2s_read_bytes(I2S_NUM_0, (char*) BUFFER, READ_LEN, (100 / portTICK_RATE_MS));
+    
     adcBuffer = (uint16_t *)BUFFER;
     
     int signalLevel = 0;   
@@ -686,9 +686,9 @@ pixel *Animate::unmarshal(uint8_t *pyld, unsigned len, uint16_t *pixCnt, uint8_t
         *pixCnt = 0;
         return NULL;
     }
-    if (cnt ==0)
+    if (cnt == 0)
     {
-        return false;
+        return NULL;
     }
     pixel *result = new pixel[cnt];
     // TODO Add logic to return if len is impossibly large or small

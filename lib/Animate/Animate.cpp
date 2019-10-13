@@ -3,16 +3,15 @@
 
 // <Configure> this to your own setup:
 #define DEFAULT_HUE_ANGLE 0
-// Uncomment for RGBW (with 4 leds per pixel)
-//#define RGBW 
 
-const uint16_t PixelCount = 72;     // Length of LED stripe 144 - 13 = 131 Leds in a 30cm diameter round
+
+const uint16_t PixelCount = 131;     // Length of LED stripe 144 - 13 = 131 Leds in a 30cm diameter round
 const uint8_t  PixelPin = 19;       // Data line of Addressable LEDs
-float maxL = 0.2f;
+float maxL = 0.1f;
 #ifdef RGBW
   struct RgbwColor CylonEyeColor(HslColor(0.0f, 1.0f, maxL)); // Red as default
 #else
-  struct RgbColor CylonEyeColor(HslColor(0.0f, 1.0f, maxL)); // Red as default
+  struct RgbColor CylonEyeColor(HslColor(0.0f, 0.6f, maxL)); // Red as default
 #endif
 byte maxBrightness = 20;             // 0 to 255 - Only for RGB
 // </Configure>
@@ -340,6 +339,9 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
                note = (int)command.charAt(2)-96; 
                noteLength = noteLength /2;
             }
+            int colorAngle = commandToBase36(command, 3);
+            CylonEyeColor = HslColor(colorAngle / 360.0f, 1.0f, maxL);
+
             for (uint16_t x = note*noteLength+1; x < (note+1)*noteLength; x++){
                 strip.SetPixelColor(x, CylonEyeColor);
             }

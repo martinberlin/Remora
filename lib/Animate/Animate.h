@@ -1,11 +1,13 @@
 /*
   Interface of Led Animations class
 */
+
 #ifndef neopixelbus_h
     #include <NeoPixelBus.h>
     #include <NeoPixelAnimator.h>
 #endif
-
+// Uncomment for RGBW (with 4 leds per pixel)
+//#define RGBW 
 typedef struct{
     uint8_t R = 0;
     uint8_t G = 0;
@@ -45,5 +47,12 @@ class Animate
     pixel *unmarshal(uint8_t *pyld, unsigned len, uint16_t *pixCnt, uint8_t *channel=NULL);
 
     uint8_t syncWord = 0x0;
+
+    // We want to inform our lib if RGB or RGBW was selected
+    #ifdef RGBW
+    const bool RGBWE = true;
+    #else
+    const bool RGBWE = false;
+    #endif
 };
 

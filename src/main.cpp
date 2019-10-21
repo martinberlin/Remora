@@ -60,10 +60,6 @@ void WiFiEvent(WiFiEvent_t event) {
         Serial.println("WiFi connected");
         Serial.println("IP address: ");
         Serial.println(WiFi.localIP());
-
-        u8cursor = u8cursor+2;
-        u8x8.setCursor(0, u8cursor);
-        u8x8.print(IpAddress2String(WiFi.localIP()));
     
 
         if (!MDNS.begin(localDomain)) {
@@ -132,6 +128,8 @@ void setup()
   u8x8.print(" .");
 
   connectToWifi();
+
+  
   WiFi.onEvent(WiFiEvent);
 
   // Set up automatic reconnect timer

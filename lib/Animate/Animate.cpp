@@ -1,6 +1,6 @@
 #include "Animate.h"
 #include "AsyncUDP.h"
-
+U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/ 15, /* data=*/ 4, /* reset=*/ 16);
 // <Configure> this to your own setup:
 #define DEFAULT_HUE_ANGLE 0
 
@@ -26,6 +26,7 @@ struct config {
   String ipAddress;
 } animateConfig;
 
+uint8_t animationType = 0;
 // Message transport protocol
 AsyncUDP udp;
 
@@ -50,8 +51,7 @@ AnimEaseFunction moveEase =
         NeoEase::CubicInOut;
 //      NeoEase::QuarticInOut;
 
-Animate::Animate() {
-}
+Animate::Animate() {}
 
 /**
  * Generic message printer. Modify this if you want to send this messages elsewhere (Display)
@@ -295,6 +295,13 @@ int commandToInt(String command, int length, uint8_t offset) {
     return colorAngle;
 }
 
+void u8Clean() {
+    u8g2.setDrawColor(0);
+    u8g2.drawBox(0,32,128,20);
+    u8g2.setDrawColor(1);
+    u8g2.setCursor(0, 48);
+}
+
 void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
     animateConfig.udpPort = udpPort;
     animateConfig.ipAddress = ipAddress2String(ipAddress);
@@ -304,6 +311,14 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
     if(udp.listen(animateConfig.udpPort)) {
         debugMessage("UDP Listening on IP: ");
         debugMessage(animateConfig.ipAddress+":"+String(animateConfig.udpPort));
+        
+        u8g2.begin();
+        u8g2.setFont(u8g2_font_shylock_nbp_tf);
+        u8g2.setCursor(0, 15);
+        u8g2.print(animateConfig.ipAddress+" : "+String(animateConfig.udpPort));
+        u8g2.sendBuffer();
+        u8g2.setFont(u8g2_font_inb16_mf); //u8g2_font_helvB12_te
+        
 
     // Callback that gets fired every time an UDP Message arrives
     udp.onPacket([](AsyncUDPPacket packet) {
@@ -311,9 +326,16 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
         if (packet.length()>9) {
             //Serial.println("Call pixels->receive()");
             pix.receive(packet.data(), packet.length());
+
+            if (animationType!=1) {
+                u8Clean();
+                u8g2.print("UDPX");
+                u8g2.sendBuffer();
+            }
+            animationType = 1;
             return;
         }
-
+        animationType = 2;
         if(debugMode) {
             Serial.print("Data L "+String(packet.length())+" : ");
             Serial.write(packet.data(), packet.length());Serial.println();
@@ -323,6 +345,10 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
         for ( int i = 0; i < packet.length(); i++ ) {
             command += (char)packet.data()[i];
         }
+
+        u8Clean();
+        u8g2.print(command);
+        u8g2.sendBuffer();
 
         // Chords A -> G (65 -> 72)
         if (command.charAt(0) == '0' && (int)command.charAt(2)>64) {

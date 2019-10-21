@@ -1,7 +1,7 @@
 /*
   Interface of Led Animations class
 */
-
+#include <U8g2lib.h> 
 #ifndef neopixelbus_h
     #include <NeoPixelBus.h>
     #include <NeoPixelAnimator.h>
@@ -21,8 +21,9 @@ class Animate
 {
   public:
     Animate();
+    
     // Print out messages in Serial
-    static const boolean debugMode = true;
+    static const boolean debugMode = false;
     void startUdpListener(const IPAddress& ipAddress, int udpPort);
     void micRead();
     String ipAddress2String(const IPAddress& ipAddress);

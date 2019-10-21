@@ -1,5 +1,3 @@
-// Remora Firmware Beta 1.1 First squeleton
-
 #include <WiFi.h>
 // Config.h and Animate.h need configuration
 #include <Config.h>  // WiFi credentials, mDNS Domain
@@ -7,6 +5,11 @@
 #include <ESPmDNS.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/timers.h"
+#include <U8g2lib.h> 
+
+// HELTEC Board pins, update if you use another Board:
+U8X8_SSD1306_128X64_NONAME_SW_I2C u8x8(/* clock=*/ 15, /* data=*/ 4, /* reset=*/ 16);
+byte u8cursor = 1;
 
 // Debug mode prints to serial
 bool debugMode = true;
@@ -38,13 +41,31 @@ void connectToWifi() {
   WiFi.begin(WIFI_SSID1, WIFI_PASS1);
 }
 
+/**
+ * Convert the IP to string 
+ */
+String IpAddress2String(const IPAddress& ipAddress)
+{
+  return String(ipAddress[0]) + String(".") +\
+  String(ipAddress[1]) + String(".") +\
+  String(ipAddress[2]) + String(".") +\
+  String(ipAddress[3]);
+}
+
 void WiFiEvent(WiFiEvent_t event) {
     Serial.printf("[WiFi-event] event: %d\n", event);
+
     switch(event) {
     case SYSTEM_EVENT_STA_GOT_IP:
         Serial.println("WiFi connected");
         Serial.println("IP address: ");
         Serial.println(WiFi.localIP());
+
+        u8cursor = u8cursor+2;
+        u8x8.setCursor(0, u8cursor);
+        u8x8.print(IpAddress2String(WiFi.localIP()));
+    
+
         if (!MDNS.begin(localDomain)) {
           while(1) { 
           delay(100);
@@ -94,10 +115,25 @@ void WiFiEvent(WiFiEvent_t event) {
 void setup()
 {
   Serial.begin(115200);
+
+  u8x8.begin();
+  u8x8.setCursor(0, u8cursor);
+  u8x8.setFont(u8x8_font_amstrad_cpc_extended_u);
+  u8x8.print("REMORA");
+  delay(100);
+  u8x8.print(" .");
+  delay(100);
+  u8x8.print(" .");
+  delay(100);
+  u8x8.print(" .");
+  delay(100);
+  u8x8.print(" .");
+  delay(100);
+  u8x8.print(" .");
+
   connectToWifi();
   WiFi.onEvent(WiFiEvent);
-  itoa(ESP.getEfuseMac(), internalConfig.chipId, 16);
-  printMessage("ESP32 ChipID: "+String(internalConfig.chipId));
+
   // Set up automatic reconnect timer
   wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void *)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
 }

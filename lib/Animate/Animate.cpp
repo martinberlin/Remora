@@ -13,10 +13,10 @@ float maxL = 0.1f;
 #else
   struct RgbColor CylonEyeColor(HslColor(0.0f, 0.6f, maxL)); // Red as default
 #endif
-byte maxBrightness = 180;             // 0 to 255 - Only for RGB
+byte maxBrightness = 200;             // 0 to 255 - Only for RGB
 // </Configure>
 
-
+String commandDisplayLast = "";
 // Output class receives binary and outputs to Neopixel
 Animate pix;
 
@@ -297,7 +297,7 @@ int commandToInt(String command, int length, uint8_t offset) {
 
 void u8Clean() {
     u8g2.setDrawColor(0);
-    u8g2.drawBox(0,32,128,20);
+    u8g2.drawBox(0,32,120,12);
     u8g2.setDrawColor(1);
     u8g2.setCursor(0, 48);
 }
@@ -348,11 +348,12 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             commandDisplay += (char)packet.data()[i];
             commandDisplay += " ";
         }
-
-        u8Clean();
-        u8g2.print(commandDisplay);
-        u8g2.sendBuffer();
-
+        if (command != commandDisplayLast) {
+            u8Clean();
+            u8g2.print(commandDisplay);
+            u8g2.sendBuffer();
+        }
+        commandDisplayLast = command;
         // Chords A -> G (65 -> 72)
         if (command.charAt(0) == '0' && (int)command.charAt(2)>64) {
             int duration = commandToBase36(command, 1) * 10;

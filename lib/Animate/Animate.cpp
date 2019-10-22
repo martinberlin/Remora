@@ -313,11 +313,11 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
         debugMessage(animateConfig.ipAddress+":"+String(animateConfig.udpPort));
         
         u8g2.begin();
-        u8g2.setFont(u8g2_font_shylock_nbp_tf);
+        u8g2.setFont(u8g2_font_amstrad_cpc_extended_8u);
         u8g2.setCursor(0, 15);
-        u8g2.print(animateConfig.ipAddress+" : "+String(animateConfig.udpPort));
+        u8g2.print(animateConfig.ipAddress);
         u8g2.sendBuffer();
-        u8g2.setFont(u8g2_font_inb16_mf); //u8g2_font_helvB12_te
+        u8g2.setFont(u8g2_font_inb16_mf);
         
 
     // Callback that gets fired every time an UDP Message arrives
@@ -341,13 +341,16 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             Serial.write(packet.data(), packet.length());Serial.println();
         }
         String command;
+        String commandDisplay;
       
         for ( int i = 0; i < packet.length(); i++ ) {
             command += (char)packet.data()[i];
+            commandDisplay += (char)packet.data()[i];
+            commandDisplay += " ";
         }
 
         u8Clean();
-        u8g2.print(command);
+        u8g2.print(commandDisplay);
         u8g2.sendBuffer();
 
         // Chords A -> G (65 -> 72)

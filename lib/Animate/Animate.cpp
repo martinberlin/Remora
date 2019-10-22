@@ -297,7 +297,7 @@ int commandToInt(String command, int length, uint8_t offset) {
 
 void u8Clean() {
     u8g2.setDrawColor(0);
-    u8g2.drawBox(0,32,120,12);
+    u8g2.drawBox(0,34,80,14);
     u8g2.setDrawColor(1);
     u8g2.setCursor(0, 48);
 }
@@ -317,7 +317,7 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
         u8g2.setCursor(0, 15);
         u8g2.print(animateConfig.ipAddress);
         u8g2.sendBuffer();
-        u8g2.setFont(u8g2_font_inb16_mf);
+        u8g2.setFont(u8g2_font_fub14_tf);
         
 
     // Callback that gets fired every time an UDP Message arrives
@@ -348,12 +348,7 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             commandDisplay += (char)packet.data()[i];
             commandDisplay += " ";
         }
-        if (command != commandDisplayLast) {
-            u8Clean();
-            u8g2.print(commandDisplay);
-            u8g2.sendBuffer();
-        }
-        commandDisplayLast = command;
+
         // Chords A -> G (65 -> 72)
         if (command.charAt(0) == '0' && (int)command.charAt(2)>64) {
             int duration = commandToBase36(command, 1) * 10;
@@ -376,6 +371,13 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
                 strip.SetPixelColor(x, CylonEyeColor);
             }
             animations.StartAnimation(1, duration, darkenAll);
+
+            if (animationType!=3) {
+                u8Clean();
+                u8g2.print("NOTES");
+                u8g2.sendBuffer();
+            }
+            animationType = 3;
             return;
         }
         //debugMessage("LEN:"+String(packet.length() ));
@@ -497,45 +499,12 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
             }
         }
 
-        // Pure colors for now
-        if (command.charAt(0) == 'r') {
-            debugMessage("Pure red");
-            CylonEyeColor.R = maxBrightness;
-            CylonEyeColor.G = 0;
-            CylonEyeColor.B = 0;
+        if (command != commandDisplayLast) {
+            u8Clean();
+            u8g2.print(commandDisplay);
+            u8g2.sendBuffer();
         }
-        if (command.charAt(0) == 'g') {
-            debugMessage("Pure green");
-            CylonEyeColor.R = 0;
-            CylonEyeColor.G = maxBrightness;
-            CylonEyeColor.B = 0;
-        }
-        if (command.charAt(0) == 'b') {
-            debugMessage("Pure blue");
-            CylonEyeColor.R = 0;
-            CylonEyeColor.G = 0;
-            CylonEyeColor.B = maxBrightness;
-        }
-        if (command.charAt(0) == 'y') {
-            debugMessage("Pure yellow");
-            CylonEyeColor.R = maxBrightness;
-            CylonEyeColor.G = maxBrightness;
-            CylonEyeColor.B = 0;
-        }
-        if (command.charAt(0) == 'w' ) {
-            debugMessage("Pure white");
-            CylonEyeColor.R = maxBrightness;
-            CylonEyeColor.G = maxBrightness;
-            CylonEyeColor.B = maxBrightness;
-        }
-        
-        if (command.charAt(0) == 'v') {
-            debugMessage("Pure violet");
-            CylonEyeColor.R = maxBrightness;
-            CylonEyeColor.G = 0;
-            CylonEyeColor.B = maxBrightness;
-        }
- 
+        commandDisplayLast = command;
         }); 
     } else {
         debugMessage("UDP Listener could not start");

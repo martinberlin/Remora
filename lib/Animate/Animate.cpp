@@ -6,14 +6,14 @@ U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/ 15, /* data=*/ 4, 
 
 
 const uint16_t PixelCount = 144;     // Length of LED stripe 144 - 13 = 131 Leds in a 30cm diameter round
-const uint8_t  PixelPin = 19;       // Data line of Addressable LEDs
+const uint8_t  PixelPin = 27;       // Data line of Addressable LEDs
 float maxL = 0.1f;
 #ifdef RGBW
   struct RgbwColor CylonEyeColor(HslColor(0.0f, 1.0f, maxL)); // Red as default
 #else
   struct RgbColor CylonEyeColor(HslColor(0.0f, 0.6f, maxL)); // Red as default
 #endif
-byte maxBrightness = 20;             // 0 to 255 - Only for RGB
+byte maxBrightness = 180;             // 0 to 255 - Only for RGB
 // </Configure>
 
 

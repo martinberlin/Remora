@@ -60,7 +60,9 @@ void WiFiEvent(WiFiEvent_t event) {
         // TODO: Ensure we don't start UDP while reconnecting to Wi-Fi (low prio)
 	      xTimerStart(wifiReconnectTimer, 0);
         break;
-                // Non used, just there to avoid warnings
+        
+        // Non used, just there to avoid warnings
+        case SYSTEM_EVENT_STA_WPS_ER_PBC_OVERLAP:
         case SYSTEM_EVENT_WIFI_READY:
         case SYSTEM_EVENT_SCAN_DONE:
         case SYSTEM_EVENT_STA_START:

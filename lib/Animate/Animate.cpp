@@ -5,7 +5,7 @@
 #define DEFAULT_HUE_ANGLE 0
 
 
-const uint16_t PixelCount = 131;     // Length of LED stripe 144 - 13 = 131 Leds in a 30cm diameter round
+const uint16_t PixelCount = 72;     // Length of LED stripe 144 - 13 = 131 Leds in a 30cm diameter round
 const uint8_t  PixelPin = 19;       // Data line of Addressable LEDs
 float maxL = 0.1f;
 #ifdef RGBW

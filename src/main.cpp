@@ -8,6 +8,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/timers.h"
 
+#define USE_WIFI_MANAGER	
+
 // Debug mode prints to serial
 bool debugMode = true;
 TimerHandle_t wifiReconnectTimer;
@@ -18,6 +20,14 @@ struct config {
   char chipId[20];
   int udpPort = 49161; // 49161 Default Orca UDP Port
 } internalConfig;
+
+#ifdef USE_WIFI_MANAGER
+	#include <DNSServer.h>
+	#include <WebServer.h>
+	#include <WiFiManager.h>
+
+  WiFiManager wifiManager;
+#endif
 
 /**
  * Generic message printer. Modify this if you want to send this messages elsewhere (Display)
@@ -91,11 +101,37 @@ void WiFiEvent(WiFiEvent_t event) {
     }
 }
 
+#ifdef USE_WIFI_MANAGER
+	//flag for saving data
+	bool shouldSaveConfig = false;
+
+	//callback notifying us of the need to save config
+	void saveConfigCallback () {
+		Serial.println("Should save config");
+		shouldSaveConfig = true;
+	}
+#endif
+
 void setup()
 {
+  WiFiManager wifiManager;
   Serial.begin(115200);
-  connectToWifi();
+  
+  //reset saved settings
+  //wifiManager.resetSettings();
+ 
+	#if defined(USE_WIFI_MANAGER)
+		wifiManager.setTimeout(180);
+		wifiManager.setConfigPortalTimeout(180); // try for 3 minute
+		wifiManager.setMinimumSignalQuality(15);
+		wifiManager.setRemoveDuplicateAPs(true);
+		wifiManager.setSaveConfigCallback(saveConfigCallback);
+		wifiManager.autoConnect("RemoraAP");
+    Serial.println("Wifi Manager start");
+  #endif
+  
   WiFi.onEvent(WiFiEvent);
+
   itoa(ESP.getEfuseMac(), internalConfig.chipId, 16);
   printMessage("ESP32 ChipID: "+String(internalConfig.chipId));
   // Set up automatic reconnect timer

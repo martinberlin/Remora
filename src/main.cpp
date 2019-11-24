@@ -453,8 +453,7 @@ void setup()
 
 	if (hasCredentials) {
 		// Check for available AP's
-		bool wifiScan = scanWiFi();
-		if (wifiScan) {
+		if (scanWiFi) {
 			// If AP was found, start connection
 			connectWiFi();
 			

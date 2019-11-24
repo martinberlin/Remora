@@ -83,7 +83,7 @@ BLEService *pService;
 BLEServer *pServer;
 
 /** Buffer for JSON string */
-StaticJsonDocument<200> jsonBuffer;
+StaticJsonBuffer<200> jsonBuffer;
 
 /**
  * Generic message printer. Modify this if you want to send this messages elsewhere (Display)
@@ -136,26 +136,16 @@ class MyCallbackHandler: public BLECharacteristicCallbacks {
 		}
 
 		/** Json object for incoming data */
-    DynamicJsonDocument doc(200);
-    // Deserialize the JSON document
-    DeserializationError error = deserializeJson(doc,(char *)&value[0]);
-
-	   if (error)
-            {
-              printMessage("ERR parsing JSON");
-              printMessage(error.c_str());
-              return;
-            }
-
-			if (doc["ssidPrim"] &&
-					doc["pwPrim"] && 
-					doc["ssidSec"] &&
-					doc["pwSec"]
-          ) {
-				ssidPrim = doc["ssidPrim"].as<String>();
-				pwPrim = doc["pwPrim"].as<String>();
-				ssidSec = doc["ssidSec"].as<String>();
-				pwSec = doc["pwSec"].as<String>();
+		JsonObject& jsonIn = jsonBuffer.parseObject((char *)&value[0]);
+		if (jsonIn.success()) {
+			if (jsonIn.containsKey("ssidPrim") &&
+					jsonIn.containsKey("pwPrim") && 
+					jsonIn.containsKey("ssidSec") &&
+					jsonIn.containsKey("pwSec")) {
+				ssidPrim = jsonIn["ssidPrim"].as<String>();
+				pwPrim = jsonIn["pwPrim"].as<String>();
+				ssidSec = jsonIn["ssidSec"].as<String>();
+				pwSec = jsonIn["pwSec"].as<String>();
 
 				Preferences preferences;
 				preferences.begin("WiFiCred", false);
@@ -171,8 +161,7 @@ class MyCallbackHandler: public BLECharacteristicCallbacks {
 				Serial.println("secondary SSID: "+ssidSec+" password: "+pwSec);
 				connStatusChanged = true;
 				hasCredentials = true;
-
-			} else if (doc["erase"]) {
+			} else if (jsonIn.containsKey("erase")) {
 				Serial.println("Received erase command");
 				Preferences preferences;
 				preferences.begin("WiFiCred", false);
@@ -190,12 +179,13 @@ class MyCallbackHandler: public BLECharacteristicCallbacks {
 				Serial.println("nvs_flash_init: " + err);
 				err=nvs_flash_erase();
 				Serial.println("nvs_flash_erase: " + err);
-
-			} else if (doc["reset"]) {
+			} else if (jsonIn.containsKey("reset")) {
 				WiFi.disconnect();
 				esp_restart();
 			}
-
+		} else {
+			Serial.println("Received invalid JSON");
+		}
 		jsonBuffer.clear();
 	};
 
@@ -204,14 +194,13 @@ class MyCallbackHandler: public BLECharacteristicCallbacks {
 		String wifiCredentials;
 
 		/** Json object for outgoing data */
-    StaticJsonDocument<200> jsonOut;
-
+		JsonObject& jsonOut = jsonBuffer.createObject();
 		jsonOut["ssidPrim"] = ssidPrim;
 		jsonOut["pwPrim"] = pwPrim;
 		jsonOut["ssidSec"] = ssidSec;
 		jsonOut["pwSec"] = pwSec;
 		// Convert JSON object into a string
-    serializeJson(jsonOut, wifiCredentials);
+		jsonOut.printTo(wifiCredentials);
 
 		// encode the data
 		int keyIndex = 0;

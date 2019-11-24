@@ -3,8 +3,6 @@
 #include <Config.h>  // WiFi credentials, mDNS Domain
 #include <Animate.h> // PixelCount, PixelPin
 #include <ESPmDNS.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/timers.h"
 #include <U8g2lib.h> 
 #include <WiFi.h>
 // Starting BLE Setup
@@ -275,10 +273,7 @@ void gotIP(system_event_id_t event) {
 void lostCon(system_event_id_t event) {
 	isConnected = false;
 	connStatusChanged = true;
-  Serial.println("WiFi lost connection");
-        // TODO: Ensure we don't start UDP while reconnecting to Wi-Fi (low prio)
-	      xTimerStart(wifiReconnectTimer, 0);
-
+    Serial.println("WiFi lost connection");
 }
 
 /**
@@ -450,22 +445,20 @@ void setup()
 
 	// Start BLE server
 	initBLE();
-
 	if (hasCredentials) {
 		// Check for available AP's
-		if (scanWiFi) {
-			// If AP was found, start connection
-			connectWiFi();
+		if (!scanWiFi) {
+			Serial.println("Could not find any AP");
 			
 		} else {
-			Serial.println("Could not find any AP");
+			// If AP was found, start connection
+			connectWiFi();
 		}
 	}
-
-  // Set up automatic reconnect timer
-  wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void *)0, reinterpret_cast<TimerCallbackFunction_t>(connectWiFi));
 }
 
 void loop() {
-  animate.loop();
+	if (isConnected) {
+	  animate.loop();
+	}
 }

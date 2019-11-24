@@ -273,7 +273,8 @@ void gotIP(system_event_id_t event) {
 void lostCon(system_event_id_t event) {
 	isConnected = false;
 	connStatusChanged = true;
-    Serial.println("WiFi lost connection");
+    Serial.println("WiFi lost connection, restarting");
+	ESP.restart();
 }
 
 /**
@@ -458,7 +459,5 @@ void setup()
 }
 
 void loop() {
-	if (isConnected) {
-	  animate.loop();
-	}
+  animate.loop();
 }

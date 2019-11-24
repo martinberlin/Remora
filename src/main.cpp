@@ -292,9 +292,9 @@ void lostCon(system_event_id_t event) {
 */
 bool scanWiFi() {
 	/** RSSI for primary network */
-	int8_t rssiPrim;
+	int8_t rssiPrim = 0;
 	/** RSSI for secondary network */
-	int8_t rssiSec;
+	int8_t rssiSec = 0;
 	/** Result of this function */
 	bool result = false;
 
@@ -307,7 +307,7 @@ bool scanWiFi() {
 	// Scan for AP
 	int apNum = WiFi.scanNetworks(false,true,false,1000);
 	if (apNum == 0) {
-		Serial.println("Found no networks?????");
+		Serial.println("Found no networks");
 		return false;
 	}
 	
@@ -379,11 +379,6 @@ void connectWiFi() {
 	}
 }
 
-void connectToWifi() {
-  Serial.println("Connecting to Wi-Fi...");
-  WiFi.begin(WIFI_SSID1, WIFI_PASS1);
-}
-
 /**
  * Convert the IP to string 
  */
@@ -442,6 +437,7 @@ void setup()
 			hasCredentials = true;
 		}
 	} else {
+		u8x8.print("BLE configuration");
 		Serial.println("Could not find preferences, need send data over BLE");
 	}
 	preferences.end();
@@ -460,7 +456,7 @@ void setup()
 	}
 
   // Set up automatic reconnect timer
-  wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void *)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
+  wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void *)0, reinterpret_cast<TimerCallbackFunction_t>(connectWiFi));
 }
 
 void loop() {

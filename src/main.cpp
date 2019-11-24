@@ -437,7 +437,13 @@ void setup()
 			hasCredentials = true;
 		}
 	} else {
-		u8x8.print("BLE configuration");
+		u8x8.clear();
+		u8x8.println("BLE APP:");
+		u8x8.println();
+		u8x8.println("ESP32WIFIBLE");
+		u8x8.println();
+		u8x8.println("USE ANDROID APP");
+		u8x8.println("TO CONFIG WIFI");
 		Serial.println("Could not find preferences, need send data over BLE");
 	}
 	preferences.end();
@@ -447,11 +453,13 @@ void setup()
 
 	if (hasCredentials) {
 		// Check for available AP's
-		if (!scanWiFi) {
-			Serial.println("Could not find any AP");
-		} else {
+		bool wifiScan = scanWiFi();
+		if (wifiScan) {
 			// If AP was found, start connection
 			connectWiFi();
+			
+		} else {
+			Serial.println("Could not find any AP");
 		}
 	}
 

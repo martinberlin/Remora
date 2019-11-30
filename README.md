@@ -5,10 +5,25 @@
 Remora is a simple pseudo animation language that works as a companion to Orca receiving UDP short instructions and sending animations to addressable LED stripes.
 This animations run entirely in the ESP32 controller and are initially aimed to be short so they can be triggered by [Orca sequencer](https://github.com/hundredrabbits/Orca) bangs
 
-## Branches
+## Bluetooth WiFi configuration
 
+Starting in December 2019 all the configuration in the master branches of the udpx Firmware line we create will be over Bluetooth
+**Please install the ESP32-WiFI-BLE Application in any Android device:**
+https://play.google.com/store/apps/details?id=tk.giesecke.esp32wifible
+
+1. Start the App
+2. Select your device starting with ESP32*
+3. Write your WiFi SSID / Password and hit Send
+
+That's it you are connected! Have more devices? Just copy the password and set up different controllers.
+We took this decision since we find the Bluetooth way a much more standard way to configure IoT devices. Specially ESP32 that has BLE and Bluetooth serial included, should be in our philosophy the way to set fast things up and start using your controller. We refuse to keep on forcing people to connect to an access point to set up WiFi, thing that sometimes is very unusable, specially if you use your mobile phone as an access point.
+
+
+## Branches
+ 
+ - **master**    stable branch with configuration over Bluetooth
  - **develop**   main branch ahead of others where latest updates are merged
- - **master**    stable branch
+ - **wifi-manager** main branch without Bluetooth configuration, but with WiFi manager (requires restart)
  - **m5/***      to be compiled on M5StickC devices
 
 ## Communications protocol

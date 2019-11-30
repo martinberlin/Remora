@@ -152,6 +152,8 @@ void readBTSerial() {
 			Serial.println("secondary SSID: "+ssidSec+" password: "+pwSec);
 			connStatusChanged = true;
 			hasCredentials = true;
+			delay(500); 
+			ESP.restart();
 		}
 		else if (jsonBuffer.containsKey("erase"))
 		{ // {"erase":"true"}
@@ -332,16 +334,14 @@ void connectWiFi() {
 
 void setup()
 { 
-  Serial.begin(115200);
-  createName();
+	Serial.begin(115200);
+	createName();
   
-  	Preferences preferences;
-
-  
+  	Preferences preferences; 
 	preferences.begin("WiFiCred", false);
-     // Uncomment to --force erase credentials
-  /*   preferences.clear();
-  preferences.end(); */
+    // Uncomment to --force erase credentials
+	//preferences.clear();
+    //preferences.end(); 
 
 	bool hasPref = preferences.getBool("valid", false);
 	if (hasPref) {

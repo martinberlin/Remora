@@ -1,5 +1,4 @@
-// Configuration. Rename this file to Config.h and fill with your credentials
-#define WIFI_SSID1 "KabelBox-A210"
-#define WIFI_PASS1 ""
-
+// Configuration is over Bluetooth now, there are not anymore WiFi credentials here
+// Please use the ESP32-WiFI-BLE App:
+// https://play.google.com/store/apps/details?id=tk.giesecke.esp32wifible
 #define MDNSDOMAIN "remora"

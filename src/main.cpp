@@ -7,8 +7,8 @@
 #include <ESPmDNS.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/timers.h"
-
-#define USE_WIFI_MANAGER	
+// Uncomment to use WiFi manager
+//#define USE_WIFI_MANAGER	
 
 // Debug mode prints to serial
 bool debugMode = true;
@@ -25,8 +25,7 @@ struct config {
 	#include <DNSServer.h>
 	#include <WebServer.h>
 	#include <WiFiManager.h>
-
-  WiFiManager wifiManager;
+    WiFiManager wifiManager;
 #endif
 
 /**
@@ -60,22 +59,29 @@ void connectToWifi() {
 #endif
 
 void setup()
-{
-  WiFiManager wifiManager;
+{ 
   Serial.begin(115200);
   
   //reset saved settings
   //wifiManager.resetSettings();
  
 	#if defined(USE_WIFI_MANAGER)
+	    WiFiManager wifiManager;
 		wifiManager.setTimeout(180);
 		wifiManager.setConfigPortalTimeout(180); // try for 3 minute
 		wifiManager.setMinimumSignalQuality(15);
 		wifiManager.setRemoveDuplicateAPs(true);
 		wifiManager.setSaveConfigCallback(saveConfigCallback);
 		wifiManager.autoConnect("RemoraAP");
-    Serial.println("Wifi Manager start");
-  #endif
+        Serial.println("Wifi Manager start");
+	    #else
+  		connectToWifi();
+  	#endif
+
+	  while (WiFi.status() != WL_CONNECTED) {
+		delay(300);
+		Serial.println(".");
+		}
     Serial.println("WiFi connected");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());

@@ -1,7 +1,9 @@
 /*
   Interface of Led Animations class
 */
-
+#ifdef ESP8266
+    #include "IPAddress.h"
+#endif
 #ifndef neopixelbus_h
     #include <NeoPixelBus.h>
     #include <NeoPixelAnimator.h>

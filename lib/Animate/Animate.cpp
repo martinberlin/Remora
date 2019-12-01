@@ -1,5 +1,12 @@
 #include "Animate.h"
-#include "AsyncUDP.h"
+
+#ifdef ESP32
+    #include "AsyncUDP.h"
+#elif ESP8266
+    #include "ESPAsyncUDP.h"
+#else
+    #error This was written for ESPs, specify your own UDP library
+#endif
 
 // <Configure> this to your own setup:
 #define DEFAULT_HUE_ANGLE 0

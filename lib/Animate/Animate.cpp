@@ -13,7 +13,7 @@
 
 
 const uint16_t PixelCount = 131;     // Length of LED stripe 144 - 13 = 131 Leds in a 30cm diameter round
-const uint8_t  PixelPin = 19;       // Data line of Addressable LEDs
+const uint8_t  PixelPin = 3;       // Data line of Addressable LEDs: RX for ESP8266
 float maxL = 0.1f;
 #ifdef RGBW
   struct RgbwColor CylonEyeColor(HslColor(0.0f, 1.0f, maxL)); // Red as default

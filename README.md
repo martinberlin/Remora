@@ -14,7 +14,7 @@ This animations run entirely in the ESP32 controller and are initially aimed to 
 ## Communications protocol
 
 UDP will be hearing in port 49161 so you can send short instructions from Orca or any other program you desire.
-This project is mainly headed to receive short UDP commands from ORCΛ but on develop branch also UDPX [Pixel library}(https://github.com/IoTPanic/pixels/) coded by IoTPanic is included. So if the UDP payload is major than 9 pixels it will trigger the binary protocol.
+This project is mainly headed to receive short UDP commands from ORCΛ but on develop branch also UDPX [Pixel library](https://github.com/IoTPanic/pixels/) coded by IoTPanic is included. So if the UDP payload is major than 9 pixels it will trigger the binary protocol.
 To test it there is an online tool called [UDPX](http://udpx.fasani.de). As a prerequisite you need to start from this repository a script to act as a middleware:
 
     nodejs middleware.js

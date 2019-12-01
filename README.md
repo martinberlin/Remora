@@ -1,9 +1,10 @@
-# Remora
+# Remora udpx
 
 ![Remora Logo](/extras/img/remora-370.png)
 
 Remora is a simple pseudo animation language that works as a companion to Orca receiving UDP short instructions and sending animations to addressable LED stripes.
-This animations run entirely in the ESP32 controller and are initially aimed to be short so they can be triggered by [Orca sequencer](https://github.com/hundredrabbits/Orca) bangs
+This animations run entirely in the ESP32 controller and are initially aimed to be short so they can be triggered by [Orca sequencer](https://github.com/hundredrabbits/Orca) bangs.
+Starting on Dec. 2019, the Remora project has been rebranded as "Remora udpx", since now it supports also the Pixels protocol. Any message that is major als 9 bytes will be interpreted as an animation frame. It also joins our open source [udpx-app](https://github.com/martinberlin/udpx-app) that has a UDP text message sender to test Remora. The cool new addition, is that a part of sending short UDP messages to trigger animations like **550** now you can also select a video from your mobile and stream that pixels to your Remora led stripe.
 
 ## Bluetooth WiFi configuration
 
@@ -18,6 +19,17 @@ https://play.google.com/store/apps/details?id=tk.giesecke.esp32wifible
 That's it you are connected! Have more devices? Just copy the password and set up different controllers.
 We took this decision since we find the Bluetooth way a much more standard way to configure IoT devices. Specially ESP32 that has BLE and Bluetooth serial included, should be in our philosophy the way to set fast things up and start using your controller. We refuse to keep on forcing people to connect to an access point to set up WiFi, thing that sometimes is very unusable, specially if you use your mobile phone as an access point.
 
+## Android App latest builds
+
+If you want to test this fast using Android to send UDP messages, just download and install the udpx app from Play store:
+<a href="https://play.google.com/store/apps/details?id=io.cordova.udpx" />
+<img src="https://github.com/martinberlin/udpx/raw/master/examples/udpx-app-180x120.jpg" />
+[udpx esp32](https://play.google.com/store/apps/details?id=io.cordova.udpx)
+
+This is updated at least once a month so maybe won't have the latest features.
+Luckycloud cloudstorage hosts the latest APK builds, if you want to check latest unstable features first uninstall the App, and download:
+
+[Latest signed APK release](https://storage.luckycloud.de/d/0c007c42956746c186a1/?p=/android/releases&mode=list)
 
 ## Branches
  

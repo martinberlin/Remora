@@ -25,7 +25,8 @@ struct config {
   char chipId[20];
   int udpPort = 49161; // 49161 Default Orca UDP Port
 } internalConfig;
-
+// WiFi credentials storage
+Preferences preferences; 
 /**
  * Generic message printer. Modify this if you want to send this messages elsewhere (Display)
  */
@@ -39,20 +40,23 @@ void printMessage(String message, bool newline = true)
     }
    }
 }
-
-/** Unique device name */
 char apName[] = "ESP32-xxxxxxxxxxxx";
-/** Selected network 
-    true = use primary network
-		false = use secondary network
-*/
 bool usePrimAP = true;
 /** Flag if stored AP credentials are available */
 bool hasCredentials = false;
 /** Connection status */
 volatile bool isConnected = false;
+bool isBleConnected = false;
 /** Connection change status */
 bool connStatusChanged = false;
+
+String ipAddress2String(const IPAddress& ipAddress)
+{
+  return String(ipAddress[0]) + String(".") +\
+  String(ipAddress[1]) + String(".") +\
+  String(ipAddress[2]) + String(".") +\
+  String(ipAddress[3]);
+}
 
 /**
  * Create unique device name from MAC address
@@ -78,153 +82,32 @@ BluetoothSerial SerialBT;
 /** Buffer for JSON string */
 StaticJsonDocument<200> jsonBuffer;
 
-/**
- * initBTSerial
- * Initialize Bluetooth Serial
- * Start BLE server and service advertising
- * @return <code>bool</code>
- * 			true if success
- * 			false if error occured
- */
-bool initBTSerial() {
-		if (!SerialBT.begin(apName)) {
-			Serial.println("Failed to start BTSerial");
-			return false;
-		}
-		Serial.println("BTSerial active. Device name: " + String(apName));
-		return true;
-}
-
-/**
- * readBTSerial
- * read all data from BTSerial receive buffer
- * parse data for valid WiFi credentials
- */
-void readBTSerial() {
-	uint64_t startTimeOut = millis();
-	String receivedData;
-	int msgSize = 0;
-	// Read RX buffer into String
-	while (SerialBT.available() != 0) {
-		receivedData += (char)SerialBT.read();
-		msgSize++;
-		// Check for timeout condition
-		if ((millis()-startTimeOut) >= 5000) break;
-	}
-	SerialBT.flush();
-	Serial.println("Received message " + receivedData + " over Bluetooth");
-
-	// decode the message | No need to do this, since we receive it as string already
-	if (receivedData[0] != '{') {
-		int keyIndex = 0;
-		for (int index = 0; index < receivedData.length(); index ++) {
-			receivedData[index] = (char) receivedData[index] ^ (char) apName[keyIndex];
-			keyIndex++;
-			if (keyIndex >= strlen(apName)) keyIndex = 0;
-		}
-		Serial.println("Decoded message: " + receivedData); 
-	}
-	
-	/** Json object for incoming data */
-	auto error = deserializeJson(jsonBuffer, receivedData);
-	if (!error)
-	{
-		if (jsonBuffer.containsKey("ssidPrim") &&
-			jsonBuffer.containsKey("pwPrim") &&
-			jsonBuffer.containsKey("ssidSec") &&
-			jsonBuffer.containsKey("pwSec"))
-		{
-			ssidPrim = jsonBuffer["ssidPrim"].as<String>();
-			pwPrim = jsonBuffer["pwPrim"].as<String>();
-			ssidSec = jsonBuffer["ssidSec"].as<String>();
-			pwSec = jsonBuffer["pwSec"].as<String>();
-
-			Preferences preferences;
-			preferences.begin("WiFiCred", false);
-			preferences.putString("ssidPrim", ssidPrim);
-			preferences.putString("ssidSec", ssidSec);
-			preferences.putString("pwPrim", pwPrim);
-			preferences.putString("pwSec", pwSec);
-			preferences.putBool("valid", true);
-			preferences.end();
-
-			Serial.println("Received over bluetooth:");
-			Serial.println("primary SSID: "+ssidPrim+" password: "+pwPrim);
-			Serial.println("secondary SSID: "+ssidSec+" password: "+pwSec);
-			connStatusChanged = true;
-			hasCredentials = true;
-			setup();
-			/* DO not restart now
-			ESP.restart(); */
-		}
-		else if (jsonBuffer.containsKey("erase"))
-		{ // {"erase":"true"}
-			Serial.println("Received erase command");
-			Preferences preferences;
-			preferences.begin("WiFiCred", false);
-			preferences.clear();
-			preferences.end();
-			connStatusChanged = true;
-			hasCredentials = false;
-			ssidPrim = "";
-			pwPrim = "";
-			ssidSec = "";
-			pwSec = "";
-
-			int err;
-			err=nvs_flash_init();
-			Serial.println("nvs_flash_init: " + err);
-			err=nvs_flash_erase();
-			Serial.println("nvs_flash_erase: " + err);
-		}
-		else if (jsonBuffer.containsKey("read"))
-		{ // {"read":"true"}
-			Serial.println("BTSerial read request");
-			String wifiCredentials;
-			jsonBuffer.clear();
-
-			/** Json object for outgoing data */
-			jsonBuffer.clear();
-			jsonBuffer["ssidPrim"] = ssidPrim;
-			jsonBuffer["pwPrim"] = pwPrim;
-			jsonBuffer["ssidSec"] = ssidSec;
-			jsonBuffer["pwSec"] = pwSec;
-			// Convert JSON object into a string
-			serializeJson(jsonBuffer, wifiCredentials);
-
-			// encode the data
-			int keyIndex = 0;
-			Serial.println("Stored settings: " + wifiCredentials);
-			for (int index = 0; index < wifiCredentials.length(); index ++) {
-				wifiCredentials[index] = (char) wifiCredentials[index] ^ (char) apName[keyIndex];
-				keyIndex++;
-				if (keyIndex >= strlen(apName)) keyIndex = 0;
-			}
-			Serial.println("Stored encrypted: " + wifiCredentials);
-
-			delay(2000);
-			SerialBT.print(wifiCredentials);
-			SerialBT.flush();
-		} else if (jsonBuffer.containsKey("reset")) {
-			WiFi.disconnect();
-			esp_restart();
-		}
-	} else {
-		Serial.println("Received invalid JSON");
-	}
-	jsonBuffer.clear();
-}
-
 /** Callback for receiving IP address from AP */
 void gotIP(system_event_id_t event) {
 	isConnected = true;
 	connStatusChanged = true;
-  
-  if (!MDNS.begin(localDomain)) {
-      while(1) { 
-      delay(100);
-      }
-    }
+
+	if (isBleConnected) {
+			Serial.println("BTSerial send ip:port isBTavailable:"+String(SerialBT.available()));
+			String wifiCredentials;
+			jsonBuffer.clear();
+			jsonBuffer["status"] = "1";
+			jsonBuffer["ip"] = ipAddress2String(WiFi.localIP());
+			jsonBuffer["port"] = internalConfig.udpPort;
+			// Convert JSON object into a string
+			serializeJson(jsonBuffer, wifiCredentials);
+			SerialBT.print(wifiCredentials);
+			SerialBT.flush();
+			delay(1000);
+	}
+	// Delete preferences for DEBUG 
+    //preferences.clear();
+    //preferences.end(); 
+	if (!MDNS.begin(localDomain)) {
+		while(1) { 
+		delay(100);
+		}
+	}
     MDNS.addService("http", "tcp", 80);
     printMessage(String(localDomain)+".local mDns started");
 
@@ -334,12 +217,153 @@ void connectWiFi() {
 	}
 }
 
+/**
+ * initBTSerial
+ * Initialize Bluetooth Serial
+ * Start BLE server and service advertising
+ * @return <code>bool</code>
+ * 			true if success
+ * 			false if error occured
+ */
+bool initBTSerial() {
+		if (!SerialBT.begin(apName)) {
+			Serial.println("Failed to start BTSerial");
+			return false;
+		}
+		Serial.println("BTSerial active. Device name: " + String(apName));
+		return true;
+}
+
+/**
+ * readBTSerial
+ * read all data from BTSerial receive buffer
+ * parse data for valid WiFi credentials
+ */
+void readBTSerial() {
+	uint64_t startTimeOut = millis();
+	String receivedData;
+	int msgSize = 0;
+	// Read RX buffer into String
+	while (SerialBT.available() != 0) {
+		receivedData += (char)SerialBT.read();
+		msgSize++;
+		// Check for timeout condition
+		if ((millis()-startTimeOut) >= 5000) break;
+	}
+	SerialBT.flush();
+	Serial.println("Received message " + receivedData + " over Bluetooth");
+
+	// decode the message | No need to do this, since we receive it as string already
+	if (receivedData[0] != '{') {
+		int keyIndex = 0;
+		for (int index = 0; index < receivedData.length(); index ++) {
+			receivedData[index] = (char) receivedData[index] ^ (char) apName[keyIndex];
+			keyIndex++;
+			if (keyIndex >= strlen(apName)) keyIndex = 0;
+		}
+		Serial.println("Decoded message: " + receivedData); 
+	}
+	
+	/** Json object for incoming data */
+	auto error = deserializeJson(jsonBuffer, receivedData);
+	if (!error)
+	{
+		if (jsonBuffer.containsKey("ssidPrim") &&
+			jsonBuffer.containsKey("pwPrim") &&
+			jsonBuffer.containsKey("ssidSec") &&
+			jsonBuffer.containsKey("pwSec"))
+		{
+			ssidPrim = jsonBuffer["ssidPrim"].as<String>();
+			pwPrim = jsonBuffer["pwPrim"].as<String>();
+			ssidSec = jsonBuffer["ssidSec"].as<String>();
+			pwSec = jsonBuffer["pwSec"].as<String>();
+
+			Preferences preferences;
+			preferences.begin("WiFiCred", false);
+			preferences.putString("ssidPrim", ssidPrim);
+			preferences.putString("ssidSec", ssidSec);
+			preferences.putString("pwPrim", pwPrim);
+			preferences.putString("pwSec", pwSec);
+			preferences.putBool("valid", true);
+			preferences.end();
+
+			Serial.println("Received over bluetooth:");
+			Serial.println("primary SSID: "+ssidPrim+" password: "+pwPrim);
+			Serial.println("secondary SSID: "+ssidSec+" password: "+pwSec);
+			connStatusChanged = true;
+			hasCredentials = true;
+			isBleConnected = true;
+			
+			if (!scanWiFi()) {
+				Serial.println("Could not find any AP");
+			} else {
+				// If AP was found, start connection
+				connectWiFi();
+			}
+
+		}
+		else if (jsonBuffer.containsKey("erase"))
+		{ // {"erase":"true"}
+			Serial.println("Received erase command");
+			Preferences preferences;
+			preferences.begin("WiFiCred", false);
+			preferences.clear();
+			preferences.end();
+			connStatusChanged = true;
+			hasCredentials = false;
+			ssidPrim = "";
+			pwPrim = "";
+			ssidSec = "";
+			pwSec = "";
+
+			int err;
+			err=nvs_flash_init();
+			Serial.println("nvs_flash_init: " + err);
+			err=nvs_flash_erase();
+			Serial.println("nvs_flash_erase: " + err);
+		}
+		else if (jsonBuffer.containsKey("read"))
+		{ // {"read":"true"}
+			Serial.println("BTSerial read request");
+			String wifiCredentials;
+			jsonBuffer.clear();
+
+			/** Json object for outgoing data */
+			jsonBuffer.clear();
+			jsonBuffer["ssidPrim"] = ssidPrim;
+			jsonBuffer["pwPrim"] = pwPrim;
+			jsonBuffer["ssidSec"] = ssidSec;
+			jsonBuffer["pwSec"] = pwSec;
+			// Convert JSON object into a string
+			serializeJson(jsonBuffer, wifiCredentials);
+
+			// encode the data
+			int keyIndex = 0;
+			Serial.println("Stored settings: " + wifiCredentials);
+			for (int index = 0; index < wifiCredentials.length(); index ++) {
+				wifiCredentials[index] = (char) wifiCredentials[index] ^ (char) apName[keyIndex];
+				keyIndex++;
+				if (keyIndex >= strlen(apName)) keyIndex = 0;
+			}
+			Serial.println("Stored encrypted: " + wifiCredentials);
+
+			delay(2000);
+			SerialBT.print(wifiCredentials);
+			SerialBT.flush();
+		} else if (jsonBuffer.containsKey("reset")) {
+			WiFi.disconnect();
+			esp_restart();
+		}
+	} else {
+		Serial.println("Received invalid JSON");
+	}
+	jsonBuffer.clear();
+}
+
 void setup()
 { 
 	Serial.begin(115200);
 	createName();
-  
-  	Preferences preferences; 
 	preferences.begin("WiFiCred", false);
   
   // Uncomment to --force erase credentials

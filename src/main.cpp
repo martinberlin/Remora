@@ -369,10 +369,6 @@ void setup()
 	Serial.begin(115200);
 	createName();
 	preferences.begin("WiFiCred", false);
-  
-  // Uncomment to --force erase credentials
-  // preferences.clear();
-  // preferences.end(); 
 
 	bool hasPref = preferences.getBool("valid", false);
 	if (hasPref) {
@@ -397,7 +393,7 @@ void setup()
 	}
 	preferences.end();
 
-	// Start BTSerial
+	// Start Bluetooth serial
 	initBTSerial();
 
 	if (hasCredentials) {
@@ -412,14 +408,11 @@ void setup()
 }
 
 void loop() {
-  if (isConnected) {
-    animate.loop();
-  } else {
-    // Check if Data over SerialBT has arrived
-    if (SerialBT.available() != 0) {
-      // Get and parse received data
-      readBTSerial();
+    if (isConnected) {
+        animate.loop();
     }
-  }
-  
+	// Do an else on isConnected if you want to avoid having Bluetooth serial at the same time
+	if (SerialBT.available() != 0) {
+		readBTSerial();
+	}
 }

@@ -20,26 +20,14 @@ bool debugMode = true;
 TimerHandle_t wifiReconnectTimer;
 // Animation handling class
 Animate animate;
-const char* localDomain = MDNSDOMAIN; // mDNS: led.local (Config.h)
+
 struct config {
   char chipId[20];
   int udpPort = 49161; // 49161 Default Orca UDP Port
 } internalConfig;
 // WiFi credentials storage
 Preferences preferences; 
-/**
- * Generic message printer. Modify this if you want to send this messages elsewhere (Display)
- */
-void printMessage(String message, bool newline = true)
-{
-  if (debugMode) {
-    if (newline) {
-      Serial.println(message);
-    } else {
-      Serial.print(message);
-    }
-   }
-}
+
 char apName[] = "ESP32-xxxxxxxxxxxx";
 bool usePrimAP = true;
 /** Flag if stored AP credentials are available */
@@ -57,7 +45,19 @@ String ipAddress2String(const IPAddress& ipAddress)
   String(ipAddress[2]) + String(".") +\
   String(ipAddress[3]);
 }
-
+/**
+ * Generic message printer. Modify this if you want to send this messages elsewhere (Display)
+ */
+void printMessage(String message, bool newline = true)
+{
+  if (debugMode) {
+    if (newline) {
+      Serial.println(message);
+    } else {
+      Serial.print(message);
+    }
+   }
+}
 /**
  * Create unique device name from MAC address
  **/
@@ -82,34 +82,53 @@ BluetoothSerial SerialBT;
 /** Buffer for JSON string */
 StaticJsonDocument<200> jsonBuffer;
 
+/**
+ * initBTSerial
+ * Initialize Bluetooth Serial
+ * Start BLE server and service advertising
+ * @return <code>bool</code>
+ * 			true if success
+ * 			false if error occured
+ */
+bool initBTSerial() {
+		if (!SerialBT.begin(apName)) {
+			Serial.println("Failed to start BTSerial");
+			return false;
+		}
+		Serial.println("BTSerial active. Device name: " + String(apName));
+		return true;
+}
+
 /** Callback for receiving IP address from AP */
 void gotIP(system_event_id_t event) {
 	isConnected = true;
 	connStatusChanged = true;
 
+    // The plan was to return ip:port to the App once connected but Bluetooth seems to disconnect after WiFi
 	if (isBleConnected) {
-			Serial.println("BTSerial send ip:port isBTavailable:"+String(SerialBT.available()));
-			String wifiCredentials;
-			jsonBuffer.clear();
-			jsonBuffer["status"] = "1";
-			jsonBuffer["ip"] = ipAddress2String(WiFi.localIP());
-			jsonBuffer["port"] = internalConfig.udpPort;
-			// Convert JSON object into a string
-			serializeJson(jsonBuffer, wifiCredentials);
-			SerialBT.print(wifiCredentials);
-			SerialBT.flush();
-			delay(1000);
+		Serial.println("BTSerial send ip:port isBTavailable:"+String(SerialBT.available()));
+		String wifiCredentials;
+		jsonBuffer.clear();
+		jsonBuffer["status"] = 1;
+		jsonBuffer["ip"] = ipAddress2String(WiFi.localIP());
+		jsonBuffer["port"] = internalConfig.udpPort;
+		// Convert JSON object into a string
+		serializeJson(jsonBuffer, wifiCredentials);
+		Serial.println(wifiCredentials);
+		Serial.println();
+
+		SerialBT.print(wifiCredentials);
+		SerialBT.flush();
+		// Is not sent since after WiFI BT connection is cut
 	}
-	// Delete preferences for DEBUG 
-    //preferences.clear();
-    //preferences.end(); 
-	if (!MDNS.begin(localDomain)) {
+
+	if (!MDNS.begin(apName)) {
 		while(1) { 
 		delay(100);
 		}
 	}
     MDNS.addService("http", "tcp", 80);
-    printMessage(String(localDomain)+".local mDns started");
+    printMessage(String(apName)+".local mDns started");
 
     animate.startUdpListener(WiFi.localIP(), internalConfig.udpPort);
 }
@@ -217,22 +236,7 @@ void connectWiFi() {
 	}
 }
 
-/**
- * initBTSerial
- * Initialize Bluetooth Serial
- * Start BLE server and service advertising
- * @return <code>bool</code>
- * 			true if success
- * 			false if error occured
- */
-bool initBTSerial() {
-		if (!SerialBT.begin(apName)) {
-			Serial.println("Failed to start BTSerial");
-			return false;
-		}
-		Serial.println("BTSerial active. Device name: " + String(apName));
-		return true;
-}
+
 
 /**
  * readBTSerial

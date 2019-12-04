@@ -114,16 +114,17 @@ void readBTSerial() {
 	SerialBT.flush();
 	Serial.println("Received message " + receivedData + " over Bluetooth");
 
-	// decode the message 
-	int keyIndex = 0;
-	for (int index = 0; index < receivedData.length(); index ++) {
-		receivedData[index] = (char) receivedData[index] ^ (char) apName[keyIndex];
-		keyIndex++;
-		if (keyIndex >= strlen(apName)) keyIndex = 0;
+	// decode the message | No need to do this, since we receive it as string already
+	if (receivedData[0] != '{') {
+		int keyIndex = 0;
+		for (int index = 0; index < receivedData.length(); index ++) {
+			receivedData[index] = (char) receivedData[index] ^ (char) apName[keyIndex];
+			keyIndex++;
+			if (keyIndex >= strlen(apName)) keyIndex = 0;
+		}
+		Serial.println("Decoded message: " + receivedData); 
 	}
-
-	Serial.println("Received message " + receivedData + " over Bluetooth");
-
+	
 	/** Json object for incoming data */
 	auto error = deserializeJson(jsonBuffer, receivedData);
 	if (!error)
@@ -152,8 +153,9 @@ void readBTSerial() {
 			Serial.println("secondary SSID: "+ssidSec+" password: "+pwSec);
 			connStatusChanged = true;
 			hasCredentials = true;
-			delay(500); 
-			ESP.restart();
+			setup();
+			/* DO not restart now
+			ESP.restart(); */
 		}
 		else if (jsonBuffer.containsKey("erase"))
 		{ // {"erase":"true"}
@@ -234,7 +236,7 @@ void lostCon(system_event_id_t event) {
 	isConnected = false;
 	connStatusChanged = true;
 
-  Serial.println("WiFi lost connection, restarting");
+    Serial.println("WiFi lost connection, restarting");
 	ESP.restart();
 }
 
@@ -339,9 +341,10 @@ void setup()
   
   	Preferences preferences; 
 	preferences.begin("WiFiCred", false);
-    // Uncomment to --force erase credentials
-	//preferences.clear();
-    //preferences.end(); 
+  
+  // Uncomment to --force erase credentials
+  // preferences.clear();
+  // preferences.end(); 
 
 	bool hasPref = preferences.getBool("valid", false);
 	if (hasPref) {

@@ -17,6 +17,9 @@ https://play.google.com/store/apps/details?id=tk.giesecke.esp32wifible
 3. Write your WiFi SSID / Password and hit Send
 
 That's it you are connected! Have more devices? Just copy the password and set up different controllers.
+
+**Credits are due:** All logic doing the Firmware part is from Bernd Giesecke, since I followed his great example, to make Remora configurable per Bluetooth serial.
+
 We took this decision since we find the Bluetooth way a much more standard way to configure IoT devices. Specially ESP32 that has BLE and Bluetooth serial included, should be in our philosophy the way to set fast things up and start using your controller. We refuse to keep on forcing people to connect to an access point to set up WiFi, thing that sometimes is very unusable, specially if you use your mobile phone as an access point.
 
 ## Android App latest builds

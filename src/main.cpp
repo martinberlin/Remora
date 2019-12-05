@@ -98,6 +98,133 @@ void printMessage(String message, bool newline = true)
 }
 
 /**
+	 scanWiFi
+	 Scans for available networks 
+	 and decides if a switch between
+	 allowed networks makes sense
+
+	 @return <code>bool</code>
+	        True if at least one allowed network was found
+*/
+bool scanWiFi() {
+	/** RSSI for primary network */
+	int8_t rssiPrim = 0;
+	/** RSSI for secondary network */
+	int8_t rssiSec = 0;
+	/** Result of this function */
+	bool result = false;
+
+	Serial.println("Start scanning for networks");
+
+	WiFi.disconnect(true);
+	WiFi.enableSTA(true);
+	WiFi.mode(WIFI_STA);
+
+	// Scan for AP
+	int apNum = WiFi.scanNetworks(false,true,false,1000);
+	if (apNum == 0) {
+		Serial.println("Found no networks");
+		return false;
+	}
+	
+	byte foundAP = 0;
+	bool foundPrim = false;
+
+	for (int index=0; index<apNum; index++) {
+		String ssid = WiFi.SSID(index);
+		Serial.println("Found AP: " + ssid + " RSSI: " + WiFi.RSSI(index));
+		if (!strcmp((const char*) &ssid[0], (const char*) &ssidPrim[0])) {
+			Serial.println("Found primary AP");
+			foundAP++;
+			foundPrim = true;
+			rssiPrim = WiFi.RSSI(index);
+		}
+		if (!strcmp((const char*) &ssid[0], (const char*) &ssidSec[0])) {
+			Serial.println("Found secondary AP");
+			foundAP++;
+			rssiSec = WiFi.RSSI(index);
+		}
+	}
+
+	switch (foundAP) {
+		case 0:
+			result = false;
+			break;
+		case 1:
+			if (foundPrim) {
+				usePrimAP = true;
+			} else {
+				usePrimAP = false;
+			}
+			result = true;
+			break;
+		default:
+			Serial.printf("RSSI Prim: %d Sec: %d\n", rssiPrim, rssiSec);
+			if (rssiPrim > rssiSec) {
+				usePrimAP = true; // RSSI of primary network is better
+			} else {
+				usePrimAP = false; // RSSI of secondary network is better
+			}
+			result = true;
+			break;
+	}
+	return result;
+}
+
+/** Callback for receiving IP address from AP */
+void gotIP(system_event_id_t event) {
+	isConnected = true;
+	connStatusChanged = true;
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+
+
+  if (!MDNS.begin(localDomain)) {
+    while(1) { 
+    delay(100);
+    }
+  }
+  MDNS.addService("http", "tcp", 80);
+  printMessage(String(localDomain)+".local mDns started");
+
+  animate.startUdpListener(WiFi.localIP(), internalConfig.udpPort);
+}
+
+
+/** Callback for connection loss */
+void lostCon(system_event_id_t event) {
+	isConnected = false;
+	connStatusChanged = true;
+    Serial.println("WiFi lost connection, restarting");
+	ESP.restart();
+}
+
+/**
+ * Start connection to AP
+ */
+void connectWiFi() {
+	// Setup callback function for successful connection
+	WiFi.onEvent(gotIP, SYSTEM_EVENT_STA_GOT_IP);
+	// Setup callback function for lost connection
+	WiFi.onEvent(lostCon, SYSTEM_EVENT_STA_DISCONNECTED);
+
+	WiFi.disconnect(true);
+	WiFi.enableSTA(true);
+	WiFi.mode(WIFI_STA);
+
+	Serial.println();
+	Serial.print("Start connection to ");
+	if (usePrimAP) {
+		Serial.println(ssidPrim);
+		WiFi.begin(ssidPrim.c_str(), pwPrim.c_str());
+	} else {
+		Serial.println(ssidSec);
+		WiFi.begin(ssidSec.c_str(), pwSec.c_str());
+	}
+}
+
+/**
  * MyServerCallbacks
  * Callbacks for client connection and disconnection
  */
@@ -265,132 +392,6 @@ void initBLE() {
 	// Start advertising
 	pAdvertising = pServer->getAdvertising();
 	pAdvertising->start();
-}
-
-/** Callback for receiving IP address from AP */
-void gotIP(system_event_id_t event) {
-	isConnected = true;
-	connStatusChanged = true;
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
-
-
-  if (!MDNS.begin(localDomain)) {
-    while(1) { 
-    delay(100);
-    }
-  }
-  MDNS.addService("http", "tcp", 80);
-  printMessage(String(localDomain)+".local mDns started");
-
-  animate.startUdpListener(WiFi.localIP(), internalConfig.udpPort);
-}
-
-/** Callback for connection loss */
-void lostCon(system_event_id_t event) {
-	isConnected = false;
-	connStatusChanged = true;
-    Serial.println("WiFi lost connection, restarting");
-	ESP.restart();
-}
-
-/**
-	 scanWiFi
-	 Scans for available networks 
-	 and decides if a switch between
-	 allowed networks makes sense
-
-	 @return <code>bool</code>
-	        True if at least one allowed network was found
-*/
-bool scanWiFi() {
-	/** RSSI for primary network */
-	int8_t rssiPrim = 0;
-	/** RSSI for secondary network */
-	int8_t rssiSec = 0;
-	/** Result of this function */
-	bool result = false;
-
-	Serial.println("Start scanning for networks");
-
-	WiFi.disconnect(true);
-	WiFi.enableSTA(true);
-	WiFi.mode(WIFI_STA);
-
-	// Scan for AP
-	int apNum = WiFi.scanNetworks(false,true,false,1000);
-	if (apNum == 0) {
-		Serial.println("Found no networks");
-		return false;
-	}
-	
-	byte foundAP = 0;
-	bool foundPrim = false;
-
-	for (int index=0; index<apNum; index++) {
-		String ssid = WiFi.SSID(index);
-		Serial.println("Found AP: " + ssid + " RSSI: " + WiFi.RSSI(index));
-		if (!strcmp((const char*) &ssid[0], (const char*) &ssidPrim[0])) {
-			Serial.println("Found primary AP");
-			foundAP++;
-			foundPrim = true;
-			rssiPrim = WiFi.RSSI(index);
-		}
-		if (!strcmp((const char*) &ssid[0], (const char*) &ssidSec[0])) {
-			Serial.println("Found secondary AP");
-			foundAP++;
-			rssiSec = WiFi.RSSI(index);
-		}
-	}
-
-	switch (foundAP) {
-		case 0:
-			result = false;
-			break;
-		case 1:
-			if (foundPrim) {
-				usePrimAP = true;
-			} else {
-				usePrimAP = false;
-			}
-			result = true;
-			break;
-		default:
-			Serial.printf("RSSI Prim: %d Sec: %d\n", rssiPrim, rssiSec);
-			if (rssiPrim > rssiSec) {
-				usePrimAP = true; // RSSI of primary network is better
-			} else {
-				usePrimAP = false; // RSSI of secondary network is better
-			}
-			result = true;
-			break;
-	}
-	return result;
-}
-
-/**
- * Start connection to AP
- */
-void connectWiFi() {
-	// Setup callback function for successful connection
-	WiFi.onEvent(gotIP, SYSTEM_EVENT_STA_GOT_IP);
-	// Setup callback function for lost connection
-	WiFi.onEvent(lostCon, SYSTEM_EVENT_STA_DISCONNECTED);
-
-	WiFi.disconnect(true);
-	WiFi.enableSTA(true);
-	WiFi.mode(WIFI_STA);
-
-	Serial.println();
-	Serial.print("Start connection to ");
-	if (usePrimAP) {
-		Serial.println(ssidPrim);
-		WiFi.begin(ssidPrim.c_str(), pwPrim.c_str());
-	} else {
-		Serial.println(ssidSec);
-		WiFi.begin(ssidSec.c_str(), pwSec.c_str());
-	}
 }
 
 /**

@@ -121,20 +121,30 @@ class MyCallbackHandler: public BLECharacteristicCallbacks {
 	void onWrite(BLECharacteristic *pCharacteristic) {
 		std::string value = pCharacteristic->getValue();
 		if (value.length() == 0) {
+			Serial.println("ERR Empty string received");
 			return;
 		}
-		Serial.println("Received over BLE: " + String((char *)&value[0]));
-
-		// Decode data
-		int keyIndex = 0;
-		for (int index = 0; index < value.length(); index ++) {
-			value[index] = (char) value[index] ^ (char) apName[keyIndex];
-			keyIndex++;
-			if (keyIndex >= strlen(apName)) keyIndex = 0;
+		
+		Serial.println("Received over BLE: "); 
+		String inJson;
+		for (int i = 0; i < value.length(); i++) {
+          Serial.print(value[i]);
+		  inJson = inJson + value[i];
 		}
-
-		/** Json object for incoming data */
-		JsonObject& jsonIn = jsonBuffer.parseObject((char *)&value[0]);
+			
+		// decode the message | No need to do this, since we receive it as string already, but let's support ESP32_WIFI_BLE
+		if (value[0] != '{') {
+			int keyIndex = 0;
+			for (int index = 0; index < value.length(); index ++) {
+				value[index] = (char) value[index] ^ (char) apName[keyIndex];
+				keyIndex++;
+				if (keyIndex >= strlen(apName)) keyIndex = 0;
+			}
+			/** Json object for incoming data */
+			inJson = (char *)&value[0];
+		} 
+		JsonObject& jsonIn = jsonBuffer.parseObject(inJson);
+		
 		if (jsonIn.success()) {
 			if (jsonIn.containsKey("ssidPrim") &&
 					jsonIn.containsKey("pwPrim") && 
@@ -159,6 +169,14 @@ class MyCallbackHandler: public BLECharacteristicCallbacks {
 				Serial.println("secondary SSID: "+ssidSec+" password: "+pwSec);
 				connStatusChanged = true;
 				hasCredentials = true;
+
+				if (!scanWiFi()) {
+				Serial.println("Could not find any AP");
+				} else {
+					// If AP was found, start connection
+					connectWiFi();
+				}
+
 			} else if (jsonIn.containsKey("erase")) {
 				Serial.println("Received erase command");
 				Preferences preferences;
@@ -413,7 +431,11 @@ void setup()
 	Serial.println(compileDate);
 
 	Preferences preferences;
+
 	preferences.begin("WiFiCred", false);
+	// Remove comments to clear stored WiFi
+	//preferences.clear();
+	//preferences.end();
 	bool hasPref = preferences.getBool("valid", false);
 	if (hasPref) {
 		ssidPrim = preferences.getString("ssidPrim","");

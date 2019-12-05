@@ -34,8 +34,6 @@ bool usePrimAP = true;
 bool hasCredentials = false;
 /** Connection status */
 volatile bool isConnected = false;
-bool isBleConnected = false;
-/** Connection change status */
 bool connStatusChanged = false;
 
 String ipAddress2String(const IPAddress& ipAddress)
@@ -105,23 +103,6 @@ void gotIP(system_event_id_t event) {
 	connStatusChanged = true;
 
     // The plan was to return ip:port to the App once connected but Bluetooth seems to disconnect after WiFi
-	if (isBleConnected) {
-		Serial.println("BTSerial send ip:port isBTavailable:"+String(SerialBT.available()));
-		String wifiCredentials;
-		jsonBuffer.clear();
-		jsonBuffer["status"] = 1;
-		jsonBuffer["ip"] = ipAddress2String(WiFi.localIP());
-		jsonBuffer["port"] = internalConfig.udpPort;
-		// Convert JSON object into a string
-		serializeJson(jsonBuffer, wifiCredentials);
-		Serial.println(wifiCredentials);
-		Serial.println();
-
-		SerialBT.print(wifiCredentials);
-		SerialBT.flush();
-		// Is not sent since after WiFI BT connection is cut
-	}
-
 	if (!MDNS.begin(apName)) {
 		while(1) { 
 		delay(100);
@@ -236,8 +217,6 @@ void connectWiFi() {
 	}
 }
 
-
-
 /**
  * readBTSerial
  * read all data from BTSerial receive buffer
@@ -296,7 +275,6 @@ void readBTSerial() {
 			Serial.println("secondary SSID: "+ssidSec+" password: "+pwSec);
 			connStatusChanged = true;
 			hasCredentials = true;
-			isBleConnected = true;
 			
 			if (!scanWiFi()) {
 				Serial.println("Could not find any AP");
@@ -325,6 +303,25 @@ void readBTSerial() {
 			Serial.println("nvs_flash_init: " + err);
 			err=nvs_flash_erase();
 			Serial.println("nvs_flash_erase: " + err);
+		}
+		else if (jsonBuffer.containsKey("getip"))
+		{ // {"getip":"true"}
+			Serial.println("getip");
+			String wifiCredentials;
+			jsonBuffer.clear();
+			jsonBuffer["status"] = 1;
+			jsonBuffer["ip"] = ipAddress2String(WiFi.localIP());
+			jsonBuffer["port"] = internalConfig.udpPort;
+			serializeJson(jsonBuffer, wifiCredentials);
+			Serial.println(wifiCredentials);
+			Serial.println();
+			if (SerialBT.available()) {
+				SerialBT.print(wifiCredentials);
+				SerialBT.flush();
+			} else {
+				Serial.println("Cannot send IP request: Serial Bluetooth is not available");
+			}
+			
 		}
 		else if (jsonBuffer.containsKey("read"))
 		{ // {"read":"true"}
@@ -368,7 +365,12 @@ void setup()
 { 
 	Serial.begin(115200);
 	createName();
+
+	// Start Bluetooth serial
+	initBTSerial();
+	delay(9000);
 	preferences.begin("WiFiCred", false);
+    //preferences.clear();
 
 	bool hasPref = preferences.getBool("valid", false);
 	if (hasPref) {
@@ -393,9 +395,6 @@ void setup()
 	}
 	preferences.end();
 
-	// Start Bluetooth serial
-	initBTSerial();
-
 	if (hasCredentials) {
 		// Check for available AP's
 		if (!scanWiFi()) {
@@ -405,6 +404,8 @@ void setup()
 			connectWiFi();
 		}
 	}
+
+
 }
 
 void loop() {

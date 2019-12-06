@@ -44,14 +44,11 @@ Luckycloud cloudstorage hosts the latest APK builds, if you want to check latest
 ## Communications protocol
 
 UDP will be hearing in port 49161 so you can send short instructions from Orca or any other program you desire.
-This project is mainly headed to receive short UDP commands from ORCΛ but on develop branch also UDPX [Pixel library}(https://github.com/IoTPanic/pixels/) coded by IoTPanic is included. So if the UDP payload is major than 9 pixels it will trigger the binary protocol.
-To test it there is an online tool called [UDPX](http://api.slosarek.eu/udpx/). As a prerequisite you need to start from this repository a script to act as a middleware:
+This project is mainly headed to receive short UDP commands from ORCΛ but on master and develop branches also [udpx Pixel library](https://github.com/IoTPanic/pixels/) coded by IoTPanic is included.
+So if the UDP payload is major than 9 pixels it will trigger the binary protocol.
+[udpx video Demo](http://udpx.fasani.de)
 
-    nodejs middleware.js
-
-For security reasons it's not allowed to send UDP directly from the browser, so this acts as a proxy doing TCP->UDP.
-Fill your ESP32 IP address and UDP port with 49161. Provided the middleware is running you should be able to send binary animations directly from the UDPX tester. 
-The test is though as a learning tool. Please read the documentation of the [UDPX Repository](https://github.com/martinberlin/udpx) to understand more about the communications protocol.
+Please read the documentation of the [UDPX Repository](https://github.com/martinberlin/udpx) if you want to understand more about the communications protocol.
 
 ### Requirements and discovering the ESP32 IP Address
 

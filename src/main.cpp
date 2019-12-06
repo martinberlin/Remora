@@ -1,6 +1,5 @@
 
-// Config.h and Animate.h need configuration
-#include <Config.h>  // WiFi credentials, mDNS Domain
+// Animate.h need configuration
 #include <Animate.h> // PixelCount, PixelPin
 #include <ESPmDNS.h>
 #include <U8g2lib.h> 
@@ -26,7 +25,7 @@ bool debugMode = true;
 TimerHandle_t wifiReconnectTimer;
 // Animation handling class
 Animate animate;
-const char* localDomain = MDNSDOMAIN; // mDNS: led.local (Config.h)
+
 struct config {
   char chipId[20];
   int udpPort = 49161; // 49161 Default Orca UDP Port
@@ -36,7 +35,7 @@ struct config {
 const char compileDate[] = __DATE__ " " __TIME__;
 
 /** Unique device name */
-char apName[] = "ESP32-xxxxxxxxxxxx";
+char apName[] = "ESP-xxxxxxxxxxxx_49161";
 /** Selected network 
     true = use primary network
 		false = use secondary network
@@ -57,7 +56,7 @@ void createName() {
 	// Get MAC address for WiFi station
 	esp_read_mac(baseMac, ESP_MAC_WIFI_STA);
 	// Write unique name into apName
-	sprintf(apName, "ESP32-%02X%02X%02X%02X%02X%02X", baseMac[0], baseMac[1], baseMac[2], baseMac[3], baseMac[4], baseMac[5]);
+	sprintf(apName, "ESP-%02X%02X%02X%02X%02X%02X_%d", baseMac[0], baseMac[1], baseMac[2], baseMac[3], baseMac[4], baseMac[5], internalConfig.udpPort);
 }
 
 // List of Service and Characteristic UUIDs
@@ -179,14 +178,13 @@ void gotIP(system_event_id_t event) {
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 
-
-  if (!MDNS.begin(localDomain)) {
+  if (!MDNS.begin(apName)) {
     while(1) { 
     delay(100);
     }
   }
   MDNS.addService("http", "tcp", 80);
-  printMessage(String(localDomain)+".local mDns started");
+  printMessage(String(apName)+".local mDns started");
 
   animate.startUdpListener(WiFi.localIP(), internalConfig.udpPort);
 }

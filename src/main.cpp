@@ -102,25 +102,20 @@ void gotIP(system_event_id_t event) {
 	isConnected = true;
 	connStatusChanged = true;
 
-    // The plan was to return ip:port to the App once connected but Bluetooth seems to disconnect after WiFi
-	if (!MDNS.begin(apName)) {
-		while(1) { 
-		delay(100);
-		}
-	}
+    // The plan is to return ESP32-MAC_PORT
+	String port = String(internalConfig.udpPort);
+	uint8_t mdnsLength = strlen(apName)+strlen(port.c_str())+1;
+	char mdnsName[mdnsLength];
+	strcat(mdnsName, apName);
+	strcat(mdnsName, "_");
+	strcat(mdnsName, port.c_str());
+
+	MDNS.begin(mdnsName);
+	delay(100);
     MDNS.addService("http", "tcp", 80);
-    printMessage(String(apName)+".local mDns started");
+    printMessage(String(mdnsName)+".local mDns started");
 
     animate.startUdpListener(WiFi.localIP(), internalConfig.udpPort);
-}
-
-/** Callback for connection loss */
-void lostCon(system_event_id_t event) {
-	isConnected = false;
-	connStatusChanged = true;
-
-    Serial.println("WiFi lost connection, restarting");
-	ESP.restart();
 }
 
 /**
@@ -195,6 +190,16 @@ bool scanWiFi() {
 			break;
 	}
 	return result;
+}
+
+/** Callback for connection loss */
+void lostCon(system_event_id_t event) {
+	isConnected = false;
+	connStatusChanged = true;
+
+    Serial.println("WiFi lost connection, trying to connect again");
+	//ESP.restart();
+	WiFi.begin(ssidPrim.c_str(), pwPrim.c_str());
 }
 
 /**

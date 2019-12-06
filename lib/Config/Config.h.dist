@@ -1,4 +1,6 @@
 // Configuration is over Bluetooth now, there are not anymore WiFi credentials here
 // Please use the ESP32-WiFI-BLE App:
 // https://play.google.com/store/apps/details?id=tk.giesecke.esp32wifible
-#define MDNSDOMAIN "remora"
+
+// MDNSDOMAIN now set automatically if not defined here, need to follow naming: NAME_PORT
+//#define MDNSDOMAIN "remora_49161"

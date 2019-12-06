@@ -28,7 +28,7 @@ struct config {
 // WiFi credentials storage
 Preferences preferences; 
 
-char apName[] = "ESP32-xxxxxxxxxxxx";
+char apName[] = "ESP-xxxxxxxxxxxx_49161";
 bool usePrimAP = true;
 /** Flag if stored AP credentials are available */
 bool hasCredentials = false;
@@ -64,7 +64,7 @@ void createName() {
 	// Get MAC address for WiFi station
 	esp_read_mac(baseMac, ESP_MAC_WIFI_STA);
 	// Write unique name into apName
-	sprintf(apName, "ESP32-%02X%02X%02X%02X%02X%02X", baseMac[0], baseMac[1], baseMac[2], baseMac[3], baseMac[4], baseMac[5]);
+	sprintf(apName, "ESP-%02X%02X%02X%02X%02X%02X_%d", baseMac[0], baseMac[1], baseMac[2], baseMac[3], baseMac[4], baseMac[5], internalConfig.udpPort);
 }
 
 /** SSIDs of local WiFi networks */
@@ -102,18 +102,10 @@ void gotIP(system_event_id_t event) {
 	isConnected = true;
 	connStatusChanged = true;
 
-    // The plan is to return ESP32-MAC_PORT
-	String port = String(internalConfig.udpPort);
-	uint8_t mdnsLength = strlen(apName)+strlen(port.c_str())+2;
-	char mdnsName[mdnsLength];
-	strcat(mdnsName, apName);
-	strcat(mdnsName, "_");
-	strcat(mdnsName, port.c_str());
-
-	MDNS.begin(mdnsName);
+	MDNS.begin(apName);
 	delay(100);
     MDNS.addService("http", "tcp", 80);
-    printMessage(String(mdnsName)+".local mDns started");
+    printMessage(String(apName)+".local mDns started");
 
     animate.startUdpListener(WiFi.localIP(), internalConfig.udpPort);
 }

@@ -104,7 +104,7 @@ void gotIP(system_event_id_t event) {
 
     // The plan is to return ESP32-MAC_PORT
 	String port = String(internalConfig.udpPort);
-	uint8_t mdnsLength = strlen(apName)+strlen(port.c_str())+1;
+	uint8_t mdnsLength = strlen(apName)+strlen(port.c_str())+2;
 	char mdnsName[mdnsLength];
 	strcat(mdnsName, apName);
 	strcat(mdnsName, "_");

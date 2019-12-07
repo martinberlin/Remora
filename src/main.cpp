@@ -1,9 +1,7 @@
 // Remora Firmware WiFi Configuration over Bluetooth serial
 #include <WiFi.h>
-#include <nvs.h>
-#include <nvs_flash.h>
 // Config.h and Animate.h need configuration
-#include <Config.h>  // WiFi credentials, mDNS Domain
+#include <Config.h>  // WiFi credentials, mDNS Domain - Not used for now with Blue config
 #include <Animate.h> // PixelCount, PixelPin
 #include <ESPmDNS.h>
 #include "freertos/FreeRTOS.h"

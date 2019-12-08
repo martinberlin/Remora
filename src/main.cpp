@@ -33,6 +33,7 @@ bool hasCredentials = false;
 /** Connection status */
 volatile bool isConnected = false;
 bool connStatusChanged = false;
+uint8_t lostConnectionCount = 1;
 
 String ipAddress2String(const IPAddress& ipAddress)
 {
@@ -187,8 +188,17 @@ void lostCon(system_event_id_t event) {
 	isConnected = false;
 	connStatusChanged = true;
 
-    Serial.println("WiFi lost connection, trying to connect again");
-	//ESP.restart();
+    Serial.printf("WiFi lost connection try %d to connect again\n", lostConnectionCount);
+	lostConnectionCount++;
+	// Avoid trying to connect forever if the user made a typo in password
+	if (lostConnectionCount>4) {
+		Serial.println("Clearing saved WiFi credentials");
+		preferences.begin("WiFiCred", false);
+		preferences.clear();
+		preferences.end();
+		delay(500);
+		ESP.restart();
+	}
 	WiFi.begin(ssidPrim.c_str(), pwPrim.c_str());
 }
 
@@ -359,13 +369,20 @@ void readBTSerial() {
 void setup()
 { 
 	Serial.begin(115200);
+	Serial.println("Remora udpx v"+String(UDPX_VERSION));
 	createName();
 
 	// Start Bluetooth serial
 	initBTSerial();
-	delay(9000);
+	int waitLoop = 0;
+	while (waitLoop < BLE_WAIT_FOR_CONFIG) {
+		if (SerialBT.available() != 0) {
+			readBTSerial();		
+  		}
+		waitLoop++;
+		delay(1);
+	}
 	preferences.begin("WiFiCred", false);
-    //preferences.clear();
 
 	bool hasPref = preferences.getBool("valid", false);
 	if (hasPref) {
@@ -393,7 +410,9 @@ void setup()
 	if (hasCredentials) {
 		// Check for available AP's
 		if (!scanWiFi()) {
-			Serial.println("Could not find any AP");
+			Serial.println("Could not find any AP, restarting in 1 second");
+			delay(1000);
+			ESP.restart();
 		} else {
 			// If AP was found, start connection
 			connectWiFi();

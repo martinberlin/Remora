@@ -13,16 +13,17 @@ Starting in December 2019 all the configuration in the master branches of the ud
 If you want to take advantage of this fast setup, there are [detailed instructions in udpx repository](https://github.com/martinberlin/udpx#configuring-wifi-using-bluetooth).
 **Please install one of this Applications in any Android device:**
 
-1. [udpx](https://play.google.com/store/apps/details?id=io.cordova.udpx
+1. [udpx](https://play.google.com/store/apps/details?id=io.cordova.udpx)
 2. [ESP32-WiFI-BLE](https://play.google.com/store/apps/details?id=tk.giesecke.esp32wifible)
 
 The benefit of using udpx is that it has Bluetooth WiFi configuration and also multicast DNS discovery, so you can discover the IP address after some seconds connected. The benefit of ESP32-WiFi-BLE is that it let's you setup 2 access points, in case you have a show and need to use your mobile Hotspot. In a nutshell:
 
 1. Start the App, power up your Remora ESP32
-2. Select your device starting with ESP32_MAC_49161
-3. Write your WiFi SSID / Password and hit Send
+2. Config Tab -> Select your device starting with ESP32_MAC_49161
+3. Write your WiFi SSID / Password and hit Send 
 
-That's it you are connected! Have more devices? Just copy the password and set up different controllers.
+That's it, if your WiFi name and password match you should be connected in some seconds
+Have more devices? Just go back to point 2 and set up different controllers.
 You can also check this [short video](https://twitter.com/martinfasani/status/1203936678769045506) to get an idea of how to set it up with ORCΛ
 Please note, if you want to use mDNS discovery for any other Firmware, follow this naming standard like we do here:
 SERVICE_HOST If that's the multicast host name, then you will be able to set both IP and Port in one click. 

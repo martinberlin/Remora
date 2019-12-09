@@ -22,11 +22,12 @@ The benefit of using udpx is that it has Bluetooth WiFi configuration and also m
 2. Config Tab -> Select your device starting with ESP32_MAC_49161
 3. Write your WiFi SSID / Password and hit Send 
 
-That's it, if your WiFi name and password match you should be connected in some seconds
+That's it, if your WiFi name and password match you should be connected in some seconds.
 Have more devices? Just go back to point 2 and set up different controllers.
 You can also check this [short video](https://twitter.com/martinfasani/status/1203936678769045506) to get an idea of how to set it up with ORCΛ
+
 Please note, if you want to use mDNS discovery for any other Firmware, follow this naming standard like we do here:
-SERVICE_HOST If that's the multicast host name, then you will be able to set both IP and Port in one click. 
+SERVICE_PORT If that's the multicast host name, then you will be able to set both IP and Port in one click. 
 
 **Credits are due:** All logic doing the Firmware part is from Bernd Giesecke, since I followed his great example, to make Remora configurable per Bluetooth serial.
 
@@ -55,8 +56,7 @@ Luckycloud cloudstorage hosts the latest APK builds, if you want to check latest
 
 UDP will be hearing in port 49161 so you can send short instructions from Orca or any other program you desire.
 This project is mainly headed to receive short UDP commands from ORCΛ but on master and develop branches also [udpx Pixel library](https://github.com/IoTPanic/pixels/) coded by IoTPanic is included.
-So if the UDP payload is major than 9 pixels it will trigger the binary protocol.
-[udpx video Demo](http://udpx.fasani.de)
+So if the UDP payload is major than 9 pixels it will trigger the binary protocol. [udpx video Demo](http://udpx.fasani.de)
 
 Please read the documentation of the [UDPX Repository](https://github.com/martinberlin/udpx) if you want to understand more about the communications protocol.
 
@@ -66,7 +66,7 @@ Please read the documentation of the [UDPX Repository](https://github.com/martin
 2. Make sure to update the settings for your LED Stripe **(data PIN, Length)** and also edit lib/Config/config.h adding your WiFi credentials
 3. Update the default **Orca IP** [for UDP](https://github.com/hundredrabbits/Orca/issues/135) so it knows where to send the UDP Messages. Now Remora supports mDns so if you are on Linux or Mac try to make a ping to: 
 
-**ping led.local**
+**ping SERVICE_PORT.local**
 
 And see if the ESP32 responds to mark it's IP Address. That's how you can hit an animation from any device connected to the same network, sending an UDP message to that IP and default port 49161. Note that for windows you need to install Bonjour to resolve local mDNS to their IP Addresses. If mDns discovery it's not an option, then connect the ESP32 board to the PC and open Serial debbugging in port 115200 on Arduino or Plataformio. Reset the board and you can see the IP Address as soon it connects to WiFi.
 
@@ -76,15 +76,16 @@ Check further details on how this works on [this blog post at fasani.de](https:/
 
 ## Hardware list
 
-1. ESP32 Board (The cheapest one. Suggested 4,50€)
+1. ESP32 Board (The cheapest one in Alixpress/Ebay. Suggested 4,50€)
 2. Addressable LEDs [WS2812B](https://www.aliexpress.com/item/Individually-Addressable-RGB-LED-Strip-Light-WS2812B-SK6812-LED-Stripe-DC-5V-5050-Waterproof-Diode-Flexible/32864337987.html) (1 Mtr, 144 leds, about 10€)
 3. 1 mtr Aluminium profile (About 4€ in any store like Bauhaus)
 4. Additionally and if you use a Stripe larger as 72 elements then you will get a brown out error when many LEDs are on since USB delivers max. 500mA so we recommend to give power from an external source than USB:
    [SANMIN 1PCS AC110V/220V-DC5V 3A 15W Isolated switch power supply module 220 to 5v](https://www.aliexpress.com/item/SANMIN-1PCS-AC110V-220V-DC5V-3A-15W-Isolated-switch-power-supply-module-220-to-5v-black/32842935108.html)
 5. Optional: [3D model to print the case](https://hackaday.io/project/166146-remora) In the project hackaday page you can file STL files for a simple case that fits a mini ESP32 
 
-That and soldiering 3 cables plus additing an optional 220v to 5VDC converter will do it. Usually the data cable is on the middle, so soldiering 5V positive, ground and data to a PIN in the ESP32 is the only electronic schema that you will need to make it work. 
-Note: Check in others stores if you get a better price, in total should be not more than 19 € to put a one meter Stripe + Controller together.
+If you want to have a bigger panel, you can of course use any Led Matrix, we suggest the brand BTF-Lighting since they have awesome 22x22 or 44x11 matrix at affordable pricing.
+That and soldiering 3 cables plus additing an optional 220v to 5VDC converter will do it. Usually the data cable is on the middle, so soldiering 5V positive, ground and data to GPIO19 in the ESP32 is the only electronic schema that you will need to make it work. 
+Note: Check in others stores if you get a better price, in total should be not more than 19 € to put a one meter Stripe + Controller together. 
 
 ## Electronic schematics
 

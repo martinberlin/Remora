@@ -2,25 +2,34 @@
 
 ![Remora Logo](/extras/img/remora-370.png)
 
-Remora is a simple pseudo animation language that works as a companion to Orca receiving UDP short instructions and sending animations to addressable LED stripes.
+Remora is a simple pseudo animation language that works as a companion to ORCΛ receiving UDP short instructions and sending animations to addressable LED stripes.
 This animations run entirely in the ESP32 controller and are initially aimed to be short so they can be triggered by [Orca sequencer](https://github.com/hundredrabbits/Orca) bangs.
-Starting on Dec. 2019, the Remora project has been rebranded as "Remora udpx", since now it supports also the Pixels protocol. Any message that is major als 9 bytes will be interpreted as an animation frame. It also joins our open source [udpx-app](https://github.com/martinberlin/udpx-app) that has a UDP text message sender to test Remora. The cool new addition, is that a part of sending short UDP messages to trigger animations like **550** now you can also select a video from your mobile and stream that pixels to your Remora led stripe.
+
+Starting on Dec. 2019, the Remora project has been rebranded as **Remora udpx**, since now it supports also the Pixels protocol. Any message that is>9 bytes will be interpreted as an animation frame. It also joins our open source [udpx-app](https://github.com/martinberlin/udpx-app) that has a UDP text message sender to test Remora. The cool new addition, is that a part of sending short UDP messages to trigger animations like **550** now you can also select a video from your mobile and stream that pixels to your Remora led stripe.
 
 ## Bluetooth WiFi configuration
 
-Starting in December 2019 all the configuration in the master branches of the udpx Firmware line we create will be over Bluetooth
-**Please install the ESP32-WiFI-BLE Application in any Android device:**
-https://play.google.com/store/apps/details?id=tk.giesecke.esp32wifible
+Starting in December 2019 all the configuration in the master branches of the udpx Firmware line we create will be over Bluetooth.
+If you want to take advantage of this fast setup, there are [detailed instructions in udpx repository](https://github.com/martinberlin/udpx#configuring-wifi-using-bluetooth).
+**Please install one of this Applications in any Android device:**
 
-1. Start the App
-2. Select your device starting with ESP32*
+1. [udpx](https://play.google.com/store/apps/details?id=io.cordova.udpx
+2. [ESP32-WiFI-BLE](https://play.google.com/store/apps/details?id=tk.giesecke.esp32wifible)
+
+The benefit of using udpx is that it has Bluetooth WiFi configuration and also multicast DNS discovery, so you can discover the IP address after some seconds connected. The benefit of ESP32-WiFi-BLE is that it let's you setup 2 access points, in case you have a show and need to use your mobile Hotspot. In a nutshell:
+
+1. Start the App, power up your Remora ESP32
+2. Select your device starting with ESP32_MAC_49161
 3. Write your WiFi SSID / Password and hit Send
 
 That's it you are connected! Have more devices? Just copy the password and set up different controllers.
+You can also check this [short video](https://twitter.com/martinfasani/status/1203936678769045506) to get an idea of how to set it up with ORCΛ
+Please note, if you want to use mDNS discovery for any other Firmware, follow this naming standard like we do here:
+SERVICE_HOST If that's the multicast host name, then you will be able to set both IP and Port in one click. 
 
 **Credits are due:** All logic doing the Firmware part is from Bernd Giesecke, since I followed his great example, to make Remora configurable per Bluetooth serial.
 
-We took this decision since we find the Bluetooth way a much more standard way to configure IoT devices. Specially ESP32 that has BLE and Bluetooth serial included, should be in our philosophy the way to set fast things up and start using your controller. We refuse to keep on forcing people to connect to an access point to set up WiFi, thing that sometimes is very unusable, specially if you use your mobile phone as an access point.
+We took this decision since we find the Bluetooth way a much more standard way to configure IoT devices. Specially ESP32 that has BLE and Bluetooth serial included, should be in our philosophy the way to set fast things up and start using your controller. We refuse to keep on forcing people to connect to an access point to set up WiFi specially if you use your mobile phone as an access point. 
 
 ## Android App latest builds
 
@@ -174,7 +183,7 @@ Please feel free to fork this and make it yours adding new animation ideas. Pull
 
 ## Companion Applications
 
-- [Orca](https://github.com/hundredrabbits/orca), ORCΛ Sequencer
+- [ORCΛ](https://github.com/hundredrabbits/orca), ORCΛ Sequencer
 - [UDProxy](/extras) UDP is a simple nodejs script to enable sending animations to multiple Led stripes. 
 
 See comments at the start of js file for configuration

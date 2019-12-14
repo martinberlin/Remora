@@ -4,7 +4,6 @@
 // <Configure> this to your own setup:
 #define DEFAULT_HUE_ANGLE 0
 
-
 const uint16_t PixelCount = 72;     // Length of LED stripe 144 - 13 = 131 Leds in a 30cm diameter round
 const uint8_t  PixelPin = 19;       // Data line of Addressable LEDs
 float maxL = 0.1f;
@@ -52,7 +51,9 @@ AnimEaseFunction moveEase =
 
 Animate::Animate() {
 }
-
+void Animate::stripBegin() {
+    strip.Begin();
+}
 /**
  * Generic message printer. Modify this if you want to send this messages elsewhere (Display)
  */
@@ -298,8 +299,6 @@ int commandToInt(String command, int length, uint8_t offset) {
 void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
     animateConfig.udpPort = udpPort;
     animateConfig.ipAddress = ipAddress2String(ipAddress);
-
-    strip.Begin();
 
     if(udp.listen(animateConfig.udpPort)) {
         debugMessage("UDP Listening on IP: ");

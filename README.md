@@ -18,11 +18,11 @@ If you want to take advantage of this fast setup, there are [detailed instructio
 
 The benefit of using udpx is that it has Bluetooth WiFi configuration and also multicast DNS discovery, so you can discover the IP address after some seconds connected. The benefit of ESP32-WiFi-BLE is that it let's you setup 2 access points, in case you have a show and need to use your mobile Hotspot. In a nutshell:
 
-1. Start the App, power up your Remora ESP32
+1. Start the App, power up your Remora ESP32 (First pixel BLUE)
 2. Config Tab -> Select your device starting with ESP32_MAC_49161
 3. Write your WiFi SSID / Password and hit Send 
 
-That's it, if your WiFi name and password match you should be connected in some seconds.
+That's it, if your WiFi name and password match you should be connected you get 1 GREEN led indicating you got an IP address. If the credentials are wrong or can't connect your first pixel will shine RED
 Have more devices? Just go back to point 2 and set up different controllers.
 You can also check this [short video](https://twitter.com/martinfasani/status/1203936678769045506) to get an idea of how to set it up with ORCΛ
 

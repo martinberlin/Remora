@@ -26,7 +26,7 @@ class Animate
     void startUdpListener(const IPAddress& ipAddress, int udpPort);
     void micRead();
     String ipAddress2String(const IPAddress& ipAddress);
-
+    void stripBegin();
     void loop();
     
     // Credits: @IoTpanic

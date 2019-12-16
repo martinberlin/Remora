@@ -5,7 +5,7 @@
 Remora is a simple pseudo animation language that works as a companion to ORCΛ receiving UDP short instructions and sending animations to addressable LED stripes.
 This animations run entirely in the ESP32 controller and are initially aimed to be short so they can be triggered by [Orca sequencer](https://github.com/hundredrabbits/Orca) bangs.
 
-Starting on Dec. 2019, the Remora project has been rebranded as **Remora udpx**, since now it supports also the Pixels protocol. Any message that is>9 bytes will be interpreted as an animation frame. It also joins our open source [udpx-app](https://github.com/martinberlin/udpx-app) that has a UDP text message sender to test Remora. The cool new addition, is that a part of sending short UDP messages to trigger animations like **550** now you can also select a video from your mobile and stream that pixels to your Remora led stripe.
+Starting on Dec. 2019, the Remora project has been rebranded as **Remora udpx**, since now it supports also the Pixels protocol when it receives a udpx push. Any message that is>9 bytes will be interpreted as an animation frame. That means it can also receive video frames  from [open source udpx-app](https://github.com/martinberlin/udpx-app). You can simply install the [udpx client from the Play store](https://play.google.com/store/apps/details?id=io.cordova.udpx). 
 
 ## Bluetooth WiFi configuration
 
@@ -187,5 +187,4 @@ Please feel free to fork this and make it yours adding new animation ideas. Pull
 
 - [ORCΛ](https://github.com/hundredrabbits/orca), ORCΛ Sequencer
 - [UDProxy](/extras) UDP is a simple nodejs script to enable sending animations to multiple Led stripes. 
-
-See comments at the start of js file for configuration
+- [udpx Firmware](https://github.com/martinberlin/udpx) can receive larger UDP packets since has a Brotli and Zlib decompressor built in. It does not animations directly in ESP32, it just receives frames, so it's a better option if you want to display video in a LED Matrix

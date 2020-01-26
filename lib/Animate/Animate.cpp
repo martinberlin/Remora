@@ -327,7 +327,7 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
         }
         String command;
       
-        for ( int i = 0; i < packet.length(); i++ ) {
+        for (unsigned int i = 0; i < packet.length(); i++) {
             command += (char)packet.data()[i];
         }
 

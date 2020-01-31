@@ -32,9 +32,9 @@ AsyncUDP udp;
 
 // NOTE: Make sure to check what Feature is the right one for your LED Stripe: https://github.com/Makuna/NeoPixelBus/wiki/NeoPixelBus-object#neo-features
 #ifdef RGBW
-  NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
+  NeoPixelBus<NeoGrbwFeature, NeoEsp32Rmt0Ws2812xMethod> strip(PixelCount, PixelPin);
 #else
-  NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
+  NeoPixelBus<NeoGrbFeature, NeoEsp32Rmt0Ws2812xMethod> strip(PixelCount, PixelPin);
 #endif
 
 NeoPixelAnimator animations(2);
@@ -52,7 +52,9 @@ AnimEaseFunction moveEase =
 //      NeoEase::QuarticInOut;
 
 Animate::Animate() {}
-
+void Animate::stripBegin() {
+    strip.Begin();
+}
 /**
  * Generic message printer. Modify this if you want to send this messages elsewhere (Display)
  */
@@ -305,8 +307,6 @@ void u8Clean() {
 void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
     animateConfig.udpPort = udpPort;
     animateConfig.ipAddress = ipAddress2String(ipAddress);
-
-    strip.Begin();
 
     if(udp.listen(animateConfig.udpPort)) {
         debugMessage("UDP Listening on IP: ");

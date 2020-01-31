@@ -21,7 +21,7 @@ class Animate
 {
   public:
     Animate();
-    
+    void stripBegin();    
     // Print out messages in Serial
     static const boolean debugMode = false;
     void startUdpListener(const IPAddress& ipAddress, int udpPort);

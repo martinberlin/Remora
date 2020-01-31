@@ -421,7 +421,7 @@ void initBLE() {
 void setup()
 {
   Serial.begin(115200);
-
+  animate.stripBegin();
   u8x8.begin();
   u8x8.setCursor(0, u8cursor);
   u8x8.setFont(u8x8_font_amstrad_cpc_extended_u);

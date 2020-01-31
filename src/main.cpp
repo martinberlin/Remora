@@ -36,10 +36,10 @@ const char compileDate[] = __DATE__ " " __TIME__;
 
 /** Unique device name */
 char apName[] = "ESP-xxxxxxxxxxxx_49161";
-/** Selected network 
-    true = use primary network
-		false = use secondary network
-*/
+/** WiFI Credentials storage */
+Preferences preferences;
+
+uint8_t lostConnectionCount = 1;
 bool usePrimAP = true;
 /** Flag if stored AP credentials are available */
 bool hasCredentials = false;
@@ -94,6 +94,26 @@ void printMessage(String message, bool newline = true)
       Serial.print(message);
     }
    }
+}
+
+/**
+ * Convert the IP to string 
+ */
+String IpAddress2String(const IPAddress& ipAddress)
+{
+  return String(ipAddress[0]) + String(".") +\
+  String(ipAddress[1]) + String(".") +\
+  String(ipAddress[2]) + String(".") +\
+  String(ipAddress[3]);
+}
+
+void showStatus(uint8_t R,uint8_t G,uint8_t B) {
+    animate.write(0, R, G, B);
+    animate.show();
+    delay(900);
+    animate.write(0, 0, 0, 0);
+    animate.show();
+    delay(100);
 }
 
 /**
@@ -177,15 +197,11 @@ void gotIP(system_event_id_t event) {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
-
-  if (!MDNS.begin(apName)) {
-    while(1) { 
-    delay(100);
-    }
-  }
+  MDNS.begin(apName);
+  showStatus(0,150,0);
+  delay(500);
   MDNS.addService("http", "tcp", 80);
   printMessage(String(apName)+".local mDns started");
-
   animate.startUdpListener(WiFi.localIP(), internalConfig.udpPort);
 }
 
@@ -194,8 +210,19 @@ void gotIP(system_event_id_t event) {
 void lostCon(system_event_id_t event) {
 	isConnected = false;
 	connStatusChanged = true;
-    Serial.println("WiFi lost connection, restarting");
-	ESP.restart();
+
+    Serial.printf("WiFi lost connection try %d to connect again\n", lostConnectionCount);
+	lostConnectionCount++;
+	// Avoid trying to connect forever if the user made a typo in password
+	if (lostConnectionCount>4) {
+		Serial.println("Clearing saved WiFi credentials");
+		preferences.begin("WiFiCred", false);
+		preferences.clear();
+		preferences.end();
+		showStatus(100,0,0);
+		ESP.restart();
+	}
+	WiFi.begin(ssidPrim.c_str(), pwPrim.c_str());
 }
 
 /**
@@ -280,7 +307,6 @@ class MyCallbackHandler: public BLECharacteristicCallbacks {
 				ssidSec = jsonIn["ssidSec"].as<String>();
 				pwSec = jsonIn["pwSec"].as<String>();
 
-				Preferences preferences;
 				preferences.begin("WiFiCred", false);
 				preferences.putString("ssidPrim", ssidPrim);
 				preferences.putString("ssidSec", ssidSec);
@@ -392,17 +418,6 @@ void initBLE() {
 	pAdvertising->start();
 }
 
-/**
- * Convert the IP to string 
- */
-String IpAddress2String(const IPAddress& ipAddress)
-{
-  return String(ipAddress[0]) + String(".") +\
-  String(ipAddress[1]) + String(".") +\
-  String(ipAddress[2]) + String(".") +\
-  String(ipAddress[3]);
-}
-
 void setup()
 {
   Serial.begin(115200);
@@ -462,6 +477,8 @@ void setup()
 		u8x8.println("USE ANDROID APP");
 		u8x8.println("TO CONFIG WIFI");
 		Serial.println("Could not find preferences, need send data over BLE");
+		showStatus(0,0,150);
+		delay(500);
 	}
 	preferences.end();
 
@@ -471,7 +488,7 @@ void setup()
 		// Check for available AP's
 		if (!scanWiFi) {
 			Serial.println("Could not find any AP");
-			
+			showStatus(0,0,120);
 		} else {
 			// If AP was found, start connection
 			connectWiFi();

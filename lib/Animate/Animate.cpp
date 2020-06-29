@@ -8,7 +8,7 @@
 
 const uint16_t PixelCount = 130;     // Length of LED stripe 144 - 14 = 130 Leds in a 30cm diameter round
 const uint8_t  PixelPin = 26;        // Data line of Addressable LEDs
-float maxS = 0.5f;
+float maxS = 0.9f;
 float maxL = 0.3f;
 #ifdef RGBW
   struct RgbwColor CylonEyeColor(HslColor(0.0f, 1.0f, maxL)); // Red as default

@@ -188,3 +188,16 @@ Please feel free to fork this and make it yours adding new animation ideas. Pull
 - [ORCΛ](https://github.com/hundredrabbits/orca), ORCΛ Sequencer
 - [UDProxy](/extras) UDP is a simple nodejs script to enable sending animations to multiple Led stripes. 
 - [udpx Firmware](https://github.com/martinberlin/udpx) can receive larger UDP packets since has a Brotli and Zlib decompressor built in. It does not animations directly in ESP32, it just receives frames, so it's a better option if you want to display video in a LED Matrix
+
+
+### Sponsoring
+
+If you like this Firmware please consider becoming a sponsor where you can donate as little as 2 u$ per month. Just click on:
+**❤ Sponsor**  on the top right
+
+♢ For cryptocurrency users is also possible to help this project transferring Ethereum:
+
+0x68cEAB84F33776a7Fac977B2Bdc0D50933344086
+
+We are thankful for the support and contributions so far!
+

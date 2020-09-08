@@ -7,7 +7,7 @@
 //#define RGBW 
 
 const uint16_t PixelCount = 130;     // Length of LED stripe 144 - 14 = 130 Leds in a 30cm diameter round
-const uint8_t  PixelPin = 26;        // Data line of Addressable LEDs
+const uint8_t  PixelPin = 0;        // Data line of Addressable LEDs
 float maxS = 0.9f;
 float maxL = 0.3f;
 #ifdef RGBW
@@ -16,7 +16,7 @@ float maxL = 0.3f;
   struct RgbColor CylonEyeColor(HslColor(0.0f, maxS, maxL)); // Red as default
 #endif
 
-boolean enableBeatDetection = false; // Turn to true to enable Mic beat detection
+boolean enableBeatDetection = true; // Turn to true to enable Mic beat detection
 // 0 to 255 - Only for RGB note that unless you power it with a good USB-C you won't be able to switch to max brightness
 byte maxBrightness = 100;
 // </Configure>

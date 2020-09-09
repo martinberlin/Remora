@@ -8,4 +8,5 @@
 lib/Config/Config.h
 # Midi demos folder
 extras/midi-to-orca/midis
+extras/midi-to-udp/node_modules
 node_modules

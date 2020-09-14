@@ -26,15 +26,14 @@ let options = yargs
 
 console.log("Listening to: "+input.getPortName(options.port_id)+ ' and forwarding to '+options.udp_ip+':'+PORT);
 
-// This send per UDP works
-sendPerUdp("Test");
-
 
 // Configure a callback.
 input.on('message', (deltaTime, message) => {
   
   // The message is an array of numbers corresponding to the MIDI bytes: https://www.cs.cf.ac.uk/Dave/Multimedia/node158.html
   if (message!='248') {
+    // The line that solved the not being called issue:
+    setImmediate(() => {});
     noteStatus = (message[0]==145) ? '1' : '0';
     noteChord  = message[1].toString(16);  // FF 0 01
     noteVelocity  = (message[2].toString(16).length==1) ?'0'+message[2].toString(16):message[2].toString(16);
@@ -52,7 +51,6 @@ input.ignoreTypes(false, false, false);
 
 
 function sendPerUdp(noteInfo) {
-  // Send per UDP - is not sending 
   var inBuffer = Buffer.from(noteInfo, 'utf8');
   udpclient.send(inBuffer,PORT,options.udp_ip, function(err, bytes) {
     if (err) {

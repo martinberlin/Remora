@@ -34,10 +34,16 @@ input.on('message', (deltaTime, message) => {
   if (Array.isArray(message) && message[0]!==248) {
     // The line that solved the not being called issue:
     setImmediate(() => {})
-    
+    noteVelocity = '00';
     noteStatus = (message[0]>=145) ? '1' : '0';
+    if (typeof message[1]!=='number') {
+      return;
+    }
     noteChord  = message[1].toString(16);  // FF 0 01
+    
+    if (typeof message[2]==='number') {
     noteVelocity  = (message[2].toString(16).length==1) ?'0'+message[2].toString(16):message[2].toString(16);
+    }  
     let noteInfo = noteChord+noteStatus+noteVelocity;
     console.log(noteInfo);
 

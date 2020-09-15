@@ -31,10 +31,11 @@ console.log("Listening to: "+input.getPortName(options.port_id)+ ' and forwardin
 input.on('message', (deltaTime, message) => {
   
   // The message is an array of numbers corresponding to the MIDI bytes: https://www.cs.cf.ac.uk/Dave/Multimedia/node158.html
-  if (message!='248') {
+  if (Array.isArray(message) && message[0]!==248) {
     // The line that solved the not being called issue:
-    setImmediate(() => {});
-    noteStatus = (message[0]==145) ? '1' : '0';
+    setImmediate(() => {})
+    
+    noteStatus = (message[0]>=145) ? '1' : '0';
     noteChord  = message[1].toString(16);  // FF 0 01
     noteVelocity  = (message[2].toString(16).length==1) ?'0'+message[2].toString(16):message[2].toString(16);
     let noteInfo = noteChord+noteStatus+noteVelocity;

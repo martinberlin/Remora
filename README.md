@@ -7,6 +7,11 @@ This animations run entirely in the ESP32 controller and are initially aimed to 
 
 Starting on Dec. 2019, the Remora project has been rebranded as **Remora udpx**, since now it supports also the Pixels protocol when it receives a udpx push. Any message that is>9 bytes will be interpreted as an animation frame. That means it can also receive video frames  from [open source udpx-app](https://github.com/martinberlin/udpx-app). You can simply install the [udpx client from the Play store](https://play.google.com/store/apps/details?id=io.cordova.udpx). 
 
+## MIDI Partner project
+
+![Remora Matrix Logo](https://raw.githubusercontent.com/martinberlin/Remora-matrix/2241c71170e061236acb74dfa06f1fc89e24e36d/assets/remora-matrix.svg)
+As a partner project [Remora Matrix](https://github.com/martinberlin/Remora-matrix) uses [MIDI to trigger geometrical drawings in RGB Led matrixes](https://twitter.com/martinfasani/status/1320474348340334593) using FastLED.
+
 ## Bluetooth WiFi configuration
 
 Starting in December 2019 all the configuration in the master branches of the udpx Firmware line we create will be over Bluetooth.

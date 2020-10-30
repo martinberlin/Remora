@@ -10,6 +10,7 @@ Starting on Dec. 2019, the Remora project has been rebranded as **Remora udpx**,
 ## MIDI Partner project
 
 ![Remora Matrix Logo](https://raw.githubusercontent.com/martinberlin/Remora-matrix/2241c71170e061236acb74dfa06f1fc89e24e36d/assets/remora-matrix.svg)
+
 As a partner project [Remora Matrix](https://github.com/martinberlin/Remora-matrix) uses [MIDI to trigger geometrical drawings in RGB Led matrixes](https://twitter.com/martinfasani/status/1320474348340334593) using FastLED.
 
 ## Bluetooth WiFi configuration
@@ -191,7 +192,8 @@ Please feel free to fork this and make it yours adding new animation ideas. Pull
 ## Companion Applications
 
 - [ORCΛ](https://github.com/hundredrabbits/orca), ORCΛ Sequencer
-- [UDProxy](/extras) UDP is a simple nodejs script to enable sending animations to multiple Led stripes. 
+- [UDProxy](/extras) UDP is a simple nodejs script to enable sending animations to multiple Led stripes.
+- [Remora Matrix](https://github.com/martinberlin/Remora-matrix)
 - [udpx Firmware](https://github.com/martinberlin/udpx) can receive larger UDP packets since has a Brotli and Zlib decompressor built in. It does not animations directly in ESP32, it just receives frames, so it's a better option if you want to display video in a LED Matrix
 
 

@@ -204,7 +204,7 @@ If you like this Firmware please consider becoming a sponsor where you can donat
 
 ♢ For cryptocurrency users is also possible to help this project transferring Ethereum:
 
-     0x65B7EF685E5B493603740310A84268c6D59f58B5
+     0x68cEAB84F33776a7Fac977B2Bdc0D50933344086
 
 We are thankful for the support and contributions so far! 
 Every small quantity of digital gold helps to spend more time giving support and developing further this projects.

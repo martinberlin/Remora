@@ -5,8 +5,6 @@
     #include <NeoPixelBus.h>
     #include <NeoPixelAnimator.h>
 #endif
-#define PIN_CLK  0
-#define PIN_DATA 34
 
 #include <driver/i2s.h>
 

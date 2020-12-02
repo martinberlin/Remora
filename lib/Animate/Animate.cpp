@@ -6,9 +6,17 @@
 const uint16_t PixelCount = LED_STRIP_PIXELS;     // Length of LED stripe 144 - 13 = 131 Leds in a 30cm diameter round
 const uint8_t  PixelPin   = LED_STRIP_DATA_IN;    // Data line of Addressable LEDs
 float maxL = 0.2f;
-struct RgbwColor CylonEyeColor(HslColor(0.0f, 1.0f, maxL)); // Red as default
-boolean enableBeatDetection = true; // Turn to true to enable Mic beat detection
-byte maxBrightness = 20;             // 0 to 255 - Only for RGB
+
+#if defined(RGB_WHITE) && RGB_WHITE==1
+   struct RgbwColor CylonEyeColor(HslColor(0.0f, 1.0f, maxL)); // Red as default
+   RgbwColor color;
+   #else
+   struct RgbColor CylonEyeColor(HslColor(0.0f, 1.0f, maxL)); // Red as default
+   RgbColor color;
+#endif
+
+uint8_t enableBeatDetection = ENABLE_BEAT_DETECTION; // Turn to true to enable Mic beat detection
+byte maxBrightness = 20;                             // 0 to 255 - Only for RGB
 // </Configure>
 
 uint16_t lastSignalLevel = 0;
@@ -18,6 +26,9 @@ int signalLevelMajorThan = -50;
 #define READ_LEN (50)
 uint8_t BUFFER[READ_LEN] = {0};
 uint16_t *adcBuffer = NULL;
+// I2S internal pins
+#define PIN_CLK  0
+#define PIN_DATA 34
 
 // Sent from main.cpp:
 struct config {
@@ -28,7 +39,11 @@ struct config {
 AsyncUDP udp;
 
 // NOTE: Make sure to check what Feature is the right one for your LED Stripe: https://github.com/Makuna/NeoPixelBus/wiki/NeoPixelBus-object#neo-features
-NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
+#if defined(RGB_WHITE) && RGB_WHITE==1
+    NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
+   #else
+    NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
+#endif
 NeoPixelAnimator animations(2);
 NeoGamma<NeoGammaTableMethod> colorGamma;
 uint16_t lastPixel = 0; // track the eye position
@@ -96,7 +111,6 @@ void allBlack()
  */
 void fadeAll(uint8_t darkenBy)
 {
-    RgbwColor color;
     for (uint16_t indexPixel = 0; indexPixel < strip.PixelCount(); indexPixel++)
     {
         color = strip.GetPixelColor(indexPixel);
@@ -106,7 +120,6 @@ void fadeAll(uint8_t darkenBy)
 }
 void darkenAll(const AnimationParam& param)
 {
-    RgbwColor color;
     for (uint16_t indexPixel = 0; indexPixel < strip.PixelCount(); indexPixel++)
     {
         color = strip.GetPixelColor(indexPixel);
@@ -263,7 +276,7 @@ void DrawPixelColorToColor(bool corrected, HslColor startColor, HslColor stopCol
     for (uint16_t index = 0; index < strip.PixelCount(); index++)
     {
         float progress = index / static_cast<float>(strip.PixelCount() - 2);
-        RgbwColor color = HslColor::LinearBlend<NeoHueBlendShortestDistance>(startColor, stopColor, progress);
+        color = HslColor::LinearBlend<NeoHueBlendShortestDistance>(startColor, stopColor, progress);
         if (corrected)
         {
             color = colorGamma.Correct(color);
@@ -512,10 +525,10 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
         if (command.charAt(0) == 'B') {
             if (command.charAt(1) == '1') {
                 debugMessage("BEAT On");
-                enableBeatDetection = true;
+                enableBeatDetection = 1;
             } else {
                 debugMessage("BEAT Off");
-                enableBeatDetection = false;
+                enableBeatDetection = 0;
             }
         }
         // Beat sensibility values
@@ -541,8 +554,8 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
 
 void Animate::micRead() 
 {   
-
-    i2s_read_bytes(I2S_NUM_0, (char*) BUFFER, READ_LEN, (100 / portTICK_RATE_MS));
+    size_t bytesread;
+    i2s_read(I2S_NUM_0,(char*) BUFFER, READ_LEN, &bytesread, (100 / portTICK_RATE_MS));
     adcBuffer = (uint16_t *)BUFFER;
     
     int signalLevel = 0;   
@@ -550,12 +563,12 @@ void Animate::micRead()
        signalLevel += adcBuffer[i];
     }
     signalLevel = ((signalLevel/READ_LEN)/100 -290)*3;
-   //  && (signalLevel!=lastSignalLevel)
-
+     
+    //Serial.printf(" %d",signalLevel); // Debug. If you want to trigger this only on different beats
+    //  && (signalLevel!=lastSignalLevel) 
    if (signalLevel>signalLevelMajorThan && signalLevel<signalLevelMinorThan) {
     // BEAT
       debugMessage(String(signalLevel) + ">" + String(signalLevelMajorThan) + " and < "+ String(signalLevelMinorThan));
-      
       animations.StartAnimation(0, 1, allToColorNoise);
       animations.StartAnimation(1, signalLevel, darkenAll);
       lastSignalLevel = signalLevel;

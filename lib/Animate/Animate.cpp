@@ -3,8 +3,8 @@
 
 // <Configure> this to your own setup:
 #define DEFAULT_HUE_ANGLE 0
-const uint16_t PixelCount = 131;     // Length of LED stripe 144 - 13 = 131 Leds in a 30cm diameter round
-const uint8_t  PixelPin = 26;        // Data line of Addressable LEDs
+const uint16_t PixelCount = LED_STRIP_PIXELS;     // Length of LED stripe 144 - 13 = 131 Leds in a 30cm diameter round
+const uint8_t  PixelPin   = LED_STRIP_DATA_IN;    // Data line of Addressable LEDs
 float maxL = 0.2f;
 struct RgbwColor CylonEyeColor(HslColor(0.0f, 1.0f, maxL)); // Red as default
 boolean enableBeatDetection = true; // Turn to true to enable Mic beat detection

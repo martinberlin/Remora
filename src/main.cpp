@@ -2,8 +2,7 @@
 #include <M5StickC.h>
 #include <WiFi.h>
 #include <WiFiManager.h>
-// Config.h and Animate.h need configuration
-#include <Config.h>  // WiFi credentials, mDNS Domain
+// Animate.h needs configuration. Constants are now in Config.h
 #include <Animate.h> // PixelCount, PixelPin
 #include <ESPmDNS.h>
 #include "freertos/FreeRTOS.h"
@@ -37,8 +36,9 @@ void printMessage(String message, bool newline = true)
 
 void connectToWifi() {
   Serial.println("Connecting to Wi-Fi...");
-  WiFi.begin(WIFI_SSID1, WIFI_PASS1);
+  WiFi.begin(FALLBACK_WIFI_SSID, FALLBACK_WIFI_PASS);
 }
+
 /**
  * Convert the IP to string 
  */

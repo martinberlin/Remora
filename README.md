@@ -5,7 +5,18 @@
 Remora is a simple pseudo animation language that works as a companion to ORCΛ receiving UDP short instructions and sending animations to addressable LED stripes.
 This animations run entirely in the ESP32 controller and are initially aimed to be short so they can be triggered by [Orca sequencer](https://github.com/hundredrabbits/Orca) bangs.
 
-Starting on Dec. 2019, the Remora project has been rebranded as **Remora udpx**, since now it supports also the Pixels protocol when it receives a udpx push. Any message that is>9 bytes will be interpreted as an animation frame. That means it can also receive video frames  from [open source udpx-app](https://github.com/martinberlin/udpx-app). You can simply install the [udpx client from the Play store](https://play.google.com/store/apps/details?id=io.cordova.udpx). 
+Starting on Dec. 2019, the Remora project has been rebranded as **Remora udpx**, since now it supports also the Pixels protocol when it receives a udpx push. Any message that is>9 bytes will be interpreted as an animation frame. That means it can also receive video frames  from [open source udpx-app](https://github.com/martinberlin/udpx-app). You can simply install the [udpx client from the Play store](https://play.google.com/store/apps/details?id=io.cordova.udpx).
+
+## Latest news
+
+* It's been long time since this lighting fish does not receive a proper update. I started shaping a new version and I would like to propose also one that can work with UDP but also doing something "hearing the music"
+* This is starting to take form in [festival/ring-m5-stick](https://github.com/martinberlin/Remora/tree/festival/ring-m5-stick) branch and requires an M5 Stick-C. This model has a Mic connected to I2S so you can read PDM data
+* Additionally you can also connect a [Mic to the ESP32](https://www.youtube.com/watch?v=pPh3_ciEmzs) following some other tutorials if you don't want to get an M5-Stick-C
+
+![M5 Stick-C](https://raw.githubusercontent.com/martinberlin/Remora/master/extras/img/M5stick-c.jpg)
+The beat detection is enabled by default but you can also control it with UDP short messages sending B1 to enable it or B0 to disable.
+
+If you have any MIDI instruments then you might be interested in checking out Remora-Matrix where we are also proposing an MIDI to UDP middleware or a MIDI-Serial version to interact with music and RGB Led Matrixes.
 
 ## MIDI Partner project
 
@@ -56,7 +67,7 @@ Luckycloud cloudstorage hosts the latest APK builds, if you want to check latest
  - **master**    stable branch with configuration over Bluetooth
  - **develop**   main branch ahead of others where latest updates are merged
  - **wifi-manager** main branch without Bluetooth configuration, but with WiFi manager (requires restart)
- - **m5/***      to be compiled on M5StickC devices
+ - **m5/***      only for M5StickC devices
 
 ## Communications protocol
 

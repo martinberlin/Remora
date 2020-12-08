@@ -116,8 +116,8 @@ void setup()
     //wifiManager.resetSettings();
 
   M5.begin();
-  M5.Lcd.setRotation(3);
-  M5.Axp.ScreenBreath(8); // Brightness (min and visible 7 - 10 max)
+  M5.Lcd.setRotation(1);  // 1 & 3 Landscape
+  M5.Axp.ScreenBreath(9); // Brightness (min and visible 7 - 10 max)
   M5.Lcd.setTextColor(TFT_WHITE, TFT_BLACK);
   M5.Lcd.drawString("REMORA", 10, 2, 2);
   M5.Lcd.setTextColor(TFT_RED, TFT_BLACK);

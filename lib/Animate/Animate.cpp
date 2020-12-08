@@ -15,7 +15,7 @@ float maxL = 0.2f;
    RgbColor color;
 #endif
 
-uint8_t enableBeatDetection = ENABLE_BEAT_DETECTION; // Turn to true to enable Mic beat detection
+uint8_t audioDetectionMode = AUDIO_DETECTION_START_MODE; // Turn to true to enable Mic beat detection
 byte maxBrightness = 20;                             // 0 to 255 - Only for RGB
 // </Configure>
 
@@ -523,12 +523,22 @@ void Animate::startUdpListener(const IPAddress& ipAddress, int udpPort) {
         // Beat detection switch
         // TODO: Research if here we can inject M5 to enable display draw: M5.Lcd.drawString("BEAT On", 10, 50, 2);
         if (command.charAt(0) == 'B') {
-            if (command.charAt(1) == '1') {
-                debugMessage("BEAT On");
-                enableBeatDetection = 1;
-            } else {
-                debugMessage("BEAT Off");
-                enableBeatDetection = 0;
+            switch (command.charAt(1)) {
+                case '2':
+                debugMessage("Audio mode:2 Vumeter ON");
+                audioDetectionMode = 2;
+                break;
+                case '1':
+                debugMessage("Audio mode:1 BEAT ON");
+                audioDetectionMode = 1;
+                break;
+                case '0':
+                debugMessage("Audio mode:0 BEAT OFF");
+                audioDetectionMode = 0;
+                break;
+                default:
+                debugMessage("Audio mode:X Not implemented. Accepts only 0,1,2");
+                audioDetectionMode = 0;
             }
         }
         // Beat sensibility values
@@ -562,17 +572,39 @@ void Animate::micRead()
     for ( int i = 0; i < READ_LEN; i++ ) {
        signalLevel += adcBuffer[i];
     }
-    signalLevel = ((signalLevel/READ_LEN)/100 -290)*3;
      
-    //Serial.printf(" %d",signalLevel); // Debug. If you want to trigger this only on different beats
-    //  && (signalLevel!=lastSignalLevel) 
-   if (signalLevel>signalLevelMajorThan && signalLevel<signalLevelMinorThan) {
-    // BEAT
+   switch (audioDetectionMode)
+   {
+    // BEAT On
+   case 1:
+       signalLevel = ((signalLevel/READ_LEN)/100 -290)*3;
+       if (signalLevel>signalLevelMajorThan && signalLevel<signalLevelMinorThan) {
       debugMessage(String(signalLevel) + ">" + String(signalLevelMajorThan) + " and < "+ String(signalLevelMinorThan));
       animations.StartAnimation(0, 1, allToColorNoise);
       animations.StartAnimation(1, signalLevel, darkenAll);
       lastSignalLevel = signalLevel;
      }
+       break;
+
+    // VUMETER On
+   case 2:
+      signalLevel = abs((signalLevel/READ_LEN)/100-200);
+    
+    for(uint16_t i = 0; i<LED_STRIP_PIXELS; ++i){
+        if (i<signalLevel) {
+            #if defined(RGB_WHITE) && RGB_WHITE==1
+            strip.SetPixelColor(i, RgbwColor(0,0,0,0));
+            #else
+            strip.SetPixelColor(i, RgbColor(0,0,0));
+            #endif
+        } else {
+            strip.SetPixelColor(i, CylonEyeColor);
+        }
+    }
+      //Serial.printf(" %d",signalLevel); // Debug. If you want to trigger this only on different beats
+       break;
+   }
+   
 }
 
 void Animate::loop() {
@@ -581,7 +613,7 @@ void Animate::loop() {
     }
     
     strip.Show();
-    if (enableBeatDetection) {
+    if (audioDetectionMode>0) {
         Animate::micRead();
     }
 }
